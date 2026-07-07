@@ -10,6 +10,7 @@ import { useState } from "react";
 export default function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [nickname, setNickname] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
   const signupNewUser = async (e: React.MouseEvent<HTMLInputElement>) => {
@@ -19,6 +20,7 @@ export default function SignupForm() {
       body: JSON.stringify({
         email,
         password,
+        nickname,
       }),
     });
     const result: RouteHandlerResponse = await response.json();
@@ -46,6 +48,15 @@ export default function SignupForm() {
         value={password}
         onChange={e => setPassword(e.target.value)}
         placeholder="비밀번호"
+      />
+
+      <label htmlFor="nickname">Nickname</label>
+      <input
+        id="nickname"
+        type="text"
+        value={nickname}
+        onChange={e => setNickname(e.target.value)}
+        placeholder="닉네임"
       />
 
       <input type="submit" value="회원가입" onClick={signupNewUser} />

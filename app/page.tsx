@@ -23,6 +23,11 @@ interface getSearchYTVideo {
 }
 
 export default async function Home() {
+  const supabase = await createClient();
+  const response = await supabase.from("profiles").select();
+  console.log(response);
+
+  /* Youtube API 연결 테스트
   const youtubeApiParams = {
     q: "APT",
     part: "snippet",
@@ -38,8 +43,9 @@ export default async function Home() {
     officialRxp.exec(video.snippet.title),
   );
   const vidoeId = officialVideo.id.videoId;
+  */
 
-  /* OpenAI 연결 테스트
+  /* OpenAI API 연결 테스트
   const client = new OpenAI();
   
   const openAIResponse = await client.responses.create({
@@ -49,15 +55,5 @@ export default async function Home() {
 
   console.log(openAIResponse.output_text);
   */
-  return (
-    <div>
-      <iframe
-        id="ytplayer"
-        width="640"
-        height="360"
-        src={`https://www.youtube.com/embed/${vidoeId}`}
-        frameBorder="0"
-      ></iframe>
-    </div>
-  );
+  return <div></div>;
 }
