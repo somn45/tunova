@@ -13,19 +13,28 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const result = signinSchema.safeParse(body);
   if (!result.success) {
+    const [issue] = result.error.issues;
     return NextResponse.json({
       success: false,
       message: result.error.issues[0].message,
+      path: issue.path[0],
     });
   }
 
   const { email, password } = result.data;
 
   const supabase = await createClient();
-  await supabase.auth.signInWithPassword({
+  const response = await supabase.auth.signInWithPassword({
     email,
     password,
   });
+  if (response.error) {
+    return NextResponse.json({
+      success: false,
+      message: "가입하신 이메일과 비밀번호가 일치하지 않습니다.",
+      path: "email",
+    });
+  }
 
   return NextResponse.json({ success: true, message: "ok" });
 }

@@ -3,6 +3,7 @@
 interface RouteHandlerResponse {
   success: boolean;
   message: string;
+  path?: string;
 }
 
 import { redirect } from "next/navigation";
@@ -11,7 +12,11 @@ import { useState } from "react";
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<RouteHandlerResponse>({
+    success: false,
+    message: "",
+    path: "",
+  });
 
   const signinUser = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -22,13 +27,14 @@ export default function LoginForm() {
     const result: RouteHandlerResponse = await response.json();
 
     if (!result.success) {
-      return setErrorMessage(result.message);
+      return setErrorMessage(result);
     }
     redirect("/");
   };
 
   return (
     <form>
+      {errorMessage.path === "email" && <span>{errorMessage.message}</span>}
       <label htmlFor="email">Email</label>
       <input
         id="email"
@@ -38,6 +44,7 @@ export default function LoginForm() {
         placeholder="이메일"
       />
 
+      {errorMessage.path === "password" && <span>{errorMessage.message}</span>}
       <label htmlFor="password">Password</label>
       <input
         id="password"

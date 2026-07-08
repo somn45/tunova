@@ -25,7 +25,6 @@ interface getSearchYTVideo {
 export default async function Home() {
   const supabase = await createClient();
   const response = await supabase.from("profiles").select();
-  console.log(response);
 
   /* Youtube API 연결 테스트
   const youtubeApiParams = {

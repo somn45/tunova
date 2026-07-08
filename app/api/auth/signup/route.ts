@@ -15,26 +15,32 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const result = signupSchema.safeParse(body);
-  if (!result.success) {
+  if (!result.success && result.error) {
+    const [issue] = result.error.issues;
     return NextResponse.json({
       success: false,
       message: result.error.issues[0].message,
+      path: issue.path[0],
     });
   }
 
   const { email, password, nickname } = result.data;
 
   const supabase = await createClient();
-  await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: "http://localhost:3000/api/auth/confirm",
-      data: {
-        nickname,
+  try {
+    await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: "http://localhost:3000/api/auth/confirm",
+        data: {
+          nickname,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error(error);
+  }
 
-  return NextResponse.json({ message: "ok" });
+  return NextResponse.json({ success: true, message: "ok" });
 }
