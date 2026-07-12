@@ -26,6 +26,8 @@ export default function LoginForm() {
     });
     const result: RouteHandlerResponse = await response.json();
 
+    console.log(result);
+
     if (!result.success) {
       return setErrorMessage(result);
     }
