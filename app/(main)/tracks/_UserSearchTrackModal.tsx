@@ -47,6 +47,29 @@ interface ITunesSearchAlbumResult {
   }>;
 }
 
+export const GENRE_ID_MAP = new Map<string, number>([
+  ["Blues", 2],
+  ["Classical", 5],
+  ["Country", 6],
+  ["Electronic", 7],
+  ["Singer/Songwriter", 10],
+  ["Jazz", 11],
+  ["Latin", 12],
+  ["Pop", 14],
+  ["R&B/Soul", 15],
+  ["Soundtrack", 16],
+  ["Dance", 17],
+  ["Hip-Hop/Rap", 18],
+  ["Worldwide", 19],
+  ["Alternative", 20],
+  ["Rock", 21],
+  ["Christian", 22],
+  ["Reggae", 24],
+  ["J-Pop", 27],
+  ["Anime", 29],
+  ["K-Pop", 51],
+]);
+
 export default function UserSearchTrackModal({
   isOpen,
   closeModal,
@@ -64,10 +87,12 @@ export default function UserSearchTrackModal({
     new Set(),
   );
 
+  const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
+
   const searchTrack = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const itunesTrackParams = {
       term: e.target.value,
-      country: "kr",
+      country: "us",
       entity: "musicTrack",
     };
     const itunesSearchParams = new URLSearchParams(
@@ -78,6 +103,7 @@ export default function UserSearchTrackModal({
       `https://itunes.apple.com/search?${itunesSearchParams}`,
     );
     const searchTrackResult: ITunesSearchResult = await response.json();
+    console.log(searchTrackResult);
     setTracks(
       searchTrackResult.results.map(track => ({
         ...track,
@@ -91,7 +117,7 @@ export default function UserSearchTrackModal({
   const searchArtist = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const itunesArtistParams = {
       term: e.target.value,
-      country: "kr",
+      country: "us",
       entity: "musicArtist",
     };
     const itunesSearchParams = new URLSearchParams(
@@ -137,20 +163,43 @@ export default function UserSearchTrackModal({
       closeModal={closeModal}
       title="사용자 기반 트랙 검색"
     >
-      <AutoComplete
-        scope="트랙"
-        items={tracks}
-        onChangeKeyword={searchTrack}
-        selectedItemIds={selectedTrackIds}
-        selectItem={setSelectedTrackIds}
-      />
-      <AutoComplete
-        scope="아티스트"
-        items={artists}
-        onChangeKeyword={searchArtist}
-        selectedItemIds={selectedArtistIds}
-        selectItem={setSelectedArtistIds}
-      />
+      <form>
+        <AutoComplete
+          scope="트랙"
+          items={tracks}
+          onChangeKeyword={searchTrack}
+          selectedItemIds={selectedTrackIds}
+          selectItem={setSelectedTrackIds}
+        />
+        <AutoComplete
+          scope="아티스트"
+          items={artists}
+          onChangeKeyword={searchArtist}
+          selectedItemIds={selectedArtistIds}
+          selectItem={setSelectedArtistIds}
+        />
+
+        <label>장르</label>
+        <ul>
+          {[...selectedGenres].map(genre => (
+            <li key={genre}>{genre}</li>
+          ))}
+        </ul>
+        <ul className="h-40 overflow-y-scroll">
+          {GENRE_ID_MAP.entries()
+            .toArray()
+            .map(([genre, key]) => (
+              <li
+                key={key}
+                onClick={() =>
+                  setSelectedGenres(prevState => prevState.add(genre))
+                }
+              >
+                {genre}
+              </li>
+            ))}
+        </ul>
+      </form>
     </Modal>
   );
 }

@@ -8,8 +8,8 @@ interface AutoCompleteProps<T extends RequiredItemType> {
   scope: string;
   items: Array<T>;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  selectedItemIds: Set<number>;
-  selectItem: Dispatch<SetStateAction<Set<number>>>;
+  selectedItemIds: Set<number | number>;
+  selectItem: Dispatch<SetStateAction<Set<number | number>>>;
 }
 
 export default function AutoComplete<T extends RequiredItemType>({
@@ -22,7 +22,7 @@ export default function AutoComplete<T extends RequiredItemType>({
   const [isShowComboBox, setIsShowComboBox] = useState(false);
 
   return (
-    <form>
+    <>
       <ul>
         {items
           .filter(track => selectedItemIds.has(track.id))
@@ -55,6 +55,6 @@ export default function AutoComplete<T extends RequiredItemType>({
           </ul>
         )}
       </div>
-    </form>
+    </>
   );
 }
