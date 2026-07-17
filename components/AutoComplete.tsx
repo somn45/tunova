@@ -5,6 +5,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 type RequiredItemType = { id: number; name: string; artwork: string };
 
 interface AutoCompleteProps<T extends RequiredItemType> {
+  scope: string;
   items: Array<T>;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   selectedItemIds: Set<number>;
@@ -12,6 +13,7 @@ interface AutoCompleteProps<T extends RequiredItemType> {
 }
 
 export default function AutoComplete<T extends RequiredItemType>({
+  scope,
   items,
   onChangeKeyword,
   selectedItemIds,
@@ -33,21 +35,21 @@ export default function AutoComplete<T extends RequiredItemType>({
         onFocus={() => setIsShowComboBox(true)}
         onBlur={() => setIsShowComboBox(false)}
       >
-        <label htmlFor="track">트랙</label>
+        <label htmlFor="track">{scope}</label>
         <input
           id="track"
           type="text"
           onChange={onChangeKeyword}
-          placeholder="트랙 검색"
+          placeholder={`${scope} 검색`}
         />
         {isShowComboBox && (
           <ul className="h-40 overflow-y-scroll">
-            {items.map(track => (
+            {items.map(item => (
               <li
-                key={track.id}
-                onClick={() => selectItem(prevState => prevState.add(track.id))}
+                key={item.id}
+                onClick={() => selectItem(prevState => prevState.add(item.id))}
               >
-                {track.name}
+                {item.name}
               </li>
             ))}
           </ul>
