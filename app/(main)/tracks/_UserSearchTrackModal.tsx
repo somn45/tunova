@@ -103,7 +103,6 @@ export default function UserSearchTrackModal({
       `https://itunes.apple.com/search?${itunesSearchParams}`,
     );
     const searchTrackResult: ITunesSearchResult = await response.json();
-    console.log(searchTrackResult);
     setTracks(
       searchTrackResult.results.map(track => ({
         ...track,
@@ -157,6 +156,53 @@ export default function UserSearchTrackModal({
     );
   };
 
+  const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
+    e.preventDefault();
+
+    const userTasteTracks = await Promise.all(
+      selectedTrackIds
+        .keys()
+        .toArray()
+        .map(async trackId => {
+          const getTrackResponse = await fetch(
+            `https://itunes.apple.com/lookup?id=${trackId}`,
+          );
+          const getTrackResult: ITunesSearchResult =
+            await getTrackResponse.json();
+          return getTrackResult.results[0];
+        }),
+    );
+
+    const userTasteArtists = await Promise.all(
+      selectedArtistIds
+        .keys()
+        .toArray()
+        .map(async artistId => {
+          const getArtistResponse = await fetch(
+            `https://itunes.apple.com/lookup?id=${artistId}`,
+          );
+          const getArtistResult: ITunesSearchArtistResult =
+            await getArtistResponse.json();
+          return getArtistResult.results[0];
+        }),
+    );
+
+    const response = await fetch(
+      "http://localhost:3000/api/openai/tracks/by-user",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          tracks: userTasteTracks,
+          artists: userTasteArtists,
+          genres: selectedGenres.keys().toArray(),
+        }),
+      },
+    );
+
+    const result = await response.json();
+    console.log("OpenAI 트랙 추천 결과", result);
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -199,6 +245,7 @@ export default function UserSearchTrackModal({
               </li>
             ))}
         </ul>
+        <input type="submit" value="제출" onClick={submitUserTaste} />
       </form>
     </Modal>
   );
