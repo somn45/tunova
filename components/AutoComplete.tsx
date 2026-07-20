@@ -2,7 +2,13 @@
 
 import { Dispatch, SetStateAction, useState } from "react";
 
-type RequiredItemType = { id: number; name: string; artwork: string };
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
 
 interface AutoCompleteProps<T extends RequiredItemType> {
   scope: string;
@@ -23,11 +29,19 @@ export default function AutoComplete<T extends RequiredItemType>({
 
   return (
     <>
-      <ul>
+      <ul className="flex gap-2">
         {items
-          .filter(track => selectedItemIds.has(track.id))
-          .map(selectedTrack => (
-            <li key={selectedTrack.id}>{selectedTrack.id}</li>
+          .filter(item => selectedItemIds.has(item.id))
+          .map(item => (
+            <li
+              key={item.id}
+              className="flex gap-0.5 rounded-md bg-emerald-400 px-3 py-2"
+            >
+              <span className="text-sm">{item.name}</span>
+              {item.artist ? (
+                <span className="text-sm">{`(${item.artist})`}</span>
+              ) : null}
+            </li>
           ))}
       </ul>
       <div
@@ -43,13 +57,18 @@ export default function AutoComplete<T extends RequiredItemType>({
           placeholder={`${scope} 검색`}
         />
         {isShowComboBox && (
-          <ul className="h-40 overflow-y-scroll">
+          <ul className="flex h-40 flex-col gap-2 overflow-y-scroll">
             {items.map(item => (
               <li
                 key={item.id}
                 onClick={() => selectItem(prevState => prevState.add(item.id))}
+                className="flex gap-1.5 pr-10"
               >
-                {item.name}
+                <img src={item.artwork} alt={item.name} />
+                <div className="flex flex-col gap-0.5">
+                  <span>{item.name}</span>
+                  <span>{item.artist}</span>
+                </div>
               </li>
             ))}
           </ul>

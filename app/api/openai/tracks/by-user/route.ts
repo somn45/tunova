@@ -27,11 +27,11 @@ const TrackSchema = z.object({
   artist: z.string(),
   genres: z.array(z.string()),
   artwork: z.string(),
+  reason: z.string(),
 });
 
 const RecommendedTracks = z.object({
   recommendTracks: z.array(TrackSchema),
-  reason: z.string(),
 });
 
 export async function POST(request: NextRequest) {
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
   const openAIResponse = await client.responses.create({
     model: OPENAI_GPT_MODEL,
     instructions: `당신은 음악에 조예가 깊은 마에스트로입니다. 사용자에게 받은 트랙, 아티스트, 장르를 받고 
-      이들을 종합적으로 분석하여 각각 3곡씩 추천하고 싶은 트랙과 해당 트랙들을 추천한 이유를 말씀해주세요.`,
+      이들을 종합적으로 분석하여 추천하고 싶은 트랙 3곡과 해당 트랙들을 추천한 이유를 말씀해주세요.`,
     input: `혹시 제 취향에 맞춰 음악을 추천해주실 수 있을까요?
     제가 좋아하는 트랙은 ${stringifyTracks}이고
     제가 좋아하는 아티스트는 ${stringifyArtists}이며

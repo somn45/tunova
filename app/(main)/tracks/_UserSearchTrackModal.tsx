@@ -27,7 +27,8 @@ interface ITunesSearchResult {
     trackId: number;
     trackName: string;
     artistName: string;
-    artwork100: string;
+    releaseDate: string;
+    artworkUrl60: string;
   }>;
 }
 
@@ -43,7 +44,7 @@ interface ITunesSearchArtistResult {
 interface ITunesSearchAlbumResult {
   resultCount: number;
   results: Array<{
-    artworkUrl100: string;
+    artworkUrl60: string;
   }>;
 }
 
@@ -108,7 +109,8 @@ export default function UserSearchTrackModal({
         ...track,
         id: track.trackId,
         name: track.trackName,
-        artwork: track.artwork100,
+        artist: track.artistName,
+        artwork: track.artworkUrl60,
       })),
     );
   };
@@ -139,8 +141,8 @@ export default function UserSearchTrackModal({
 
         return {
           ...artist,
-          artworkUrl100: artistSignatureAlbum
-            ? artistSignatureAlbum.artworkUrl100
+          artworkUrl60: artistSignatureAlbum
+            ? artistSignatureAlbum.artworkUrl60
             : "",
         };
       }),
@@ -151,7 +153,7 @@ export default function UserSearchTrackModal({
         ...artist,
         id: artist.artistId,
         name: artist.artistName,
-        artwork: artist.artworkUrl100,
+        artwork: artist.artworkUrl60,
       })),
     );
   };
@@ -200,7 +202,6 @@ export default function UserSearchTrackModal({
     );
 
     const result = await response.json();
-    console.log("OpenAI 트랙 추천 결과", result);
   };
 
   return (
