@@ -1,6 +1,6 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 
 type RequiredItemType = {
   id: number;
@@ -14,15 +14,18 @@ interface AutoCompleteProps<T extends RequiredItemType> {
   scope: string;
   items: Array<T>;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  selectedItemIds: Set<number | number>;
-  selectItem: Dispatch<SetStateAction<Set<number | number>>>;
+  selectedItems: Array<RequiredItemType>;
+  selectItem: (
+    e: React.MouseEvent<HTMLLIElement>,
+    item: RequiredItemType,
+  ) => void;
 }
 
 export default function AutoComplete<T extends RequiredItemType>({
   scope,
   items,
   onChangeKeyword,
-  selectedItemIds,
+  selectedItems,
   selectItem,
 }: AutoCompleteProps<T>) {
   const [isShowComboBox, setIsShowComboBox] = useState(false);
@@ -30,19 +33,17 @@ export default function AutoComplete<T extends RequiredItemType>({
   return (
     <>
       <ul className="flex gap-2">
-        {items
-          .filter(item => selectedItemIds.has(item.id))
-          .map(item => (
-            <li
-              key={item.id}
-              className="flex gap-0.5 rounded-md bg-emerald-400 px-3 py-2"
-            >
-              <span className="text-sm">{item.name}</span>
-              {item.artist ? (
-                <span className="text-sm">{`(${item.artist})`}</span>
-              ) : null}
-            </li>
-          ))}
+        {selectedItems.map(item => (
+          <li
+            key={item.id}
+            className="flex gap-0.5 rounded-md bg-emerald-400 px-3 py-2"
+          >
+            <span className="text-sm">{item.name}</span>
+            {item.artist ? (
+              <span className="text-sm">{`(${item.artist})`}</span>
+            ) : null}
+          </li>
+        ))}
       </ul>
       <div
         tabIndex={0}
@@ -61,7 +62,7 @@ export default function AutoComplete<T extends RequiredItemType>({
             {items.map(item => (
               <li
                 key={item.id}
-                onClick={() => selectItem(prevState => prevState.add(item.id))}
+                onClick={e => selectItem(e, item)}
                 className="flex gap-1.5 pr-10"
               >
                 <img src={item.artwork} alt={item.name} />

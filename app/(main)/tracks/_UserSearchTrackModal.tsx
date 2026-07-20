@@ -4,6 +4,14 @@ import AutoComplete from "@/components/AutoComplete";
 import Modal from "@/components/Modal";
 import { useState } from "react";
 
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
+
 interface ITrack {
   wrapperType: string;
   id: number;
@@ -82,11 +90,17 @@ export default function UserSearchTrackModal({
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
     new Set(),
   );
+  const [selectedTracks, setSelectedTracks] = useState<
+    Map<number, RequiredItemType>
+  >(new Map());
 
   const [artists, setArtists] = useState<Array<IArtist>>([]);
   const [selectedArtistIds, setSelectedArtistIds] = useState<Set<number>>(
     new Set(),
   );
+  const [selectedArtists, setSelectedArtists] = useState<
+    Map<number, RequiredItemType>
+  >(new Map());
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
 
@@ -113,6 +127,26 @@ export default function UserSearchTrackModal({
         artwork: track.artworkUrl60,
       })),
     );
+  };
+
+  const selectTrack = (
+    e: React.MouseEvent<HTMLLIElement>,
+    item: RequiredItemType,
+  ) => {
+    e.preventDefault();
+    setSelectedTrackIds(prevState => prevState.add(item.id));
+    setSelectedTracks(prevState => prevState.set(item.id, item));
+  };
+
+  const getSelectedTracks = () => {
+    const trackIds = selectedTrackIds.keys().toArray();
+    const tracks = trackIds
+      .map(trackId => {
+        const selectedTrack = selectedTracks.get(trackId);
+        return selectedTrack;
+      })
+      .filter(track => !!track);
+    return tracks;
   };
 
   const searchArtist = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,6 +190,26 @@ export default function UserSearchTrackModal({
         artwork: artist.artworkUrl60,
       })),
     );
+  };
+
+  const selectArtist = (
+    e: React.MouseEvent<HTMLLIElement>,
+    item: RequiredItemType,
+  ) => {
+    e.preventDefault();
+    setSelectedArtistIds(prevState => prevState.add(item.id));
+    setSelectedArtists(prevState => prevState.set(item.id, item));
+  };
+
+  const getSelectedArtists = () => {
+    const artistIds = selectedArtistIds.keys().toArray();
+    const artists = artistIds
+      .map(artistId => {
+        const selectedArtist = selectedArtists.get(artistId);
+        return selectedArtist;
+      })
+      .filter(artist => !!artist);
+    return artists;
   };
 
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
@@ -215,15 +269,15 @@ export default function UserSearchTrackModal({
           scope="트랙"
           items={tracks}
           onChangeKeyword={searchTrack}
-          selectedItemIds={selectedTrackIds}
-          selectItem={setSelectedTrackIds}
+          selectedItems={getSelectedTracks()}
+          selectItem={selectTrack}
         />
         <AutoComplete
           scope="아티스트"
           items={artists}
           onChangeKeyword={searchArtist}
-          selectedItemIds={selectedArtistIds}
-          selectItem={setSelectedArtistIds}
+          selectedItems={getSelectedArtists()}
+          selectItem={selectArtist}
         />
 
         <label>장르</label>
