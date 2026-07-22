@@ -2,6 +2,7 @@
 
 import AutoComplete from "@/components/AutoComplete";
 import Modal from "@/components/Modal";
+import { searchArtist, searchTrack } from "@/services/trackServices";
 import { useState } from "react";
 
 type RequiredItemType = {
@@ -104,29 +105,11 @@ export default function UserSearchTrackModal({
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
 
-  const searchTrack = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const itunesTrackParams = {
-      term: e.target.value,
-      country: "us",
-      entity: "musicTrack",
-    };
-    const itunesSearchParams = new URLSearchParams(
-      itunesTrackParams,
-    ).toString();
-
-    const response = await fetch(
-      `https://itunes.apple.com/search?${itunesSearchParams}`,
-    );
-    const searchTrackResult: ITunesSearchResult = await response.json();
-    setTracks(
-      searchTrackResult.results.map(track => ({
-        ...track,
-        id: track.trackId,
-        name: track.trackName,
-        artist: track.artistName,
-        artwork: track.artworkUrl60,
-      })),
-    );
+  const handleTypeTrackInput = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const searchQueryResult = await searchTrack(e.target.value);
+    setTracks(searchQueryResult);
   };
 
   const selectTrack = (
@@ -149,47 +132,11 @@ export default function UserSearchTrackModal({
     return tracks;
   };
 
-  const searchArtist = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const itunesArtistParams = {
-      term: e.target.value,
-      country: "us",
-      entity: "musicArtist",
-    };
-    const itunesSearchParams = new URLSearchParams(
-      itunesArtistParams,
-    ).toString();
-    const response = await fetch(
-      `https://itunes.apple.com/search?${itunesSearchParams}`,
-    );
-    const searchArtistResult: ITunesSearchArtistResult = await response.json();
-
-    const artistWithArtwork = await Promise.all(
-      searchArtistResult.results.map(async artist => {
-        const searchAlbumResponse = await fetch(
-          `https://itunes.apple.com/lookup?id=${artist.artistId}&entity=album`,
-        );
-        const searchAlbumResult: ITunesSearchAlbumResult =
-          await searchAlbumResponse.json();
-
-        const artistSignatureAlbum = searchAlbumResult.results[1];
-
-        return {
-          ...artist,
-          artworkUrl60: artistSignatureAlbum
-            ? artistSignatureAlbum.artworkUrl60
-            : "",
-        };
-      }),
-    );
-
-    setArtists(
-      artistWithArtwork.map(artist => ({
-        ...artist,
-        id: artist.artistId,
-        name: artist.artistName,
-        artwork: artist.artworkUrl60,
-      })),
-    );
+  const handleTypeArtistInput = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const searchQueryResult = await searchArtist(e.target.value);
+    setArtists(searchQueryResult);
   };
 
   const selectArtist = (
@@ -268,14 +215,14 @@ export default function UserSearchTrackModal({
         <AutoComplete
           scope="트랙"
           items={tracks}
-          onChangeKeyword={searchTrack}
+          onChangeKeyword={handleTypeTrackInput}
           selectedItems={getSelectedTracks()}
           selectItem={selectTrack}
         />
         <AutoComplete
           scope="아티스트"
           items={artists}
-          onChangeKeyword={searchArtist}
+          onChangeKeyword={handleTypeArtistInput}
           selectedItems={getSelectedArtists()}
           selectItem={selectArtist}
         />
