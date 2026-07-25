@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-type EntityType = "track" | "artist";
-
 type RequiredItemType = {
   id: number;
   name: string;
@@ -24,52 +22,46 @@ interface IArtist {
   wrapperType: string;
   id: number;
   name: string;
-  artistName: string;
   artwork: string;
 }
 
-interface ITunesSearchResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: string;
-    trackId: number;
-    trackName: string;
-    artistName: string;
-    releaseDate: string;
-    artworkUrl60: string;
-  }>;
-}
-
-interface ITunesSearchArtistResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: string;
-    artistId: number;
-    artistName: string;
-  }>;
-}
-
-interface ITunesSearchAlbumResult {
-  resultCount: number;
-  results: Array<{
-    artworkUrl60: string;
-  }>;
-}
-
-type useSelectMusicEntityType = (entity: EntityType) => {
-  searchTrackResults: Array<ITrack>;
+interface useSelectTrackResult {
+  tracks: Array<ITrack>;
   searchTrack: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   selectTrack: (
     e: React.MouseEvent<HTMLLIElement>,
     item: RequiredItemType,
   ) => void;
   selectedTracks: Array<RequiredItemType>;
-};
+}
 
-const useSelectMusicEntity: useSelectMusicEntityType = entity => {
-  const [searchTrackResults, setSearchTrackResults] = useState<Array<ITrack>>(
-    [],
-  );
+interface useSelectArtistResult {
+  artists: Array<IArtist>;
+  searchArtist: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  selectArtist: (
+    e: React.MouseEvent<HTMLLIElement>,
+    item: RequiredItemType,
+  ) => void;
+  selectedArtists: Array<RequiredItemType>;
+}
+
+// 트랙 검색 결과 함수 반환 시
+function useSelectMusicEntity(
+  kind: "track",
+  search: (query: string) => Promise<Array<ITrack>>,
+): useSelectTrackResult;
+
+// 아티스트 검색 결과 함수 반환 시
+function useSelectMusicEntity(
+  kind: "artist",
+  search: (query: string) => Promise<Array<IArtist>>,
+): useSelectArtistResult;
+
+function useSelectMusicEntity(
+  kind: "track" | "artist",
+  search: (query: string) => Promise<ITrack[] | IArtist[]>,
+) {
+  const [items, setItems] = useState<ITrack[] | IArtist[]>([]);
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
     new Set(),
   );
@@ -77,39 +69,10 @@ const useSelectMusicEntity: useSelectMusicEntityType = entity => {
     Map<number, RequiredItemType>
   >(new Map());
 
-  const [searchArtistResults, setSearchArtistResults] = useState<
-    Array<IArtist>
-  >([]);
-  const [selectedArtistIds, setSelectedArtistIds] = useState<Set<number>>(
-    new Set(),
-  );
-  const [selectedArtists, setSelectedArtists] = useState<
-    Map<number, RequiredItemType>
-  >(new Map());
-
-  const searchTrack = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const itunesTrackParams = {
-      term: e.target.value,
-      country: "us",
-      entity: "musicTrack",
-    };
-    const itunesSearchParams = new URLSearchParams(
-      itunesTrackParams,
-    ).toString();
-
-    const response = await fetch(
-      `https://itunes.apple.com/search?${itunesSearchParams}`,
-    );
-    const searchTrackResult: ITunesSearchResult = await response.json();
-    setSearchTrackResults(
-      searchTrackResult.results.map(track => ({
-        ...track,
-        id: track.trackId,
-        name: track.trackName,
-        artist: track.artistName,
-        artwork: track.artworkUrl60,
-      })),
-    );
+  const searchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const searchQueryResults = await search(e.target.value);
+    setItems(searchQueryResults);
   };
 
   const selectTrack = (
@@ -129,78 +92,23 @@ const useSelectMusicEntity: useSelectMusicEntityType = entity => {
         return selectedTrack;
       })
       .filter(track => !!track);
-    return tracks;
+    return tracks ?? [];
   };
 
-  const searchArtist = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const itunesArtistParams = {
-      term: e.target.value,
-      country: "us",
-      entity: "musicArtist",
+  if (kind === "track") {
+    return {
+      tracks: items,
+      searchTrack: searchItem,
+      selectTrack: selectTrack,
+      selectedTracks: getSelectedTracks(),
     };
-    const itunesSearchParams = new URLSearchParams(
-      itunesArtistParams,
-    ).toString();
-    const response = await fetch(
-      `https://itunes.apple.com/search?${itunesSearchParams}`,
-    );
-    const searchArtistResult: ITunesSearchArtistResult = await response.json();
-
-    const artistWithArtwork = await Promise.all(
-      searchArtistResult.results.map(async artist => {
-        const searchAlbumResponse = await fetch(
-          `https://itunes.apple.com/lookup?id=${artist.artistId}&entity=album`,
-        );
-        const searchAlbumResult: ITunesSearchAlbumResult =
-          await searchAlbumResponse.json();
-
-        const artistSignatureAlbum = searchAlbumResult.results[1];
-
-        return {
-          ...artist,
-          artworkUrl60: artistSignatureAlbum
-            ? artistSignatureAlbum.artworkUrl60
-            : "",
-        };
-      }),
-    );
-
-    setSearchArtistResults(
-      artistWithArtwork.map(artist => ({
-        ...artist,
-        id: artist.artistId,
-        name: artist.artistName,
-        artwork: artist.artworkUrl60,
-      })),
-    );
-  };
-
-  const selectArtist = (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => {
-    e.preventDefault();
-    setSelectedArtistIds(prevState => prevState.add(item.id));
-    setSelectedArtists(prevState => prevState.set(item.id, item));
-  };
-
-  const getSelectedArtists = () => {
-    const artistIds = selectedArtistIds.keys().toArray();
-    const artists = artistIds
-      .map(artistId => {
-        const selectedArtist = selectedArtists.get(artistId);
-        return selectedArtist;
-      })
-      .filter(artist => !!artist);
-    return artists;
-  };
-
+  }
   return {
-    searchTrackResults,
-    searchTrack,
-    selectTrack,
-    selectedTracks: getSelectedTracks(),
+    artists: items,
+    searchArtist: searchItem,
+    selectArtist: selectTrack,
+    selectedArtists: getSelectedTracks(),
   };
-};
+}
 
 export default useSelectMusicEntity;

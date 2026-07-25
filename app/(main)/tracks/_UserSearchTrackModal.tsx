@@ -2,32 +2,12 @@
 
 import AutoComplete from "@/components/AutoComplete";
 import Modal from "@/components/Modal";
-import { searchArtist, searchTrack } from "@/services/trackServices";
+import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
+import {
+  fetchApiSearchTrack,
+  fetchApiSearchArtist,
+} from "@/services/trackServices";
 import { useState } from "react";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface ITrack {
-  wrapperType: string;
-  id: number;
-  name: string;
-  artistName: string;
-  artwork: string;
-}
-
-interface IArtist {
-  wrapperType: string;
-  id: number;
-  name: string;
-  artistName: string;
-  artwork: string;
-}
 
 interface ITunesSearchResult {
   resultCount: number;
@@ -47,13 +27,6 @@ interface ITunesSearchArtistResult {
     wrapperType: string;
     artistId: number;
     artistName: string;
-  }>;
-}
-
-interface ITunesSearchAlbumResult {
-  resultCount: number;
-  results: Array<{
-    artworkUrl60: string;
   }>;
 }
 
@@ -87,107 +60,37 @@ export default function UserSearchTrackModal({
   isOpen: boolean;
   closeModal: () => void;
 }) {
-  const [tracks, setTracks] = useState<Array<ITrack>>([]);
-  const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
-    new Set(),
-  );
-  const [selectedTracks, setSelectedTracks] = useState<
-    Map<number, RequiredItemType>
-  >(new Map());
+  const { tracks, searchTrack, selectTrack, selectedTracks } =
+    useSelectMusicEntity("track", fetchApiSearchTrack);
 
-  const [artists, setArtists] = useState<Array<IArtist>>([]);
-  const [selectedArtistIds, setSelectedArtistIds] = useState<Set<number>>(
-    new Set(),
-  );
-  const [selectedArtists, setSelectedArtists] = useState<
-    Map<number, RequiredItemType>
-  >(new Map());
+  const { artists, searchArtist, selectArtist, selectedArtists } =
+    useSelectMusicEntity("artist", fetchApiSearchArtist);
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
-
-  const handleTypeTrackInput = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const searchQueryResult = await searchTrack(e.target.value);
-    setTracks(searchQueryResult);
-  };
-
-  const selectTrack = (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => {
-    e.preventDefault();
-    setSelectedTrackIds(prevState => prevState.add(item.id));
-    setSelectedTracks(prevState => prevState.set(item.id, item));
-  };
-
-  const getSelectedTracks = () => {
-    const trackIds = selectedTrackIds.keys().toArray();
-    const tracks = trackIds
-      .map(trackId => {
-        const selectedTrack = selectedTracks.get(trackId);
-        return selectedTrack;
-      })
-      .filter(track => !!track);
-    return tracks;
-  };
-
-  const handleTypeArtistInput = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const searchQueryResult = await searchArtist(e.target.value);
-    setArtists(searchQueryResult);
-  };
-
-  const selectArtist = (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => {
-    e.preventDefault();
-    setSelectedArtistIds(prevState => prevState.add(item.id));
-    setSelectedArtists(prevState => prevState.set(item.id, item));
-  };
-
-  const getSelectedArtists = () => {
-    const artistIds = selectedArtistIds.keys().toArray();
-    const artists = artistIds
-      .map(artistId => {
-        const selectedArtist = selectedArtists.get(artistId);
-        return selectedArtist;
-      })
-      .filter(artist => !!artist);
-    return artists;
-  };
 
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
 
     const userTasteTracks = await Promise.all(
-      selectedTrackIds
-        .keys()
-        .toArray()
-        .map(async trackId => {
-          const getTrackResponse = await fetch(
-            `https://itunes.apple.com/lookup?id=${trackId}`,
-          );
-          const getTrackResult: ITunesSearchResult =
-            await getTrackResponse.json();
-          return getTrackResult.results[0];
-        }),
+      selectedTracks.map(async track => {
+        const getTrackResponse = await fetch(
+          `https://itunes.apple.com/lookup?id=${track.id}`,
+        );
+        const getTrackResult: ITunesSearchResult =
+          await getTrackResponse.json();
+        return getTrackResult.results[0];
+      }),
     );
 
     const userTasteArtists = await Promise.all(
-      selectedArtistIds
-        .keys()
-        .toArray()
-        .map(async artistId => {
-          const getArtistResponse = await fetch(
-            `https://itunes.apple.com/lookup?id=${artistId}`,
-          );
-          const getArtistResult: ITunesSearchArtistResult =
-            await getArtistResponse.json();
-          return getArtistResult.results[0];
-        }),
+      selectedArtists.map(async artist => {
+        const getArtistResponse = await fetch(
+          `https://itunes.apple.com/lookup?id=${artist.id}`,
+        );
+        const getArtistResult: ITunesSearchArtistResult =
+          await getArtistResponse.json();
+        return getArtistResult.results[0];
+      }),
     );
 
     const response = await fetch(
@@ -215,15 +118,15 @@ export default function UserSearchTrackModal({
         <AutoComplete
           scope="트랙"
           items={tracks}
-          onChangeKeyword={handleTypeTrackInput}
-          selectedItems={getSelectedTracks()}
+          onChangeKeyword={e => searchTrack(e)}
+          selectedItems={selectedTracks}
           selectItem={selectTrack}
         />
         <AutoComplete
           scope="아티스트"
           items={artists}
-          onChangeKeyword={handleTypeArtistInput}
-          selectedItems={getSelectedArtists()}
+          onChangeKeyword={e => searchArtist(e)}
+          selectedItems={selectedArtists}
           selectItem={selectArtist}
         />
 

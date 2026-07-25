@@ -26,7 +26,7 @@ interface ITunesSearchAlbumResult {
   }>;
 }
 
-export const searchTrack = async (query: string) => {
+export const fetchApiSearchTrack = async (query: string) => {
   const itunesTrackParams = {
     term: query,
     country: "us",
@@ -47,7 +47,7 @@ export const searchTrack = async (query: string) => {
   }));
 };
 
-export const searchArtist = async (query: string) => {
+export const fetchApiSearchArtist = async (query: string) => {
   const itunesArtistParams = {
     term: query,
     country: "us",
