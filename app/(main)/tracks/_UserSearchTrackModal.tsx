@@ -2,6 +2,7 @@
 
 import AutoComplete from "@/components/AutoComplete";
 import Modal from "@/components/Modal";
+import { GENRE_ID_MAP } from "@/constants/tracks";
 import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
 import {
   fetchApiSearchTrack,
@@ -9,29 +10,6 @@ import {
   generateUserBaseRecommendedTracks,
 } from "@/services/trackServices";
 import { useState } from "react";
-
-export const GENRE_ID_MAP = new Map<string, number>([
-  ["Blues", 2],
-  ["Classical", 5],
-  ["Country", 6],
-  ["Electronic", 7],
-  ["Singer/Songwriter", 10],
-  ["Jazz", 11],
-  ["Latin", 12],
-  ["Pop", 14],
-  ["R&B/Soul", 15],
-  ["Soundtrack", 16],
-  ["Dance", 17],
-  ["Hip-Hop/Rap", 18],
-  ["Worldwide", 19],
-  ["Alternative", 20],
-  ["Rock", 21],
-  ["Christian", 22],
-  ["Reggae", 24],
-  ["J-Pop", 27],
-  ["Anime", 29],
-  ["K-Pop", 51],
-]);
 
 export default function UserSearchTrackModal({
   isOpen,
