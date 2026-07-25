@@ -6,29 +6,9 @@ import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
 import {
   fetchApiSearchTrack,
   fetchApiSearchArtist,
+  generateUserBaseRecommendedTracks,
 } from "@/services/trackServices";
 import { useState } from "react";
-
-interface ITunesSearchResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: string;
-    trackId: number;
-    trackName: string;
-    artistName: string;
-    releaseDate: string;
-    artworkUrl60: string;
-  }>;
-}
-
-interface ITunesSearchArtistResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: string;
-    artistId: number;
-    artistName: string;
-  }>;
-}
 
 export const GENRE_ID_MAP = new Map<string, number>([
   ["Blues", 2],
@@ -71,41 +51,11 @@ export default function UserSearchTrackModal({
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
 
-    const userTasteTracks = await Promise.all(
-      selectedTracks.map(async track => {
-        const getTrackResponse = await fetch(
-          `https://itunes.apple.com/lookup?id=${track.id}`,
-        );
-        const getTrackResult: ITunesSearchResult =
-          await getTrackResponse.json();
-        return getTrackResult.results[0];
-      }),
-    );
-
-    const userTasteArtists = await Promise.all(
-      selectedArtists.map(async artist => {
-        const getArtistResponse = await fetch(
-          `https://itunes.apple.com/lookup?id=${artist.id}`,
-        );
-        const getArtistResult: ITunesSearchArtistResult =
-          await getArtistResponse.json();
-        return getArtistResult.results[0];
-      }),
-    );
-
-    const response = await fetch(
-      "http://localhost:3000/api/openai/tracks/by-user",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          tracks: userTasteTracks,
-          artists: userTasteArtists,
-          genres: selectedGenres.keys().toArray(),
-        }),
-      },
-    );
-
-    const result = await response.json();
+    await generateUserBaseRecommendedTracks({
+      tracks: selectedTracks,
+      artists: selectedArtists,
+      genres: selectedGenres,
+    });
   };
 
   return (

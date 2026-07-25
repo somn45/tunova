@@ -10,7 +10,7 @@ type RequiredItemType = {
   releaseDate?: string;
 };
 
-interface ITrack {
+interface TrackSearchResult {
   wrapperType: string;
   id: number;
   name: string;
@@ -18,7 +18,7 @@ interface ITrack {
   artwork: string;
 }
 
-interface IArtist {
+interface ArtistSearchResult {
   wrapperType: string;
   id: number;
   name: string;
@@ -26,7 +26,7 @@ interface IArtist {
 }
 
 interface useSelectTrackResult {
-  tracks: Array<ITrack>;
+  tracks: Array<TrackSearchResult>;
   searchTrack: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   selectTrack: (
     e: React.MouseEvent<HTMLLIElement>,
@@ -36,7 +36,7 @@ interface useSelectTrackResult {
 }
 
 interface useSelectArtistResult {
-  artists: Array<IArtist>;
+  artists: Array<ArtistSearchResult>;
   searchArtist: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
   selectArtist: (
     e: React.MouseEvent<HTMLLIElement>,
@@ -48,20 +48,24 @@ interface useSelectArtistResult {
 // 트랙 검색 결과 함수 반환 시
 function useSelectMusicEntity(
   kind: "track",
-  search: (query: string) => Promise<Array<ITrack>>,
+  search: (query: string) => Promise<Array<TrackSearchResult>>,
 ): useSelectTrackResult;
 
 // 아티스트 검색 결과 함수 반환 시
 function useSelectMusicEntity(
   kind: "artist",
-  search: (query: string) => Promise<Array<IArtist>>,
+  search: (query: string) => Promise<Array<ArtistSearchResult>>,
 ): useSelectArtistResult;
 
 function useSelectMusicEntity(
   kind: "track" | "artist",
-  search: (query: string) => Promise<ITrack[] | IArtist[]>,
+  search: (
+    query: string,
+  ) => Promise<TrackSearchResult[] | ArtistSearchResult[]>,
 ) {
-  const [items, setItems] = useState<ITrack[] | IArtist[]>([]);
+  const [items, setItems] = useState<
+    TrackSearchResult[] | ArtistSearchResult[]
+  >([]);
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
     new Set(),
   );

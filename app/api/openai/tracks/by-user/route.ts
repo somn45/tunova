@@ -3,19 +3,17 @@ import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod.js";
 import { z } from "zod";
 
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
+
 interface CreateTracksByUserBody {
-  tracks: Array<{
-    wrapperType: string;
-    trackId: number;
-    trackName: string;
-    artistName: string;
-    artwork100: string;
-  }>;
-  artists: Array<{
-    wrapperType: string;
-    artistId: number;
-    artistName: string;
-  }>;
+  tracks: Array<RequiredItemType>;
+  artists: Array<RequiredItemType>;
   genres: Array<string>;
 }
 
@@ -38,10 +36,8 @@ export async function POST(request: NextRequest) {
   const body: CreateTracksByUserBody = await request.json();
   const { tracks, artists, genres } = body;
 
-  const stringifyTracks = tracks.map(track => track.trackName).join(", ");
-  const stringifyArtists = artists
-    .map(artists => artists.artistName)
-    .join(", ");
+  const stringifyTracks = tracks.map(track => track.name).join(", ");
+  const stringifyArtists = artists.map(artists => artists.name).join(", ");
   const stringifyGenres = genres.join(", ");
 
   const client = new OpenAI();

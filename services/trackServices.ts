@@ -26,6 +26,20 @@ interface ITunesSearchAlbumResult {
   }>;
 }
 
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
+
+interface generateUserBaseRecommendedTracksParams {
+  tracks: Array<RequiredItemType>;
+  artists: Array<RequiredItemType>;
+  genres: Set<string>;
+}
+
 export const fetchApiSearchTrack = async (query: string) => {
   const itunesTrackParams = {
     term: query,
@@ -84,4 +98,25 @@ export const fetchApiSearchArtist = async (query: string) => {
     name: artist.artistName,
     artwork: artist.artworkUrl60,
   }));
+};
+
+export const generateUserBaseRecommendedTracks = async ({
+  tracks,
+  artists,
+  genres,
+}: generateUserBaseRecommendedTracksParams) => {
+  const response = await fetch(
+    "http://localhost:3000/api/openai/tracks/by-user",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        tracks,
+        artists,
+        genres: genres.keys().toArray(),
+      }),
+    },
+  );
+
+  const result = await response.json();
+  return result;
 };
