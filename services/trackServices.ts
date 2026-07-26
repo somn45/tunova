@@ -40,6 +40,21 @@ interface generateUserBaseRecommendedTracksParams {
   genres: Set<string>;
 }
 
+interface generateUserBaseRecommendedTracksResult {
+  success: boolean;
+  message: string;
+  data?: {
+    recommendTracks: {
+      id: number;
+      title: string;
+      artist: string;
+      genres: string[];
+      artwork: string;
+      reason: string;
+    }[];
+  };
+}
+
 export const fetchApiSearchTrack = async (query: string) => {
   const itunesTrackParams = {
     term: query,
@@ -117,6 +132,7 @@ export const generateUserBaseRecommendedTracks = async ({
     },
   );
 
-  const result = await response.json();
+  const result: generateUserBaseRecommendedTracksResult = await response.json();
+
   return result;
 };
