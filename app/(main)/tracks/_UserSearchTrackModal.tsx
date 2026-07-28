@@ -11,6 +11,15 @@ import {
 } from "@/services/trackServices";
 import { useState } from "react";
 
+interface IRecommendedTrack {
+  id: number;
+  title: string;
+  artist: string;
+  genres: string[];
+  artwork: string;
+  reason: string;
+}
+
 export default function UserSearchTrackModal({
   isOpen,
   closeModal,
@@ -37,7 +46,7 @@ export default function UserSearchTrackModal({
     });
 
     if (!createTrackPromptResult.success) {
-      setErrorMsg(createTrackPromptResult.message);
+      return setErrorMsg(createTrackPromptResult.message);
     }
   };
 

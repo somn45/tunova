@@ -32,7 +32,7 @@ export default function AutoComplete<T extends RequiredItemType>({
 
   return (
     <>
-      <ul className="flex gap-2">
+      <ul data-testid="selected-list" className="flex gap-2">
         {selectedItems &&
           selectedItems.map(item => (
             <li
@@ -63,6 +63,7 @@ export default function AutoComplete<T extends RequiredItemType>({
             {items.map(item => (
               <li
                 key={item.id}
+                data-testid="search-track-result"
                 onClick={e => selectItem(e, item)}
                 className="flex gap-1.5 pr-10"
               >

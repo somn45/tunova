@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type RequiredItemType = {
   id: number;
@@ -73,6 +73,10 @@ function useSelectMusicEntity(
     Map<number, RequiredItemType>
   >(new Map());
 
+  useEffect(() => {
+    console.log("aa");
+  }, [items]);
+
   const searchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const searchQueryResults = await search(e.target.value);
@@ -84,8 +88,8 @@ function useSelectMusicEntity(
     item: RequiredItemType,
   ) => {
     e.preventDefault();
-    setSelectedTrackIds(prevState => prevState.add(item.id));
-    setSelectedTracks(prevState => prevState.set(item.id, item));
+    setSelectedTrackIds(prevState => new Set(prevState).add(item.id));
+    setSelectedTracks(prevState => new Map(prevState).set(item.id, item));
   };
 
   const getSelectedTracks = () => {

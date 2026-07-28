@@ -14,19 +14,23 @@ export default function Modal({
   children,
 }: ModalProps) {
   if (!isOpen) return null;
-  return createPortal(
-    <div
-      onClick={closeModal}
-      className="fixed top-0 left-0 flex h-screen w-full items-center justify-center bg-black/60"
-    >
-      <section
-        onClick={e => e.stopPropagation()}
-        className="min-h-30 bg-white p-5"
-      >
-        <h2>{title}</h2>
-        {children}
-      </section>
-    </div>,
-    document.getElementById("portal-root")!,
+  return (
+    <>
+      {createPortal(
+        <div
+          onClick={closeModal}
+          className="fixed top-0 left-0 flex h-screen w-full items-center justify-center bg-black/60"
+        >
+          <section
+            onClick={e => e.stopPropagation()}
+            className="min-h-30 bg-white p-5"
+          >
+            <h2>{title}</h2>
+            {children}
+          </section>
+        </div>,
+        document.getElementById("portal-root")!,
+      )}
+    </>
   );
 }
