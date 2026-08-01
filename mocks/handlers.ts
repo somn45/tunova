@@ -1,6 +1,8 @@
+import {
+  MOCK_ITUNES_SEARCH_RESULT,
+  MOCK_OPENAI_RECOMMEND_TRACKS,
+} from "@/constants/tracks";
 import { http, HttpResponse } from "msw";
-import OpenAI from "openai";
-import { OpenAIError } from "openai/index.js";
 import { z } from "zod";
 
 interface SearchMusicEntityParams {
@@ -16,6 +18,15 @@ type RequiredItemType = {
   artist?: string;
   releaseDate?: string;
 };
+
+interface IRecommendedTrack {
+  id: number;
+  title: string;
+  artist: string;
+  genres: string[];
+  artwork: string;
+  reason: string;
+}
 
 const signupSchema = z.object({
   email: z.email({ error: "올바른 이메일 형식이 아닙니다." }),
@@ -78,38 +89,6 @@ export const handlers = [
       const { searchParams } = new URL(request.url);
       const entity = searchParams.get("entity");
       if (entity === "musicTrack") {
-        const MOCK_ITUNES_SEARCH_RESULT = {
-          resultCount: 3,
-          results: [
-            {
-              wrapperType: "track",
-              trackId: 1001,
-              trackName: "The Nights",
-              artistName: "Avicii",
-              releaseDate: "2014-12-01T00:00:00Z",
-              artworkUrl60:
-                "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/00/11/22/example1.jpg/60x60bb.jpg",
-            },
-            {
-              wrapperType: "track",
-              trackId: 1002,
-              trackName: "Shape of You",
-              artistName: "Ed Sheeran",
-              releaseDate: "2017-01-06T00:00:00Z",
-              artworkUrl60:
-                "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/33/44/55/example2.jpg/60x60bb.jpg",
-            },
-            {
-              wrapperType: "track",
-              trackId: 1003,
-              trackName: "Blinding Lights",
-              artistName: "The Weeknd",
-              releaseDate: "2019-11-29T00:00:00Z",
-              artworkUrl60:
-                "https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/66/77/88/example3.jpg/60x60bb.jpg",
-            },
-          ],
-        };
         return HttpResponse.json(MOCK_ITUNES_SEARCH_RESULT);
       }
       const MOCK_ITUNES_SEARCH_ARTIST_RESULT = {
@@ -159,7 +138,7 @@ export const handlers = [
         {
           success: false,
           message:
-            "추천 트랙을 생성하기 위한 취향아 선택되지 않았습니다. 추천 트랙을 생성하려면 적어도 하나의 취향을 선택하셔야 합니다.",
+            "추천 트랙을 생성하기 위한 취향이 선택되지 않았습니다. 추천 트랙을 생성하려면 적어도 하나의 취향을 선택하셔야 합니다.",
         },
         { status: 400 },
       );
@@ -174,45 +153,14 @@ export const handlers = [
       );
     }
 
-    const client = new OpenAI();
-
-    const openAIResponse = await client.responses.create({
-      model: "gpt-4.1-mini-2025-04-14",
-      input:
-        "Route Handlers 모의 코드입니다. 절대 토큰 소비가 높은 답변을 제시하지 말아주세요.",
-    });
-
-    if (
-      openAIResponse.status === "incomplete" &&
-      openAIResponse.incomplete_details?.reason === "max_output_tokens"
-    ) {
-      throw new OpenAIError(
-        "선택하실 수 있는 목록이 초과되었습니다. 각 항목당 최대 5개를 선택하세요.",
-      );
-    }
-
-    const outputText = openAIResponse.output_text;
-    const likeRefusalMessage = /죄송/;
-    if (likeRefusalMessage.test(outputText)) {
-      throw new OpenAIError(
-        "해당 요청은 수행할 수 없습니다. 다시 시도해 주세요.",
-      );
-    }
-    const message = openAIResponse.output.find(item => item.type === "message");
-    const recommendTrackResponse = message?.content[0];
-
-    if (!recommendTrackResponse) {
-      throw new OpenAIError(
-        "OpenAI content가 비어 있습니다. (응답 생성 실패 또는 도구 호출 전환)",
-      );
-    }
-
-    const openAIPromptOutput = JSON.parse(openAIResponse.output_text);
+    const mockOpenAIPromptOutput: { recommendTracks: IRecommendedTrack[] } = {
+      recommendTracks: MOCK_OPENAI_RECOMMEND_TRACKS,
+    };
 
     return HttpResponse.json({
       success: true,
       message: "ok",
-      data: openAIPromptOutput,
+      data: mockOpenAIPromptOutput,
     });
   }),
 ];

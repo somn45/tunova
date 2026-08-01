@@ -34,6 +34,8 @@ export default function UserSearchTrackModal({
     useSelectMusicEntity("artist", fetchApiSearchArtist);
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
+  const [recommendTracks, setRecommendTracks] =
+    useState<Array<IRecommendedTrack>>();
   const [errorMsg, setErrorMsg] = useState("");
 
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
@@ -48,6 +50,7 @@ export default function UserSearchTrackModal({
     if (!createTrackPromptResult.success) {
       return setErrorMsg(createTrackPromptResult.message);
     }
+    setRecommendTracks(createTrackPromptResult.data?.recommendTracks);
   };
 
   return (
@@ -95,6 +98,13 @@ export default function UserSearchTrackModal({
         <span>{errorMsg}</span>
         <input type="submit" value="제출" onClick={submitUserTaste} />
       </form>
+      <ul data-testid="recommend-tracks">
+        {recommendTracks?.map(track => (
+          <li key={track.id} data-testid="recommend-track">
+            {track.title}
+          </li>
+        ))}
+      </ul>
     </Modal>
   );
 }

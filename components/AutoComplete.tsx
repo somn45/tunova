@@ -32,7 +32,7 @@ export default function AutoComplete<T extends RequiredItemType>({
 
   return (
     <>
-      <ul data-testid="selected-list" className="flex gap-2">
+      <ul data-testid={`selected-${scope}-list`} className="flex gap-2">
         {selectedItems &&
           selectedItems.map(item => (
             <li

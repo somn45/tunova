@@ -73,10 +73,6 @@ function useSelectMusicEntity(
     Map<number, RequiredItemType>
   >(new Map());
 
-  useEffect(() => {
-    console.log("aa");
-  }, [items]);
-
   const searchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const searchQueryResults = await search(e.target.value);
