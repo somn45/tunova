@@ -1,7 +1,9 @@
+import { transformMusicEntity } from "@/utils/transformMusicEntity";
+
 interface ITunesSearchResult {
   resultCount: number;
   results: Array<{
-    wrapperType: string;
+    wrapperType: "track";
     trackId: number;
     trackName: string;
     artistName: string;
@@ -13,10 +15,9 @@ interface ITunesSearchResult {
 interface ITunesSearchArtistResult {
   resultCount: number;
   results: Array<{
-    wrapperType: string;
+    wrapperType: "artist";
     artistId: number;
     artistName: string;
-    artworkUrl60: string;
   }>;
 }
 
@@ -68,13 +69,10 @@ export const fetchApiSearchTrack = async (query: string) => {
     `https://itunes.apple.com/search?${itunesSearchParams}`,
   );
   const searchTrackResult: ITunesSearchResult = await response.json();
-  return searchTrackResult.results.map(track => ({
-    ...track,
-    id: track.trackId,
-    name: track.trackName,
-    artist: track.artistName,
-    artwork: track.artworkUrl60,
-  }));
+
+  return searchTrackResult.results.map(track => {
+    return transformMusicEntity(track);
+  });
 };
 
 export const fetchApiSearchArtist = async (query: string) => {
@@ -96,13 +94,10 @@ export const fetchApiSearchArtist = async (query: string) => {
       );
       const searchAlbumResult: ITunesSearchAlbumResult =
         await searchAlbumResponse.json();
-
       const artistSignatureAlbum = searchAlbumResult.results[1];
 
       return {
-        ...artist,
-        id: artist.artistId,
-        name: artist.artistName,
+        ...transformMusicEntity(artist),
         artwork: artistSignatureAlbum.artworkUrl60 ?? "",
       };
     }),
