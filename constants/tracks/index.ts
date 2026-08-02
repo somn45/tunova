@@ -117,6 +117,93 @@ export const MOCK_ITUNES_SEARCH_RESULT = {
   ],
 };
 
+export const MOCK_ITUNES_SEARCH_ARTIST_RESULT = {
+  resultCount: 3,
+  results: [
+    {
+      wrapperType: "artist",
+      artistId: 1001,
+      artistName: "IU",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/artist1/60x60bb.jpg",
+    },
+    {
+      wrapperType: "artist",
+      artistId: 1002,
+      artistName: "NewJeans",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/artist2/60x60bb.jpg",
+    },
+    {
+      wrapperType: "artist",
+      artistId: 1003,
+      artistName: "Zico",
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/artist3/60x60bb.jpg",
+    },
+  ],
+};
+
+export const MOCK_ITUNES_SEARCH_ALBUM_RESULT_1 = {
+  resultCount: 2,
+  results: [
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album1/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album2/60x60bb.jpg",
+    },
+  ],
+};
+
+export const MOCK_ITUNES_SEARCH_ALBUM_RESULT_2 = {
+  resultCount: 3,
+  results: [
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album3/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album4/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album5/60x60bb.jpg",
+    },
+  ],
+};
+
+export const MOCK_ITUNES_SEARCH_ALBUM_RESULT_3 = {
+  resultCount: 4,
+  results: [
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album6/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album7/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album8/60x60bb.jpg",
+    },
+    {
+      artworkUrl60:
+        "https://is1-ssl.mzstatic.com/image/thumb/album9/60x60bb.jpg",
+    },
+  ],
+};
+
+export const MOCK_ITUNES_SEARCH_ALBUM_RESULTS = [
+  MOCK_ITUNES_SEARCH_ALBUM_RESULT_1,
+  MOCK_ITUNES_SEARCH_ALBUM_RESULT_2,
+  MOCK_ITUNES_SEARCH_ALBUM_RESULT_3,
+];
+
 export const MOCK_OPENAI_RECOMMEND_TRACKS = [
   {
     id: 1,

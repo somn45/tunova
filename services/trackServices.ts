@@ -16,6 +16,7 @@ interface ITunesSearchArtistResult {
     wrapperType: string;
     artistId: number;
     artistName: string;
+    artworkUrl60: string;
   }>;
 }
 
@@ -100,19 +101,14 @@ export const fetchApiSearchArtist = async (query: string) => {
 
       return {
         ...artist,
-        artworkUrl60: artistSignatureAlbum
-          ? artistSignatureAlbum.artworkUrl60
-          : "",
+        id: artist.artistId,
+        name: artist.artistName,
+        artwork: artistSignatureAlbum.artworkUrl60 ?? "",
       };
     }),
   );
 
-  return artistWithArtwork.map(artist => ({
-    ...artist,
-    id: artist.artistId,
-    name: artist.artistName,
-    artwork: artist.artworkUrl60,
-  }));
+  return artistWithArtwork;
 };
 
 export const generateUserBaseRecommendedTracks = async ({
