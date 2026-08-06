@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type RequiredItemType = {
   id: number;
@@ -11,15 +11,13 @@ type RequiredItemType = {
 };
 
 interface TrackSearchResult {
-  wrapperType: string;
   id: number;
   name: string;
-  artistName: string;
+  artist: string;
   artwork: string;
 }
 
 interface ArtistSearchResult {
-  wrapperType: string;
   id: number;
   name: string;
   artwork: string;

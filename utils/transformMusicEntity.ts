@@ -19,12 +19,27 @@ interface ITunesSearchArtistResult {
   }>;
 }
 
-export const transformMusicEntity = (
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist: string;
+};
+
+export function transformMusicEntity(
+  origin: ITunesSearchResult["results"][number],
+): RequiredItemType;
+
+export function transformMusicEntity(
+  origin: ITunesSearchArtistResult["results"][number],
+): Pick<RequiredItemType, "id" | "name">;
+
+export function transformMusicEntity(
   origin:
     | ITunesSearchResult["results"][number]
     | ITunesSearchArtistResult["results"][number],
-) => {
-  if (origin.wrapperType === "track") {
+): RequiredItemType | Pick<RequiredItemType, "id" | "name"> {
+  if ("trackName" in origin) {
     return {
       id: origin.trackId,
       name: origin.trackName,
@@ -36,4 +51,4 @@ export const transformMusicEntity = (
     id: origin.artistId,
     name: origin.artistName,
   };
-};
+}
