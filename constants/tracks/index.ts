@@ -115,7 +115,7 @@ export const MOCK_ITUNES_SEARCH_RESULT = {
         "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/78/90/12/example10.jpg/60x60bb.jpg",
     },
   ],
-};
+} as const;
 
 export const MOCK_ITUNES_SEARCH_ARTIST_RESULT = {
   resultCount: 3,
@@ -142,7 +142,7 @@ export const MOCK_ITUNES_SEARCH_ARTIST_RESULT = {
         "https://is1-ssl.mzstatic.com/image/thumb/artist3/60x60bb.jpg",
     },
   ],
-};
+} as const;
 
 export const MOCK_ITUNES_SEARCH_ALBUM_RESULT_1 = {
   resultCount: 2,
@@ -204,30 +204,47 @@ export const MOCK_ITUNES_SEARCH_ALBUM_RESULTS = [
   MOCK_ITUNES_SEARCH_ALBUM_RESULT_3,
 ];
 
-export const MOCK_OPENAI_RECOMMEND_TRACKS = [
+export const MOCK_RECOMMENDED_TRACKS = {
+  recommendTracks: [
+    {
+      id: 1,
+      title: "Hype Boy",
+      artist: "NewJeans",
+      genres: ["K-Pop", "Dance", "R&B"],
+      artwork: "https://example.com/artworks/hypeboy.jpg",
+      reason: "최근 청취한 청량한 댄스 곡들과 분위기가 유사하여 추천합니다.",
+    },
+    {
+      id: 2,
+      title: "Blinding Lights",
+      artist: "The Weeknd",
+      genres: ["Synthwave", "Pop", "R&B"],
+      artwork: "https://example.com/artworks/blinding-lights.jpg",
+      reason: "드라이브나 운동 시 듣기 좋은 에너제틱한 비트의 곡입니다.",
+    },
+    {
+      id: 3,
+      title: "Event Horizon",
+      artist: "Younha",
+      genres: ["K-Pop", "Rock", "Indie"],
+      artwork: "https://example.com/artworks/event-horizon.jpg",
+      reason:
+        "즐겨 듣는 인디/록 장르 중 감성적인 멜로디가 돋보이는 모던록입니다.",
+    },
+  ],
+};
+
+export const MOCK_RESPONSES_OUTPUT = [
   {
-    id: 1,
-    title: "Dynamite",
-    artist: "BTS",
-    genres: ["K-Pop", "Dance"],
-    artwork: "https://picsum.photos/seed/dynamite/300/300",
-    reason: "밝고 경쾌한 리듬이 사용자가 선호하는 업템포 곡과 잘 맞습니다.",
-  },
-  {
-    id: 2,
-    title: "Ditto",
-    artist: "NewJeans",
-    genres: ["K-Pop", "Synth-pop"],
-    artwork: "https://picsum.photos/seed/ditto/300/300",
-    reason:
-      "몽환적인 신스 사운드가 최근 감상한 곡들과 유사한 분위기를 가집니다.",
-  },
-  {
-    id: 3,
-    title: "Love Dive",
-    artist: "IVE",
-    genres: ["K-Pop", "Pop"],
-    artwork: "https://picsum.photos/seed/lovedive/300/300",
-    reason: "강렬한 훅과 세련된 프로덕션이 인기 아티스트 선호도와 일치합니다.",
+    id: "msg_67b73f697ba4819183a15cc17d011509",
+    type: "message",
+    role: "assistant",
+    content: [
+      {
+        type: "output_text",
+        text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
+        annotations: [],
+      },
+    ],
   },
 ];

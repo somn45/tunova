@@ -1,6 +1,6 @@
 import {
   MOCK_ITUNES_SEARCH_RESULT,
-  MOCK_OPENAI_RECOMMEND_TRACKS,
+  MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
 import { http, HttpResponse } from "msw";
 import { z } from "zod";
@@ -154,7 +154,7 @@ export const handlers = [
     }
 
     const mockOpenAIPromptOutput: { recommendTracks: IRecommendedTrack[] } = {
-      recommendTracks: MOCK_OPENAI_RECOMMEND_TRACKS,
+      recommendTracks: MOCK_RECOMMENDED_TRACKS.recommendTracks,
     };
 
     return HttpResponse.json({

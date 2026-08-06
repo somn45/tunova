@@ -1,7 +1,7 @@
 import UserSearchTrackModal from "@/app/(main)/tracks/_UserSearchTrackModal";
 import {
   MOCK_ITUNES_SEARCH_RESULT,
-  MOCK_OPENAI_RECOMMEND_TRACKS,
+  MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -49,12 +49,13 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
 
       const recommendTrackItems =
         await screen.findAllByTestId("recommend-track");
+      screen.debug();
       expect(recommendTrackItems).toHaveLength(
-        MOCK_OPENAI_RECOMMEND_TRACKS.length,
+        MOCK_RECOMMENDED_TRACKS.recommendTracks.length,
       );
       recommendTrackItems.forEach((item, index) => {
         expect(item).toHaveTextContent(
-          MOCK_OPENAI_RECOMMEND_TRACKS[index].title,
+          MOCK_RECOMMENDED_TRACKS.recommendTracks[index].title,
         );
       });
     });
