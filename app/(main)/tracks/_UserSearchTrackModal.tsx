@@ -34,6 +34,7 @@ export default function UserSearchTrackModal({
     useSelectMusicEntity("artist", fetchApiSearchArtist);
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
+  const [generateTrackCount, setGenerateTrackCount] = useState(3);
   const [recommendTracks, setRecommendTracks] =
     useState<Array<IRecommendedTrack>>();
   const [errorMsg, setErrorMsg] = useState("");
@@ -42,9 +43,12 @@ export default function UserSearchTrackModal({
     e.preventDefault();
 
     const createTrackPromptResult = await generateUserBaseRecommendedTracks({
-      tracks: selectedTracks,
-      artists: selectedArtists,
-      genres: selectedGenres,
+      musicEntity: {
+        tracks: selectedTracks,
+        artists: selectedArtists,
+        genres: selectedGenres,
+      },
+      generateTrackCount,
     });
 
     if (!createTrackPromptResult.success) {
@@ -95,6 +99,15 @@ export default function UserSearchTrackModal({
               </li>
             ))}
         </ul>
+
+        <label>트랙 생성 숫자 ${generateTrackCount}곡</label>
+        <ul>
+          <li onClick={() => setGenerateTrackCount(1)}>1</li>
+          <li onClick={() => setGenerateTrackCount(3)}>3</li>
+          <li onClick={() => setGenerateTrackCount(10)}>10</li>
+          <li onClick={() => setGenerateTrackCount(20)}>20</li>
+        </ul>
+
         <span>{errorMsg}</span>
         <input type="submit" value="제출" onClick={submitUserTaste} />
       </form>

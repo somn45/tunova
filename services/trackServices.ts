@@ -37,9 +37,12 @@ type RequiredItemType = {
 };
 
 interface generateUserBaseRecommendedTracksParams {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Set<string>;
+  musicEntity: {
+    tracks: Array<RequiredItemType>;
+    artists: Array<RequiredItemType>;
+    genres: Set<string>;
+  };
+  generateTrackCount: number;
 }
 
 interface generateUserBaseRecommendedTracksResult {
@@ -107,10 +110,10 @@ export const fetchApiSearchArtist = async (query: string) => {
 };
 
 export const generateUserBaseRecommendedTracks = async ({
-  tracks,
-  artists,
-  genres,
+  musicEntity,
+  generateTrackCount,
 }: generateUserBaseRecommendedTracksParams) => {
+  const { tracks, artists, genres } = musicEntity;
   const response = await fetch(
     "http://localhost:3000/api/openai/tracks/by-user",
     {
@@ -119,6 +122,7 @@ export const generateUserBaseRecommendedTracks = async ({
         tracks,
         artists,
         genres: genres.keys().toArray(),
+        generateTrackCount,
       }),
     },
   );
