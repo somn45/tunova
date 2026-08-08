@@ -1,4 +1,5 @@
 import {
+  MOCK_GET_TRACK_RESPONSES,
   MOCK_ITUNES_SEARCH_RESULT,
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
@@ -162,5 +163,8 @@ export const handlers = [
       message: "ok",
       data: mockOpenAIPromptOutput,
     });
+  }),
+  http.get("http://localhost:3000/api/tracks", async () => {
+    return HttpResponse.json(MOCK_GET_TRACK_RESPONSES);
   }),
 ];

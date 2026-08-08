@@ -233,7 +233,94 @@ export const MOCK_RECOMMENDED_TRACKS = {
     },
   ],
 };
-
+export const MOCK_GET_TRACK_RESPONSES = {
+  recommendTracks: [
+    {
+      id: 1,
+      title: "Hype Boy",
+      artist: "NewJeans",
+      genres: ["K-Pop", "Dance", "R&B"],
+      artwork: "https://example.com/artworks/hypeboy.jpg",
+      reason: "최근 청취한 청량한 댄스 곡들과 분위기가 유사하여 추천합니다.",
+    },
+    {
+      id: 2,
+      title: "Blinding Lights",
+      artist: "The Weeknd",
+      genres: ["Synthwave", "Pop", "R&B"],
+      artwork: "https://example.com/artworks/blinding-lights.jpg",
+      reason: "드라이브나 운동 시 듣기 좋은 에너제틱한 비트의 곡입니다.",
+    },
+    {
+      id: 3,
+      title: "Event Horizon",
+      artist: "Younha",
+      genres: ["K-Pop", "Rock", "Indie"],
+      artwork: "https://example.com/artworks/event-horizon.jpg",
+      reason:
+        "즐겨 듣는 인디/록 장르 중 감성적인 멜로디가 돋보이는 모던록입니다.",
+    },
+    {
+      id: 4,
+      title: "Get Lucky",
+      artist: "Daft Punk (feat. Pharrell Williams)",
+      genres: ["Disco", "Funk", "Electronic"],
+      artwork: "https://example.com/artworks/get-lucky.jpg",
+      reason: "리드미컬한 베이스라인과 리듬감이 특출난 디스코 펑크 트랙입니다.",
+    },
+    {
+      id: 5,
+      title: "Night Dancer",
+      artist: "imase",
+      genres: ["J-Pop", "City Pop", "Indie"],
+      artwork: "https://example.com/artworks/night-dancer.jpg",
+      reason: "심플하면서도 중독성 있는 비트로 밤 산책에 어울리는 곡입니다.",
+    },
+    {
+      id: 6,
+      title: "Stay",
+      artist: "The Kid LAROI, Justin Bieber",
+      genres: ["Pop", "Pop Rock", "Hip-Hop"],
+      artwork: "https://example.com/artworks/stay.jpg",
+      reason:
+        "빠른 템포와 캐치한 멜로디 라인으로 집중력을 올려주는 트랙입니다.",
+    },
+    {
+      id: 7,
+      title: "Ditto",
+      artist: "NewJeans",
+      genres: ["K-Pop", "Baltimore Club", "R&B"],
+      artwork: "https://example.com/artworks/ditto.jpg",
+      reason: "몽환적인 사운드스케이프와 따뜻한 비트가 조화로운 곡입니다.",
+    },
+    {
+      id: 8,
+      title: "Shape of You",
+      artist: "Ed Sheeran",
+      genres: ["Pop", "Tropical House"],
+      artwork: "https://example.com/artworks/shape-of-you.jpg",
+      reason: "퍼커시브한 루프 리듬이 돋보이는 어쿠스틱 기반의 팝 트랙입니다.",
+    },
+    {
+      id: 9,
+      title: "Pretender",
+      artist: "Official HIGE DANdism",
+      genres: ["J-Pop", "Pop Rock"],
+      artwork: "https://example.com/artworks/pretender.jpg",
+      reason:
+        "화려한 기타 리프와 감성적인 보컬 전개가 일품인 밴드 사운드입니다.",
+    },
+    {
+      id: 10,
+      title: "Sunflower",
+      artist: "Post Malone, Swae Lee",
+      genres: ["Hip-Hop", "R&B", "Pop"],
+      artwork: "https://example.com/artworks/sunflower.jpg",
+      reason:
+        "편안하고 두터운 로파이 힙합 비트 위로 흘러가는 멜로디가 인상적입니다.",
+    },
+  ],
+};
 export const MOCK_RESPONSES_OUTPUT = [
   {
     id: "msg_67b73f697ba4819183a15cc17d011509",
