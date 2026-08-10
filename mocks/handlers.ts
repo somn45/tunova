@@ -4,7 +4,7 @@ import {
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
 import { http, HttpResponse } from "msw";
-import { z } from "zod";
+import { success, z } from "zod";
 
 interface SearchMusicEntityParams {
   term: string;
@@ -165,6 +165,10 @@ export const handlers = [
     });
   }),
   http.get("http://localhost:3000/api/tracks", async () => {
-    return HttpResponse.json(MOCK_GET_TRACK_RESPONSES);
+    return HttpResponse.json({
+      success: true,
+      message: "ok",
+      data: MOCK_GET_TRACK_RESPONSES,
+    });
   }),
 ];

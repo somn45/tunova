@@ -4,7 +4,20 @@ import { useState } from "react";
 import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
 
-export default function TrackViewContainer() {
+interface IRecommendedTrack {
+  id: number;
+  title: string;
+  artist: string;
+  genres: string[];
+  artwork: string;
+  reason: string;
+}
+
+export default function TrackViewContainer({
+  tracks,
+}: {
+  tracks?: Array<IRecommendedTrack>;
+}) {
   const [viewType, setViewType] = useState("list");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
     "tracklist",
@@ -30,14 +43,14 @@ export default function TrackViewContainer() {
         {/* 모바일 버전 */}
         <section className="flex flex-1 md:hidden">
           {currentScreen === "tracklist" ? (
-            <TrackList />
+            <TrackList tracks={tracks} />
           ) : (
             <RecommendTrackCarousel />
           )}
         </section>
         {/* 테블릿, PC 버전 */}
         <section className="hidden flex-1 flex-col md:flex xl:flex-row">
-          <TrackList />
+          <TrackList tracks={tracks} />
           {currentScreen === "recommend" && <RecommendTrackCarousel />}
         </section>
       </section>
