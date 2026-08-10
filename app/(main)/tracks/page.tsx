@@ -6,6 +6,7 @@ export default async function Tracks() {
     method: "GET",
   });
   const tracks = await response.json();
+  console.log(tracks);
   return (
     <main className="flex flex-1 flex-col">
       <h1>Tracks</h1>
