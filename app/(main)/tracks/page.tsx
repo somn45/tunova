@@ -22,7 +22,7 @@ export default async function Tracks() {
   const getTracksResult: generateUserBaseRecommendedTracksResult =
     await response.json();
   return (
-    <main className="flex flex-1 flex-col">
+    <main className="flex min-h-0 grow flex-col">
       <h1>Tracks</h1>
       <GetTrackSection />
       <TrackViewContainer tracks={getTracksResult.data?.recommendTracks} />

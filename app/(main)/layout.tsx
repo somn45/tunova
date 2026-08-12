@@ -8,7 +8,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-auto min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       <SideBar />
       {children}
       <Footer />

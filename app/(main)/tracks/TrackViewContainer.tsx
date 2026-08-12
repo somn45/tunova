@@ -24,7 +24,7 @@ export default function TrackViewContainer({
   );
   return (
     <>
-      <section className="flex flex-1 flex-col">
+      <section className="flex min-h-0 grow flex-col">
         <div className="flex justify-between">
           <div className="flex gap-2">
             <div>리스트 뷰</div>
@@ -41,7 +41,7 @@ export default function TrackViewContainer({
           </div>
         </div>
         {/* 모바일 버전 */}
-        <section className="flex flex-1 md:hidden">
+        <section className="flex min-h-0 grow md:hidden">
           {currentScreen === "tracklist" ? (
             <TrackList tracks={tracks} />
           ) : (
@@ -49,7 +49,7 @@ export default function TrackViewContainer({
           )}
         </section>
         {/* 테블릿, PC 버전 */}
-        <section className="hidden flex-1 flex-col md:flex xl:flex-row">
+        <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
           <TrackList tracks={tracks} />
           {currentScreen === "recommend" && <RecommendTrackCarousel />}
         </section>
