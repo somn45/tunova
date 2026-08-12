@@ -13,7 +13,7 @@ export default function TrackList({
   tracks?: Array<IRecommendedTrack>;
 }) {
   return (
-    <section className="flex min-h-0 w-full basis-0 flex-col items-center gap-3 overflow-y-auto bg-indigo-200 px-1.5 py-2 md:grow-2 md:px-10 xl:px-40">
+    <section className="flex min-h-0 w-full grow basis-0 flex-col items-center gap-3 overflow-y-auto bg-indigo-200 px-1.5 py-2 md:grow-2 md:px-10 xl:px-40">
       <ul className="flex min-h-0 w-full max-w-375 flex-col">
         {tracks?.map(track => (
           <li key={track.id} className="flex justify-between py-2">
