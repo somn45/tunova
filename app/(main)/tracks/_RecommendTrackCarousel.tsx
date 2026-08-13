@@ -1,6 +1,6 @@
 export default function RecommendTrackCarousel() {
   return (
-    <section className="relative flex shrink-0 grow basis-0 items-center justify-center bg-green-300 p-2 md:grow-3 md:p-6">
+    <section className="relative flex shrink-0 grow basis-0 items-center justify-center bg-green-300 p-2 md:grow-3 md:p-6 xl:grow">
       <div className="absolute top-0 bottom-0 left-4 my-auto flex size-11 items-center justify-center rounded-full bg-white">
         <button className="grow text-2xl font-bold">{`<`}</button>
       </div>
