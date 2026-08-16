@@ -1,6 +1,6 @@
 import { createClient } from "@/libs/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { success, z } from "zod";
+import { z } from "zod";
 
 export async function POST(request: NextRequest) {
   const signinSchema = z.object({

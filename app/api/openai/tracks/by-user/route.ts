@@ -1,3 +1,4 @@
+import { createClient } from "@/libs/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
 import { zodTextFormat } from "openai/helpers/zod.js";
@@ -35,6 +36,9 @@ const RecommendedTracks = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const getUserResult = await supabase.auth.getUser();
+
   const body: CreateTracksByUserBody = await request.json();
   const { tracks, artists, genres, generateTrackCount } = body;
 
@@ -114,12 +118,25 @@ export async function POST(request: NextRequest) {
       openAIResponse.output_text,
     );
 
+    const tracks = openAIPromptOutput.recommendTracks.map(recommendTrack => {
+      const { reason, id, genres, ...track } = recommendTrack;
+      return {
+        ...track,
+        genre: recommendTrack.genres[0],
+        current_listener_id: getUserResult.data.user?.id,
+      };
+    });
+
+    const { data, error } = await supabase.from("tracks").insert(tracks);
+    console.log(data, error);
+
     return NextResponse.json({
       success: true,
       message: "ok",
       data: openAIPromptOutput,
     });
   } catch (error) {
+    console.log(error);
     if (error instanceof OpenAIError) {
       return NextResponse.json(
         {
