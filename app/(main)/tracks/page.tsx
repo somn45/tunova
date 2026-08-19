@@ -1,31 +1,35 @@
+import { createClient } from "@/libs/supabase/server";
 import GetTrackSection from "./_GetTrackSecton";
 import TrackViewContainer from "./TrackViewContainer";
-interface generateUserBaseRecommendedTracksResult {
-  success: boolean;
-  message: string;
-  data?: {
-    recommendTracks: {
-      id: number;
-      title: string;
-      artist: string;
-      genres: string[];
-      artwork: string;
-      reason: string;
-    }[];
-  };
+import { id } from "zod/locales";
+
+export interface ITrack {
+  id: number;
+  title: string;
+  artist: string;
+  genre: string;
+  artwork: string;
 }
 
 export default async function Tracks() {
-  const response = await fetch("http://localhost:3000/api/tracks", {
-    method: "GET",
-  });
-  const getTracksResult: generateUserBaseRecommendedTracksResult =
-    await response.json();
+  const supabase = await createClient();
+  const { data: getTrackResult, error } = await supabase.from("tracks").select(`
+      id,
+      title,
+      artist,
+      artwork,
+      track_genres (
+        genre
+      )
+      `);
+  if (!getTrackResult) return;
+  const tracks = [...getTrackResult];
+  console.log(tracks);
   return (
     <main className="flex min-h-0 grow flex-col">
       <h1>Tracks</h1>
       <GetTrackSection />
-      <TrackViewContainer tracks={getTracksResult.data?.recommendTracks} />
+      <TrackViewContainer tracks={tracks} />
       <section className="h-20 bg-blue-300">Player Section</section>
     </main>
   );

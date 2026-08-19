@@ -37,7 +37,6 @@ const RecommendedTracks = z.object({
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
-  const getUserResult = await supabase.auth.getUser();
 
   const body: CreateTracksByUserBody = await request.json();
   const { tracks, artists, genres, generateTrackCount } = body;
@@ -122,13 +121,35 @@ export async function POST(request: NextRequest) {
       const { reason, id, genres, ...track } = recommendTrack;
       return {
         ...track,
-        genre: recommendTrack.genres[0],
-        current_listener_id: getUserResult.data.user?.id,
       };
     });
 
-    const { data, error } = await supabase.from("tracks").insert(tracks);
-    console.log(data, error);
+    const { data: trackData, error } = await supabase
+      .from("tracks")
+      .insert(tracks)
+      .select("id, title");
+
+    if (!trackData) {
+      return NextResponse.json({
+        success: true,
+        message: error.message,
+      });
+    }
+
+    const trackGenres = trackData.flatMap(track => {
+      const index = openAIPromptOutput.recommendTracks.findIndex(
+        openAIResult => track.title === openAIResult.title,
+      );
+      const genres = openAIPromptOutput.recommendTracks[index].genres;
+      return genres.map(genre => ({
+        track_id: track.id,
+        genre,
+      }));
+    });
+    console.log(trackGenres);
+    const { data, error: trackGenresError } = await supabase
+      .from("track_genres")
+      .insert(trackGenres);
 
     return NextResponse.json({
       success: true,

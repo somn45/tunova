@@ -3,20 +3,12 @@
 import { useState } from "react";
 import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
-
-interface IRecommendedTrack {
-  id: number;
-  title: string;
-  artist: string;
-  genres: string[];
-  artwork: string;
-  reason: string;
-}
+import { ITrack } from "./page";
 
 export default function TrackViewContainer({
   tracks,
 }: {
-  tracks?: Array<IRecommendedTrack>;
+  tracks?: Array<ITrack>;
 }) {
   const [viewType, setViewType] = useState("list");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
