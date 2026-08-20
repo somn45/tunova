@@ -124,6 +124,7 @@ export async function POST(request: NextRequest) {
       };
     });
 
+    // tracks에 트랙 데이터 삽입
     const { data: trackData, error } = await supabase
       .from("tracks")
       .insert(tracks)
@@ -136,6 +137,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // track_genres에 트랙 장르 정보 삽입
     const trackGenres = trackData.flatMap(track => {
       const index = openAIPromptOutput.recommendTracks.findIndex(
         openAIResult => track.title === openAIResult.title,
@@ -146,10 +148,19 @@ export async function POST(request: NextRequest) {
         genre,
       }));
     });
-    console.log(trackGenres);
-    const { data, error: trackGenresError } = await supabase
+
+    const { error: trackGenresError } = await supabase
       .from("track_genres")
       .insert(trackGenres);
+
+    const { data: loggedUserData, error: getUserError } =
+      await supabase.auth.getUser();
+    const listenedTracks = trackData.map(track => ({
+      profile_id: loggedUserData.user?.id,
+      current_listened_track_id: track.id,
+    }));
+
+    await supabase.from("current_listeners").insert(listenedTracks);
 
     return NextResponse.json({
       success: true,

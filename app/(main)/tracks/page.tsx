@@ -13,13 +13,18 @@ export interface ITrack {
 
 export default async function Tracks() {
   const supabase = await createClient();
-  const { data: getTrackResult, error } = await supabase.from("tracks").select(`
-      id,
-      title,
-      artist,
-      artwork,
-      track_genres (
-        genre
+  const { data: getTrackResult, error } = await supabase.from(
+    "current_listeners",
+  ).select(`
+      profile_id,
+      tracks (
+        id,
+        title,
+        artist,
+        artwork,
+        track_genres (
+          genre
+        )
       )
       `);
   if (!getTrackResult) return;
