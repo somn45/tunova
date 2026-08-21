@@ -2,7 +2,7 @@ import { createClient } from "@/libs/supabase/server";
 import { ITunesSearchResult } from "@/services/trackServices";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
-import { zodTextFormat } from "openai/helpers/zod.js";
+import { zodTextFormat } from "openai/helpers/zod.mjs";
 import { OpenAIError } from "openai/index.js";
 import { z } from "zod";
 
