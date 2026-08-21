@@ -21,6 +21,30 @@ export const GENRE_ID_MAP = new Map<string, number>([
   ["K-Pop", 51],
 ]);
 
+export const GENRE_TAILWIND_MAP: Record<string, { bg: string; text: string }> =
+  {
+    Blues: { bg: "bg-sky-100", text: "text-sky-700" },
+    Classical: { bg: "bg-purple-100", text: "text-purple-700" },
+    Country: { bg: "bg-amber-100", text: "text-amber-700" },
+    Electronic: { bg: "bg-violet-100", text: "text-violet-600" },
+    "Singer/Songwriter": { bg: "bg-emerald-100", text: "text-emerald-700" },
+    Jazz: { bg: "bg-amber-100", text: "text-amber-800" },
+    Latin: { bg: "bg-orange-100", text: "text-orange-700" },
+    Pop: { bg: "bg-pink-100", text: "text-pink-700" },
+    "R&B/Soul": { bg: "bg-purple-100", text: "text-purple-800" },
+    Soundtrack: { bg: "bg-slate-100", text: "text-slate-700" },
+    Dance: { bg: "bg-red-100", text: "text-red-700" },
+    "Hip-Hop/Rap": { bg: "bg-slate-200", text: "text-slate-800" },
+    Worldwide: { bg: "bg-teal-100", text: "text-teal-700" },
+    Alternative: { bg: "bg-green-100", text: "text-green-700" },
+    Rock: { bg: "bg-slate-200", text: "text-slate-900" },
+    Christian: { bg: "bg-yellow-100", text: "text-yellow-800" },
+    Reggae: { bg: "bg-green-100", text: "text-green-800" },
+    "J-Pop": { bg: "bg-rose-100", text: "text-rose-600" },
+    Anime: { bg: "bg-violet-100", text: "text-violet-800" },
+    "K-Pop": { bg: "bg-indigo-100", text: "text-indigo-700" },
+  };
+
 export const MOCK_ITUNES_SEARCH_RESULT = {
   resultCount: 10,
   results: [
