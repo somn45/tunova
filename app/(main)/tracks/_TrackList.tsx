@@ -1,6 +1,8 @@
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { GENRE_TAILWIND_MAP } from "@/constants/tracks";
 
+// ${GENRE_TAILWIND_MAP[genre].bg} ${GENRE_TAILWIND_MAP[genre].text}
+
 export default function TrackList({
   currentListeners,
 }: {
@@ -24,10 +26,7 @@ export default function TrackList({
             </div>
             <ul className="hidden flex-4 flex-wrap items-center px-10 md:flex md:gap-3">
               {track.track_genres.map(({ genre }) => (
-                <li
-                  key={genre}
-                  className={`rounded-lg px-3 py-1 ${GENRE_TAILWIND_MAP[genre].bg} ${GENRE_TAILWIND_MAP[genre].text}`}
-                >
+                <li key={genre} className={`rounded-lg px-3 py-1`}>
                   {genre}
                 </li>
               ))}

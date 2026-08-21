@@ -1,4 +1,5 @@
 import { createClient } from "@/libs/supabase/server";
+import { ITunesSearchResult } from "@/services/trackServices";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
 import { zodTextFormat } from "openai/helpers/zod.js";
@@ -27,7 +28,6 @@ const TrackSchema = z.object({
   title: z.string(),
   artist: z.string(),
   genres: z.array(z.string()),
-  artwork: z.string(),
   reason: z.string(),
 });
 
@@ -117,12 +117,40 @@ export async function POST(request: NextRequest) {
       openAIResponse.output_text,
     );
 
-    const tracks = openAIPromptOutput.recommendTracks.map(recommendTrack => {
-      const { reason, id, genres, ...track } = recommendTrack;
-      return {
-        ...track,
-      };
-    });
+    const basicTrackInfo = openAIPromptOutput.recommendTracks.map(
+      recommendTrack => {
+        const { reason, id, genres, ...track } = recommendTrack;
+        return {
+          ...track,
+        };
+      },
+    );
+
+    const tracks = await Promise.all(
+      basicTrackInfo.map(async track => {
+        const itunesTrackParams = {
+          term: track.title,
+          country: "us",
+          entity: "song",
+          limit: "5",
+        };
+        const itunesSearchParams = new URLSearchParams(
+          itunesTrackParams,
+        ).toString();
+        const searchTrackResponse = await fetch(
+          `https://itunes.apple.com/search?${itunesSearchParams}`,
+        );
+        const searchTrackResult: ITunesSearchResult =
+          await searchTrackResponse.json();
+        return {
+          ...track,
+          artwork: searchTrackResult.results[0].artworkUrl60,
+          release_date: searchTrackResult.results[0].releaseDate,
+        };
+      }),
+    );
+
+    console.log(tracks);
 
     // tracks에 트랙 데이터 삽입
     const { data: trackData, error } = await supabase
@@ -153,6 +181,7 @@ export async function POST(request: NextRequest) {
       .from("track_genres")
       .insert(trackGenres);
 
+    // current_listener 테이블에 트랙 아이디 삽입
     const { data: loggedUserData, error: getUserError } =
       await supabase.auth.getUser();
     const listenedTracks = trackData.map(track => ({

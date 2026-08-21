@@ -1,6 +1,6 @@
 import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
-interface ITunesSearchResult {
+export interface ITunesSearchResult {
   resultCount: number;
   results: Array<{
     wrapperType: "track";
