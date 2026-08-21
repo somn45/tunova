@@ -3,12 +3,12 @@
 import { useState } from "react";
 import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
-import { ITrack } from "./page";
+import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 
 export default function TrackViewContainer({
-  tracks,
+  currentListeners,
 }: {
-  tracks?: Array<ITrack>;
+  currentListeners: CurrentListeners;
 }) {
   const [viewType, setViewType] = useState("list");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
@@ -35,14 +35,14 @@ export default function TrackViewContainer({
         {/* 모바일 버전 */}
         <section className="flex min-h-0 grow md:hidden">
           {currentScreen === "tracklist" ? (
-            <TrackList tracks={tracks} />
+            <TrackList currentListeners={currentListeners} />
           ) : (
             <RecommendTrackCarousel />
           )}
         </section>
         {/* 테블릿, PC 버전 */}
         <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
-          <TrackList tracks={tracks} />
+          <TrackList currentListeners={currentListeners} />
           {currentScreen === "recommend" && <RecommendTrackCarousel />}
         </section>
       </section>
