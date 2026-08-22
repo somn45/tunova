@@ -1,3 +1,4 @@
+import { GENRE_ID_MAP } from "@/constants/tracks";
 import { createClient } from "@/libs/supabase/server";
 import { ITunesSearchResult } from "@/services/trackServices";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,7 +28,7 @@ const TrackSchema = z.object({
   id: z.number(),
   title: z.string(),
   artist: z.string(),
-  genres: z.array(z.string()),
+  genres: z.array(z.enum(GENRE_ID_MAP.keys().toArray())),
   reason: z.string(),
 });
 
@@ -77,7 +78,8 @@ export async function POST(request: NextRequest) {
     const openAIResponse = await client.responses.create({
       model: OPENAI_GPT_MODEL,
       instructions: `당신은 음악에 조예가 깊은 마에스트로입니다. 사용자에게 받은 트랙, 아티스트, 장르를 받고 
-        이들을 종합적으로 분석하여 추천하고 싶은 트랙 ${generateTrackCount}곡과 해당 트랙들을 추천한 이유를 말씀해주세요.`,
+        이들을 종합적으로 분석하여 추천하고 싶은 트랙 ${generateTrackCount}곡과 해당 트랙들을 추천한 이유를 말씀해주세요.
+        `,
       input: `혹시 제 취향에 맞춰 음악을 추천해주실 수 있을까요?
       제가 좋아하는 트랙은 ${stringifyTracks}이고
       제가 좋아하는 아티스트는 ${stringifyArtists}이며
@@ -149,8 +151,6 @@ export async function POST(request: NextRequest) {
         };
       }),
     );
-
-    console.log(tracks);
 
     // tracks에 트랙 데이터 삽입
     const { data: trackData, error } = await supabase
