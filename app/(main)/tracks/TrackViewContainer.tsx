@@ -4,6 +4,7 @@ import { useState } from "react";
 import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
+import { Grid2x2, List, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 
 export default function TrackViewContainer({
   currentListeners,
@@ -16,11 +17,11 @@ export default function TrackViewContainer({
   );
   return (
     <>
-      <section className="flex min-h-0 grow flex-col">
-        <div className="flex justify-between">
+      <section className="flex min-h-0 grow flex-col gap-2">
+        <div className="flex justify-between px-1">
           <div className="flex gap-2">
-            <div>리스트 뷰</div>
-            <div>그리드 뷰</div>
+            <List size={24} className="box-content p-2" />
+            <Grid2x2 size={24} className="box-content p-2" />
           </div>
           <div
             onClick={() =>
@@ -29,7 +30,11 @@ export default function TrackViewContainer({
               )
             }
           >
-            토글
+            {currentScreen === "tracklist" ? (
+              <PanelLeftOpen size={24} className="box-content p-2" />
+            ) : (
+              <PanelLeftClose size={24} className="box-content p-2" />
+            )}
           </div>
         </div>
         {/* 모바일 버전 */}

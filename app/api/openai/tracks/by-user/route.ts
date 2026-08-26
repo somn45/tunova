@@ -128,6 +128,11 @@ export async function POST(request: NextRequest) {
       },
     );
 
+    console.log(
+      "Open AI 출력 트랙 길이",
+      openAIPromptOutput.recommendTracks.length,
+    );
+
     const tracks = await Promise.all(
       basicTrackInfo.map(async track => {
         const itunesTrackParams = {
@@ -144,6 +149,10 @@ export async function POST(request: NextRequest) {
         );
         const searchTrackResult: ITunesSearchResult =
           await searchTrackResponse.json();
+        console.log(
+          "Itunes Search API에서 가져온 트랙 길이",
+          searchTrackResult.resultCount,
+        );
         return {
           ...track,
           artwork: searchTrackResult.results[0].artworkUrl60,
