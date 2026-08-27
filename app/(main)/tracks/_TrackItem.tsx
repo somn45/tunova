@@ -1,5 +1,9 @@
+"use client";
+
 import { GENRE_TAILWIND_MAP } from "@/constants/tracks";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
+import { CirclePlay } from "lucide-react";
+import { useState } from "react";
 
 export default function Track({
   track,
@@ -8,14 +12,24 @@ export default function Track({
   track: CurrentListeners[number]["track"];
   viewType: "list" | "grid";
 }) {
+  const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
   if (viewType === "grid") {
     return (
-      <li className="justify-items-center p-2">
+      <li
+        onMouseOver={() => setOnHoverTrackImg(true)}
+        onMouseOut={() => setOnHoverTrackImg(false)}
+        className="relative cursor-pointer justify-items-center p-2"
+      >
         <img
           src={track.artwork!}
           alt={track.title}
           className="h-15 w-15 rounded-md"
         />
+        {onHoverTrackImg && (
+          <div className="absolute top-2 left-2 flex h-15 w-15 items-center justify-center rounded-md bg-black opacity-65">
+            <CirclePlay size={32} className="text-white" />
+          </div>
+        )}
       </li>
     );
   }

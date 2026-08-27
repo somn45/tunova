@@ -18,7 +18,7 @@ export default function TrackList({
           `min-h-0 w-full overflow-y-auto px-1.5 @lg:px-4 @7xl:px-10`,
           {
             "flex flex-col": viewType === "list",
-            "grid grid-cols-3 gap-10 py-4 @lg:grid-cols-4 @7xl:grid-cols-5":
+            "grid grid-cols-3 justify-items-center gap-10 py-4 @lg:grid-cols-4 @7xl:grid-cols-5":
               viewType === "grid",
           },
         )}
