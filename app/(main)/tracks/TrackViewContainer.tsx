@@ -11,7 +11,7 @@ export default function TrackViewContainer({
 }: {
   currentListeners: CurrentListeners;
 }) {
-  const [viewType, setViewType] = useState("list");
+  const [viewType, setViewType] = useState<"list" | "grid">("grid");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
     "tracklist",
   );
@@ -20,8 +20,16 @@ export default function TrackViewContainer({
       <section className="flex min-h-0 grow flex-col gap-2">
         <div className="flex justify-between px-1">
           <div className="flex gap-2">
-            <List size={24} className="box-content p-2" />
-            <Grid2x2 size={24} className="box-content p-2" />
+            <List
+              size={24}
+              className="box-content cursor-pointer p-2"
+              onClick={() => setViewType("list")}
+            />
+            <Grid2x2
+              size={24}
+              className="box-content cursor-pointer p-2"
+              onClick={() => setViewType("grid")}
+            />
           </div>
           <div
             onClick={() =>
@@ -40,14 +48,17 @@ export default function TrackViewContainer({
         {/* 모바일 버전 */}
         <section className="flex min-h-0 grow md:hidden">
           {currentScreen === "tracklist" ? (
-            <TrackList currentListeners={currentListeners} />
+            <TrackList
+              currentListeners={currentListeners}
+              viewType={viewType}
+            />
           ) : (
             <RecommendTrackCarousel />
           )}
         </section>
         {/* 테블릿, PC 버전 */}
         <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
-          <TrackList currentListeners={currentListeners} />
+          <TrackList currentListeners={currentListeners} viewType={viewType} />
           {currentScreen === "recommend" && <RecommendTrackCarousel />}
         </section>
       </section>
