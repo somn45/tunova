@@ -5,6 +5,7 @@ import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { Grid2x2, List, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import clsx from "clsx";
 
 export default function TrackViewContainer({
   currentListeners,
@@ -22,12 +23,22 @@ export default function TrackViewContainer({
           <div className="flex gap-2">
             <List
               size={24}
-              className="box-content cursor-pointer p-2"
+              className={clsx(
+                `box-content cursor-pointer rounded-xl p-2 hover:bg-gray-300`,
+                {
+                  "bg-indigo-600 text-white": viewType === "list",
+                },
+              )}
               onClick={() => setViewType("list")}
             />
             <Grid2x2
               size={24}
-              className="box-content cursor-pointer p-2"
+              className={clsx(
+                `box-content cursor-pointer rounded-xl p-2 hover:bg-gray-300`,
+                {
+                  "bg-indigo-600 text-white": viewType === "grid",
+                },
+              )}
               onClick={() => setViewType("grid")}
             />
           </div>
@@ -39,9 +50,15 @@ export default function TrackViewContainer({
             }
           >
             {currentScreen === "tracklist" ? (
-              <PanelLeftOpen size={24} className="box-content p-2" />
+              <div className="flex items-center">
+                <span className="text-xs">추천 트랙 표시</span>
+                <PanelLeftOpen size={24} className="box-content p-2" />
+              </div>
             ) : (
-              <PanelLeftClose size={24} className="box-content p-2" />
+              <div className="flex items-center">
+                <span className="text-xs">추천 트랙 숨김</span>
+                <PanelLeftClose size={24} className="box-content p-2" />
+              </div>
             )}
           </div>
         </div>
