@@ -34,7 +34,7 @@ export default function Track({
     );
   }
   return (
-    <li className="flex justify-between py-4 hover:bg-gray-400 lg:px-2">
+    <li className="flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2">
       <div className="flex flex-5 items-center gap-2">
         <img
           src={track.artwork!}
