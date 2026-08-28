@@ -1,12 +1,10 @@
-import { createClient } from "@/libs/supabase/server";
 import GetTrackSection from "./_GetTrackSecton";
 import TrackViewContainer from "./TrackViewContainer";
-import { id } from "zod/locales";
-import { QueryData } from "@supabase/supabase-js";
 import {
   type CurrentListeners,
   executeCurrentListenersQuery,
 } from "@/libs/supabase/queries/current-listeners";
+import Player from "./_Player";
 
 export interface ITrack {
   id: number;
@@ -26,7 +24,7 @@ export default async function Tracks() {
       <h1>Tracks</h1>
       <GetTrackSection />
       <TrackViewContainer currentListeners={currentListenedTracks} />
-      <section className="h-20 bg-blue-300">Player Section</section>
+      <Player />
     </main>
   );
 }
