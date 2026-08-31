@@ -1,6 +1,7 @@
 import { GENRE_ID_MAP } from "@/constants/tracks";
 import { createClient } from "@/libs/supabase/server";
 import { ITunesSearchResult } from "@/services/trackServices";
+import { validateMusicEntity } from "@/services/validation";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
 import { zodTextFormat } from "openai/helpers/zod.mjs";
@@ -40,33 +41,22 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
   const body: CreateTracksByUserBody = await request.json();
-  const { tracks, artists, genres, generateTrackCount } = body;
+  const { generateTrackCount, ...musicEntity } = body;
 
-  const emptyAllMusicEntities = [tracks, artists, genres].every(
-    entity => entity.length === 0,
-  );
-  const exceedSomeMusicEntities = [tracks, artists, genres].some(
-    entity => entity.length > 5,
-  );
-  if (emptyAllMusicEntities) {
+  const { valid, message: invalidateMessage } =
+    validateMusicEntity(musicEntity);
+
+  if (!valid) {
     return NextResponse.json(
       {
-        success: false,
-        message:
-          "추천 트랙을 생성하기 위한 취향아 선택되지 않았습니다. 추천 트랙을 생성하려면 적어도 하나의 취향을 선택하셔야 합니다.",
+        success: valid,
+        message: invalidateMessage,
       },
       { status: 400 },
     );
   }
-  if (exceedSomeMusicEntities) {
-    return NextResponse.json(
-      {
-        success: false,
-        message: "선택하실 수 있는 취향은 각 항목 당 최대 5개입니다.",
-      },
-      { status: 400 },
-    );
-  }
+
+  const { tracks, artists, genres } = musicEntity;
 
   const stringifyTracks = tracks.map(track => track.name).join(", ");
   const stringifyArtists = artists.map(artists => artists.name).join(", ");
