@@ -4,6 +4,9 @@ import {
   writePromptCreateRecommendTracks,
 } from "@/libs/openai/prompt/recommendTracksByUser";
 import { createClient } from "@/libs/supabase/server";
+import { insertCurrentListeners } from "@/services/db/current_listeners";
+import { insertTrackGenres } from "@/services/db/track_genres";
+import { insertTracks } from "@/services/db/tracks";
 import { ITunesSearchResult } from "@/services/trackServices";
 import { validateMusicEntity } from "@/services/validation";
 import { NextRequest, NextResponse } from "next/server";
@@ -106,20 +109,15 @@ export async function POST(request: NextRequest) {
     );
 
     // tracks에 트랙 데이터 삽입
-    const { data: trackData, error } = await supabase
-      .from("tracks")
-      .insert(tracks)
-      .select("id, title");
-
-    if (!trackData) {
+    const { tracksData, success, message } = await insertTracks(tracks);
+    if (!success)
       return NextResponse.json({
-        success: true,
-        message: error.message,
+        success,
+        message,
       });
-    }
 
     // track_genres에 트랙 장르 정보 삽입
-    const trackGenres = trackData.flatMap(track => {
+    const trackGenres = tracksData.flatMap(track => {
       const index = openAIPromptOutput.recommendTracks.findIndex(
         openAIResult => track.title === openAIResult.title,
       );
@@ -130,19 +128,18 @@ export async function POST(request: NextRequest) {
       }));
     });
 
-    const { error: trackGenresError } = await supabase
-      .from("track_genres")
-      .insert(trackGenres);
+    const { insertTrackGenreMessage } = await insertTrackGenres(trackGenres);
 
     // current_listener 테이블에 트랙 아이디 삽입
     const { data: loggedUserData, error: getUserError } =
       await supabase.auth.getUser();
-    const listenedTracks = trackData.map(track => ({
+    const listenedTracks = tracksData.map(track => ({
       profile_id: loggedUserData.user?.id,
       current_listened_track_id: track.id,
     }));
 
-    await supabase.from("current_listeners").insert(listenedTracks);
+    const { insertCurrentListenersMessage } =
+      await insertCurrentListeners(listenedTracks);
 
     return NextResponse.json({
       success: true,
