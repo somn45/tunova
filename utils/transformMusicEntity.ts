@@ -28,7 +28,7 @@ type RequiredItemType = {
 
 export function transformMusicEntity(
   origin: ITunesSearchResult["results"][number],
-): RequiredItemType;
+): RequiredItemType & { releaseDate: string };
 
 export function transformMusicEntity(
   origin: ITunesSearchArtistResult["results"][number],
@@ -38,13 +38,16 @@ export function transformMusicEntity(
   origin:
     | ITunesSearchResult["results"][number]
     | ITunesSearchArtistResult["results"][number],
-): RequiredItemType | Pick<RequiredItemType, "id" | "name"> {
+):
+  | (RequiredItemType & { releaseDate: string })
+  | Pick<RequiredItemType, "id" | "name"> {
   if ("trackName" in origin) {
     return {
       id: origin.trackId,
       name: origin.trackName,
       artist: origin.artistName,
       artwork: origin.artworkUrl60,
+      releaseDate: origin.releaseDate,
     };
   }
   return {

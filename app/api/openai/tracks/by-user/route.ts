@@ -7,7 +7,7 @@ import { createClient } from "@/libs/supabase/server";
 import { insertCurrentListeners } from "@/services/db/current_listeners";
 import { insertTrackGenres } from "@/services/db/track_genres";
 import { insertTracks } from "@/services/db/tracks";
-import { ITunesSearchResult } from "@/services/trackServices";
+import { fetchApiSearchTrack } from "@/services/trackServices";
 import { validateMusicEntity } from "@/services/validation";
 import { buildBasicTrackInfo } from "@/utils/buildBasicTrackInfo";
 import { buildCustomListeners } from "@/utils/buildCustomListeners";
@@ -75,24 +75,11 @@ export async function POST(request: NextRequest) {
 
     const tracks = await Promise.all(
       basicTrackInfo.map(async track => {
-        const itunesTrackParams = {
-          term: track.title,
-          country: "us",
-          entity: "song",
-          limit: "5",
-        };
-        const itunesSearchParams = new URLSearchParams(
-          itunesTrackParams,
-        ).toString();
-        const searchTrackResponse = await fetch(
-          `https://itunes.apple.com/search?${itunesSearchParams}`,
-        );
-        const searchTrackResult: ITunesSearchResult =
-          await searchTrackResponse.json();
+        const searchTrackResult = await fetchApiSearchTrack(track.title);
         return {
           ...track,
-          artwork: searchTrackResult.results[0].artworkUrl60,
-          release_date: searchTrackResult.results[0].releaseDate,
+          artwork: searchTrackResult[0].artwork,
+          release_date: searchTrackResult[0].releaseDate,
         };
       }),
     );

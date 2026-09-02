@@ -60,11 +60,12 @@ interface generateUserBaseRecommendedTracksResult {
   };
 }
 
-export const fetchApiSearchTrack = async (query: string) => {
+export const fetchApiSearchTrack = async (query: string, limit: number = 5) => {
   const itunesTrackParams = {
     term: query,
     country: "us",
     entity: "musicTrack",
+    limit: limit?.toString(),
   };
   const itunesSearchParams = new URLSearchParams(itunesTrackParams).toString();
 
