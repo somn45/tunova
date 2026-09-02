@@ -9,6 +9,9 @@ import { insertTrackGenres } from "@/services/db/track_genres";
 import { insertTracks } from "@/services/db/tracks";
 import { ITunesSearchResult } from "@/services/trackServices";
 import { validateMusicEntity } from "@/services/validation";
+import { buildBasicTrackInfo } from "@/utils/buildBasicTrackInfo";
+import { buildCustomListeners } from "@/utils/buildCustomListeners";
+import { buildTrackGenres } from "@/utils/buildTrackGenres";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
 import { OpenAIError } from "openai/index.js";
@@ -66,18 +69,8 @@ export async function POST(request: NextRequest) {
       openAIResponse.output_text,
     );
 
-    const basicTrackInfo = openAIPromptOutput.recommendTracks.map(
-      recommendTrack => {
-        const { reason, id, genres, ...track } = recommendTrack;
-        return {
-          ...track,
-        };
-      },
-    );
-
-    console.log(
-      "Open AI 출력 트랙 길이",
-      openAIPromptOutput.recommendTracks.length,
+    const basicTrackInfo = buildBasicTrackInfo(
+      openAIPromptOutput.recommendTracks,
     );
 
     const tracks = await Promise.all(
@@ -96,10 +89,6 @@ export async function POST(request: NextRequest) {
         );
         const searchTrackResult: ITunesSearchResult =
           await searchTrackResponse.json();
-        console.log(
-          "Itunes Search API에서 가져온 트랙 길이",
-          searchTrackResult.resultCount,
-        );
         return {
           ...track,
           artwork: searchTrackResult.results[0].artworkUrl60,
@@ -117,26 +106,17 @@ export async function POST(request: NextRequest) {
       });
 
     // track_genres에 트랙 장르 정보 삽입
-    const trackGenres = tracksData.flatMap(track => {
-      const index = openAIPromptOutput.recommendTracks.findIndex(
-        openAIResult => track.title === openAIResult.title,
-      );
-      const genres = openAIPromptOutput.recommendTracks[index].genres;
-      return genres.map(genre => ({
-        track_id: track.id,
-        genre,
-      }));
-    });
+    const trackGenres = buildTrackGenres(tracksData, openAIPromptOutput);
 
     const { insertTrackGenreMessage } = await insertTrackGenres(trackGenres);
 
     // current_listener 테이블에 트랙 아이디 삽입
     const { data: loggedUserData, error: getUserError } =
       await supabase.auth.getUser();
-    const listenedTracks = tracksData.map(track => ({
-      profile_id: loggedUserData.user?.id,
-      current_listened_track_id: track.id,
-    }));
+    const listenedTracks = buildCustomListeners(
+      tracksData,
+      loggedUserData.user?.id || "",
+    );
 
     const { insertCurrentListenersMessage } =
       await insertCurrentListeners(listenedTracks);
