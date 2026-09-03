@@ -31,11 +31,71 @@ vi.mock("openai", async importOriginal => {
   };
 });
 
-mockCreate.mockImplementation(async () => ({
-  output_text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
-  status: "completed",
-  incomplete_details: undefined,
-  output: MOCK_RESPONSES_OUTPUT,
+mockCreate.mockImplementation(async () => {
+  const { MOCK_RECOMMENDED_TRACKS } = await import("@/constants/tracks");
+
+  return {
+    output_text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
+    status: "completed",
+    incomplete_details: undefined,
+    output: MOCK_RESPONSES_OUTPUT,
+  };
+});
+
+vi.mock("@/libs/supabase/server", () => {
+  return {
+    createClient: vi.fn().mockResolvedValue({
+      auth: {
+        getUser: vi.fn().mockResolvedValue({
+          data: {
+            user: {
+              id: "mockuser",
+            },
+          },
+        }),
+      },
+    }),
+  };
+});
+
+vi.mock("@/services/trackServices", async () => {
+  const { MOCK_ITUNES_SEARCH_RESULT } = await import("@/constants/tracks");
+  return {
+    fetchApiSearchTrack: vi.fn().mockResolvedValue(
+      MOCK_ITUNES_SEARCH_RESULT.results.map(track => ({
+        ...track,
+        releaseDate: "2026-09-02",
+      })),
+    ),
+  };
+});
+
+vi.mock("@/services/db/tracks", async () => {
+  const { MOCK_RECOMMENDED_TRACKS } = await import("@/constants/tracks");
+  return {
+    insertTracks: vi.fn().mockResolvedValue({
+      tracksData: MOCK_RECOMMENDED_TRACKS.recommendTracks.map(
+        (track, index) => ({
+          id: index,
+          title: track.title,
+        }),
+      ),
+      success: true,
+      message: "ok",
+    }),
+  };
+});
+
+vi.mock("@/services/db/track_genres.ts", () => ({
+  insertTrackGenres: vi.fn().mockResolvedValue({
+    insertTrackGenreMessage: "ok",
+  }),
+}));
+
+vi.mock("@/services/db/current_listeners.ts", () => ({
+  insertCurrentListeners: vi.fn().mockResolvedValue({
+    insertTrackGenreMessage: "ok",
+  }),
 }));
 
 interface generateUserBaseRecommendedTracksResult {
@@ -56,7 +116,7 @@ interface generateUserBaseRecommendedTracksResult {
 describe("/openai/tracks/by-user Route Handlers", () => {
   afterEach(() => {});
   describe("유효성 검사를 충족하는 body를 받았을 경우", () => {
-    test("OpenAI API에서 생성된 추천 트랙을 반환한다", async () => {
+    test.only("OpenAI API에서 생성된 추천 트랙을 반환한다", async () => {
       const body = JSON.stringify({
         tracks: MOCK_ITUNES_SEARCH_RESULT.results.slice(0, 3).map(track => {
           return transformMusicEntity(track);
@@ -71,6 +131,7 @@ describe("/openai/tracks/by-user Route Handlers", () => {
           },
         ),
         genres: ["K-Pop, Dance"],
+        generateTrackCount: 5,
       });
       const req = new NextRequest(
         "http://localhost:3000/api/openai/tracks/by-user",

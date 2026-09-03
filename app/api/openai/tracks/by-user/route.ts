@@ -92,6 +92,8 @@ export async function POST(request: NextRequest) {
         message,
       });
 
+    console.log("삽입 후 트랙", tracksData);
+
     // track_genres에 트랙 장르 정보 삽입
     const trackGenres = buildTrackGenres(tracksData, openAIPromptOutput);
 
