@@ -14,27 +14,27 @@ export class TrackRepository {
     }>,
   ): Promise<
     | {
-        tracksData: Array<{ id: number; title: string }>;
+        insertedTracks: Array<{ id: number; title: string }>;
         success: true;
         message: string;
       }
-    | { tracksData: null; success: false; message: string }
+    | { insertedTracks: null; success: false; message: string }
   > => {
-    const { data: tracksData, error } = await this.supabase
+    const { data: insertedTracks, error } = await this.supabase
       .from("tracks")
       .insert(tracks)
       .select("id, title");
 
-    if (!tracksData) {
+    if (!insertedTracks) {
       return {
-        tracksData: null,
+        insertedTracks: null,
         success: false,
         message: error.message,
       };
     }
 
     return {
-      tracksData,
+      insertedTracks,
       success: true,
       message: "ok",
     };
@@ -55,3 +55,5 @@ export class TrackRepository {
     };
   };
 }
+
+export type TrackRepositoryType = TrackRepository;

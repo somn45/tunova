@@ -1,10 +1,7 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class UserRepository {
-  private supabase: SupabaseClient;
-  constructor(supabaseClient: SupabaseClient) {
-    this.supabase = supabaseClient;
-  }
+  constructor(private supabase: SupabaseClient) {}
 
   getUser = async () => {
     const { data: loggedUserData, error } = await this.supabase.auth.getUser();
@@ -31,3 +28,5 @@ export class UserRepository {
     };
   };
 }
+
+export type UserRepositoryType = UserRepository;

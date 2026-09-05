@@ -4,13 +4,10 @@ import {
   writePromptCreateRecommendTracks,
 } from "@/libs/openai/prompt/recommendTracksByUser";
 import { createClient } from "@/libs/supabase/server";
-import { fetchApiSearchTrack } from "@/services/trackServices";
 import { validateMusicEntity } from "@/services/validation";
 import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
 import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
-import { buildBasicTrackInfo } from "@/utils/buildBasicTrackInfo";
-import { buildCustomListeners } from "@/utils/buildCustomListeners";
-import { buildTrackGenres } from "@/utils/buildTrackGenres";
+import { TrackService } from "@/src/infrastructure/services/track.service";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
 import { OpenAIError } from "openai/index.js";
@@ -70,42 +67,19 @@ export async function POST(request: NextRequest) {
       openAIResponse.output_text,
     );
 
-    const basicTrackInfo = buildBasicTrackInfo(
-      openAIPromptOutput.recommendTracks,
-    );
+    const trackService = new TrackService(trackRepository, userRepository);
 
-    const tracks = await Promise.all(
-      basicTrackInfo.map(async track => {
-        const searchTrackResult = await fetchApiSearchTrack(track.title);
-        return {
-          ...track,
-          artwork: searchTrackResult[0].artwork,
-          release_date: searchTrackResult[0].releaseDate,
-        };
-      }),
-    );
-
-    // tracks에 트랙 데이터 삽입
-    const { tracksData, success, message } =
-      await trackRepository.insertTracks(tracks);
+    const { insertedTracks, success, message } =
+      await trackService.addRecommendTracks(openAIPromptOutput);
     if (!success)
       return NextResponse.json({
         success,
         message,
       });
 
-    console.log("삽입 후 트랙", tracksData);
+    await trackService.addTrackGenres(insertedTracks, openAIPromptOutput);
 
-    // track_genres에 트랙 장르 정보 삽입
-    const trackGenres = buildTrackGenres(tracksData, openAIPromptOutput);
-
-    await trackRepository.insertTrackGenres(trackGenres);
-
-    // current_listener 테이블에 트랙 아이디 삽입
-    const { data } = await userRepository.getUser();
-    const listenedTracks = buildCustomListeners(tracksData, data?.id || "");
-
-    await userRepository.insertCurrentListeners(listenedTracks);
+    await trackService.addCurrentListeners(insertedTracks);
 
     return NextResponse.json({
       success: true,
