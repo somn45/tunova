@@ -4,11 +4,10 @@ import {
   writePromptCreateRecommendTracks,
 } from "@/libs/openai/prompt/recommendTracksByUser";
 import { createClient } from "@/libs/supabase/server";
-import { insertCurrentListeners } from "@/services/db/current_listeners";
-import { insertTrackGenres } from "@/services/db/track_genres";
-import { insertTracks } from "@/services/db/tracks";
 import { fetchApiSearchTrack } from "@/services/trackServices";
 import { validateMusicEntity } from "@/services/validation";
+import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
+import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
 import { buildBasicTrackInfo } from "@/utils/buildBasicTrackInfo";
 import { buildCustomListeners } from "@/utils/buildCustomListeners";
 import { buildTrackGenres } from "@/utils/buildTrackGenres";
@@ -32,7 +31,9 @@ interface CreateTracksByUserBody {
 }
 
 export async function POST(request: NextRequest) {
-  const supabase = await createClient();
+  const supabaseClient = await createClient();
+  const trackRepository = new TrackRepository(supabaseClient);
+  const userRepository = new UserRepository(supabaseClient);
 
   const body: CreateTracksByUserBody = await request.json();
   const { generateTrackCount, ...musicEntity } = body;
@@ -85,7 +86,8 @@ export async function POST(request: NextRequest) {
     );
 
     // tracks에 트랙 데이터 삽입
-    const { tracksData, success, message } = await insertTracks(tracks);
+    const { tracksData, success, message } =
+      await trackRepository.insertTracks(tracks);
     if (!success)
       return NextResponse.json({
         success,
@@ -97,18 +99,13 @@ export async function POST(request: NextRequest) {
     // track_genres에 트랙 장르 정보 삽입
     const trackGenres = buildTrackGenres(tracksData, openAIPromptOutput);
 
-    const { insertTrackGenreMessage } = await insertTrackGenres(trackGenres);
+    await trackRepository.insertTrackGenres(trackGenres);
 
     // current_listener 테이블에 트랙 아이디 삽입
-    const { data: loggedUserData, error: getUserError } =
-      await supabase.auth.getUser();
-    const listenedTracks = buildCustomListeners(
-      tracksData,
-      loggedUserData.user?.id || "",
-    );
+    const { data } = await userRepository.getUser();
+    const listenedTracks = buildCustomListeners(tracksData, data?.id || "");
 
-    const { insertCurrentListenersMessage } =
-      await insertCurrentListeners(listenedTracks);
+    await userRepository.insertCurrentListeners(listenedTracks);
 
     return NextResponse.json({
       success: true,
