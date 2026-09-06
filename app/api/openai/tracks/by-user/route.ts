@@ -1,12 +1,9 @@
-import { detectOpenAIError } from "@/libs/openai/detectOpenAIError";
-import {
-  recommendTracksType,
-  writePromptCreateRecommendTracks,
-} from "@/libs/openai/prompt/recommendTracksByUser";
+import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import { createClient } from "@/libs/supabase/server";
 import { validateMusicEntity } from "@/services/validation";
 import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
 import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
+import { OpenAIService } from "@/src/infrastructure/services/openai.services";
 import { TrackService } from "@/src/infrastructure/services/track.service";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { APIError } from "openai";
@@ -49,22 +46,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const client = new OpenAI();
-    const createRecommendTracksPrompt = writePromptCreateRecommendTracks({
-      musicEntity,
-      generateTrackCount,
-    });
-    const openAIResponse = await client.responses.create(
-      createRecommendTracksPrompt,
-    );
+    const openAIClient = new OpenAI();
+    const openAIService = new OpenAIService(openAIClient);
 
-    const openAIError = detectOpenAIError(openAIResponse);
-    if (openAIError) {
-      throw new OpenAIError(openAIError);
-    }
+    const openAIPromtptResponse =
+      await openAIService.createRecommendTracksResponses(
+        musicEntity,
+        generateTrackCount,
+      );
 
     const openAIPromptOutput: recommendTracksType = JSON.parse(
-      openAIResponse.output_text,
+      openAIPromtptResponse.output_text,
     );
 
     const trackService = new TrackService(trackRepository, userRepository);
