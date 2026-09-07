@@ -1,11 +1,11 @@
 import type { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import { createClient } from "@/libs/supabase/server";
-import { fetchApiSearchTrack } from "@/services/trackServices";
 import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
 import { transformTrackGenreRows } from "@/src/infrastructure/repositories/track.repository.mapper";
 import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
 import { transformCurrentListenerRows } from "@/src/infrastructure/repositories/user.repository.mapper";
-import { OpenAIService } from "@/src/infrastructure/services/openai.services";
+import { ItunesService } from "@/src/infrastructure/services/itunes.service";
+import { OpenAIService } from "@/src/infrastructure/services/openai.service";
 import OpenAI from "openai";
 
 type RequiredItemType = {
@@ -32,6 +32,7 @@ export const generateRecommendTrackUseCases = async (
 
   const openAIClient = new OpenAI();
   const openAIService = new OpenAIService(openAIClient);
+  const itunesService = new ItunesService();
 
   const { tracks, artists, genres } = musicEntity;
   const emptyAllMusicEntities = [tracks, artists, genres].every(
@@ -71,7 +72,7 @@ export const generateRecommendTrackUseCases = async (
 
   const trakcListWithMetadata = await Promise.all(
     basicTrackInfo.map(async track => {
-      const searchTrackResult = await fetchApiSearchTrack(track.title);
+      const searchTrackResult = await itunesService.searchTrack(track.title);
       return {
         ...track,
         artwork: searchTrackResult[0].artwork,
