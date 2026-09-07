@@ -1,3 +1,8 @@
+import type {
+  TrackGenresInsert,
+  TrackInsert,
+  TrackInsertResult,
+} from "@/src/entities/models/track";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class TrackRepository {
@@ -6,15 +11,10 @@ export class TrackRepository {
     this.supabase = supabaseClient;
   }
   insertTracks = async (
-    tracks: Array<{
-      artwork: string;
-      release_date: string;
-      title: string;
-      artist: string;
-    }>,
+    tracks: Array<TrackInsert>,
   ): Promise<
     | {
-        insertedTracks: Array<{ id: number; title: string }>;
+        insertedTracks: Array<TrackInsertResult>;
         success: true;
         message: string;
       }
@@ -40,12 +40,7 @@ export class TrackRepository {
     };
   };
 
-  insertTrackGenres = async (
-    trackGenres: Array<{
-      track_id: number;
-      genre: string;
-    }>,
-  ) => {
+  insertTrackGenres = async (trackGenres: Array<TrackGenresInsert>) => {
     const { error } = await this.supabase
       .from("track_genres")
       .insert(trackGenres);

@@ -1,3 +1,4 @@
+import type { CurrentListenersInsert } from "@/src/entities/models/user";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export class UserRepository {
@@ -13,10 +14,7 @@ export class UserRepository {
   };
 
   insertCurrentListeners = async (
-    listenedTracks: Array<{
-      profile_id: string | undefined;
-      current_listened_track_id: number;
-    }>,
+    listenedTracks: Array<CurrentListenersInsert>,
   ) => {
     const { error } = await this.supabase
       .from("current_listeners")
