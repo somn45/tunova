@@ -1,11 +1,9 @@
-import { User } from "@supabase/supabase-js";
-
-export const transformCurrentListenerRows = (
+export const transformCurrentListenerRows = <T extends { id: string }>(
   insertedTracks: {
     id: number;
     title: string;
   }[],
-  user: User,
+  user: T,
 ) =>
   insertedTracks.map(track => ({
     profile_id: user?.id || "",
