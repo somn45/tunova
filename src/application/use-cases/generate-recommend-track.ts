@@ -23,17 +23,25 @@ interface MusicEntity {
 }
 
 export const generateRecommendTrackUseCases = async (
-  musicEntity: MusicEntity,
-  generateTrackCount: number = 3,
+  {
+    userRepository,
+    trackRepository,
+    openAIService,
+    itunesService,
+  }: {
+    userRepository: UserRepository;
+    trackRepository: TrackRepository;
+    openAIService: OpenAIService;
+    itunesService: ItunesService;
+  },
+  {
+    musicEntity,
+    generateTrackCount = 3,
+  }: {
+    musicEntity: MusicEntity;
+    generateTrackCount: number;
+  },
 ) => {
-  const supabaseClient = await createClient();
-  const trackRepository = new TrackRepository(supabaseClient);
-  const userRepository = new UserRepository(supabaseClient);
-
-  const openAIClient = new OpenAI();
-  const openAIService = new OpenAIService(openAIClient);
-  const itunesService = new ItunesService();
-
   const { tracks, artists, genres } = musicEntity;
   const emptyAllMusicEntities = [tracks, artists, genres].every(
     entity => entity.length === 0,

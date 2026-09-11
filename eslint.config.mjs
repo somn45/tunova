@@ -20,6 +20,7 @@ const eslintConfig = defineConfig([
       "@typescript-eslint/no-unused-vars": [
         "error",
         { ignoreRestSiblings: true },
+        { argsIgnorePattern: "^_" },
       ],
     },
   },

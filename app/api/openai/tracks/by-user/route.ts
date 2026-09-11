@@ -1,4 +1,4 @@
-import { generateRecommendTrackUseCases } from "@/src/application/use-cases/generate-recommend-track";
+import getInjection from "@/src/di/container";
 import { NextRequest, NextResponse } from "next/server";
 import { APIError } from "openai";
 import { OpenAIError } from "openai/index.js";
@@ -23,10 +23,12 @@ export async function POST(request: NextRequest) {
   const { generateTrackCount, ...musicEntity } = body;
 
   try {
-    const openAIPromptOutput = await generateRecommendTrackUseCases(
+    const generateRecommendTrackUseCases = await getInjection();
+
+    const openAIPromptOutput = await generateRecommendTrackUseCases({
       musicEntity,
       generateTrackCount,
-    );
+    });
 
     return NextResponse.json({
       success: true,
