@@ -62,6 +62,15 @@ export async function POST(request: NextRequest): Promise<
         { status: 502 },
       );
     }
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: 500 },
+      );
+    }
     return NextResponse.json(
       {
         success: false,
