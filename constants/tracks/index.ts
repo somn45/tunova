@@ -1,3 +1,5 @@
+import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
+
 export const GENRE_ID_MAP = new Map<string, number>([
   ["Blues", 2],
   ["Classical", 5],
@@ -228,35 +230,54 @@ export const MOCK_ITUNES_SEARCH_ALBUM_RESULTS = [
   MOCK_ITUNES_SEARCH_ALBUM_RESULT_3,
 ];
 
-export const MOCK_RECOMMENDED_TRACKS = {
+export const MOCK_RECOMMENDED_TRACKS: recommendTracksType = {
   recommendTracks: [
     {
       id: 1,
-      title: "Hype Boy",
-      artist: "NewJeans",
-      genres: ["K-Pop", "Dance", "R&B"],
-      artwork: "https://example.com/artworks/hypeboy.jpg",
-      reason: "최근 청취한 청량한 댄스 곡들과 분위기가 유사하여 추천합니다.",
+      title: "Blinding Lights",
+      artist: "The Weeknd",
+      genres: ["Pop", "R&B/Soul"],
+      reason:
+        "신스팝 사운드와 업비트한 분위기가 사용자가 선호하는 트랙과 유사합니다.",
     },
     {
       id: 2,
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      genres: ["Synthwave", "Pop", "R&B"],
-      artwork: "https://example.com/artworks/blinding-lights.jpg",
-      reason: "드라이브나 운동 시 듣기 좋은 에너제틱한 비트의 곡입니다.",
+      title: "Levitating",
+      artist: "Dua Lipa",
+      genres: ["Pop", "Dance"],
+      reason: "디스코 영향을 받은 리듬감이 최근 감상 이력과 잘 맞습니다.",
     },
     {
       id: 3,
-      title: "Event Horizon",
-      artist: "Younha",
-      genres: ["K-Pop", "Rock", "Indie"],
-      artwork: "https://example.com/artworks/event-horizon.jpg",
-      reason:
-        "즐겨 듣는 인디/록 장르 중 감성적인 멜로디가 돋보이는 모던록입니다.",
+      title: "As It Was",
+      artist: "Harry Styles",
+      genres: ["Pop", "Alternative"],
+      reason: "멜랑콜릭한 팝 감성이 사용자가 자주 찾는 무드와 일치합니다.",
+    },
+    {
+      id: 4,
+      title: "Dynamite",
+      artist: "BTS",
+      genres: ["Pop", "K-Pop"],
+      reason: "밝고 경쾌한 분위기가 사용자의 최근 검색 패턴과 유사합니다.",
+    },
+    {
+      id: 5,
+      title: "Peaches",
+      artist: "Justin Bieber",
+      genres: ["R&B/Soul", "Pop"],
+      reason: "미니멀한 프로덕션과 보컬 중심 구성이 취향에 부합합니다.",
+    },
+    {
+      id: 6,
+      title: "Save Your Tears",
+      artist: "The Weeknd",
+      genres: ["Pop", "Synth-pop"],
+      reason: "동일 아티스트의 유사한 신스 사운드로 확장 추천됩니다.",
     },
   ],
 };
+
 export const MOCK_GET_TRACK_RESPONSES = {
   recommendTracks: [
     {

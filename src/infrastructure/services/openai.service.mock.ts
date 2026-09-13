@@ -1,4 +1,6 @@
+import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
+import OpenAI from "openai";
 
 type RequiredItemType = {
   id: number;
@@ -14,66 +16,18 @@ interface MusicEntity {
   genres: Array<string>;
 }
 
-const mockOpenAIPromptOutput: recommendTracksType = {
-  recommendTracks: [
-    {
-      id: 1,
-      title: "Blinding Lights",
-      artist: "The Weeknd",
-      genres: ["Pop", "R&B/Soul"],
-      reason:
-        "신스팝 사운드와 업비트한 분위기가 사용자가 선호하는 트랙과 유사합니다.",
-    },
-    {
-      id: 2,
-      title: "Levitating",
-      artist: "Dua Lipa",
-      genres: ["Pop", "Dance"],
-      reason: "디스코 영향을 받은 리듬감이 최근 감상 이력과 잘 맞습니다.",
-    },
-    {
-      id: 3,
-      title: "As It Was",
-      artist: "Harry Styles",
-      genres: ["Pop", "Alternative"],
-      reason: "멜랑콜릭한 팝 감성이 사용자가 자주 찾는 무드와 일치합니다.",
-    },
-    {
-      id: 4,
-      title: "Dynamite",
-      artist: "BTS",
-      genres: ["Pop", "K-Pop"],
-      reason: "밝고 경쾌한 분위기가 사용자의 최근 검색 패턴과 유사합니다.",
-    },
-    {
-      id: 5,
-      title: "Peaches",
-      artist: "Justin Bieber",
-      genres: ["R&B/Soul", "Pop"],
-      reason: "미니멀한 프로덕션과 보컬 중심 구성이 취향에 부합합니다.",
-    },
-    {
-      id: 6,
-      title: "Save Your Tears",
-      artist: "The Weeknd",
-      genres: ["Pop", "Synth-pop"],
-      reason: "동일 아티스트의 유사한 신스 사운드로 확장 추천됩니다.",
-    },
-  ],
-};
-
 export class MockOpenAIService {
   createRecommendTracksResponses = async (
-    musicEntity: MusicEntity,
-    generateTrackCount: number = 3,
+    _musicEntity: MusicEntity,
+    _generateTrackCount: number = 3,
   ) => {
-    const mockOpenAIResponse = {
+    const mockOpenAIResponse: OpenAI.Responses.Response = {
       id: "mock_id",
       status: "completed",
       incomplete_details: {
-        reason: null,
+        reason: undefined,
       },
-      output_text: JSON.stringify(mockOpenAIPromptOutput),
+      output_text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
       created_at: 1752100704,
       error: null,
       instructions: "",
@@ -94,6 +48,12 @@ export class MockOpenAIService {
           ],
         },
       ],
+      object: "response",
+      parallel_tool_calls: false,
+      temperature: null,
+      tool_choice: "none",
+      tools: [],
+      top_p: null,
     };
 
     if (

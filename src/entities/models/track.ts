@@ -11,12 +11,16 @@ export const selectTrackSchema = z.object({
 
 export type Track = z.infer<typeof selectTrackSchema>;
 
-export const insertTrackSchema = selectTrackSchema.pick({
-  title: true,
-  artist: true,
-  release_date: true,
-  artwork: true,
-});
+export const insertTrackSchema = selectTrackSchema
+  .pick({
+    title: true,
+    artist: true,
+    release_date: true,
+    artwork: true,
+  })
+  .partial({
+    release_date: true,
+  });
 
 export type TrackInsert = z.infer<typeof insertTrackSchema>;
 

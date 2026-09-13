@@ -1,8 +1,18 @@
 import { transformMusicEntity } from "@/utils/transformMusicEntity";
 import { ITunesSearchResult } from "./itunes.service";
 
+interface ITunesSearchArtistResult {
+  resultCount: number;
+  results: Array<{
+    wrapperType: "artist";
+    artistId: number;
+    artwork: string;
+    artistName: string;
+  }>;
+}
+
 export class MockItunesService {
-  searchTrack = async (query: string, limit: number = 5) => {
+  searchTrack = async (query: string = "mock query", limit: number = 5) => {
     const mockITunesSearchResult: ITunesSearchResult = {
       resultCount: 6,
       results: [
@@ -66,5 +76,38 @@ export class MockItunesService {
     return mockITunesSearchResult.results.map(track => {
       return transformMusicEntity(track);
     });
+  };
+
+  searchArtist = async (query: string = "mock query") => {
+    const mockArtistSearchResult: ITunesSearchArtistResult = {
+      resultCount: 3,
+      results: [
+        {
+          wrapperType: "artist",
+          artistId: 909253,
+          artistName: "Coldplay",
+          artwork:
+            "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/coldplay-artwork/100x100bb.jpg",
+        },
+        {
+          wrapperType: "artist",
+          artistId: 78500,
+          artistName: "Red Hot Chili Peppers",
+          artwork:
+            "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/rhcp-artwork/100x100bb.jpg",
+        },
+        {
+          wrapperType: "artist",
+          artistId: 136975,
+          artistName: "Radiohead",
+          artwork:
+            "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/radiohead-artwork/100x100bb.jpg",
+        },
+      ],
+    };
+    return mockArtistSearchResult.results.map(artist => ({
+      ...transformMusicEntity(artist),
+      artwork: artist.artwork,
+    }));
   };
 }

@@ -1,3 +1,4 @@
+import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import getInjection from "@/src/di/container";
 import { NextRequest, NextResponse } from "next/server";
 import { APIError } from "openai";
@@ -18,7 +19,13 @@ interface CreateTracksByUserBody {
   generateTrackCount: number;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<
+  NextResponse<{
+    success: boolean;
+    message: string;
+    data?: recommendTracksType;
+  }>
+> {
   const body: CreateTracksByUserBody = await request.json();
   const { generateTrackCount, ...musicEntity } = body;
 
@@ -58,7 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: error,
+        message: "unknown error",
       },
       { status: 500 },
     );

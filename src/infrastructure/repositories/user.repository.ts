@@ -8,7 +8,7 @@ export class UserRepository {
     const { data: loggedUserData, error } = await this.supabase.auth.getUser();
     return {
       success: !!error?.message,
-      getUserMessage: error?.message,
+      getUserMessage: error?.message || "ok",
       data: loggedUserData.user,
     };
   };

@@ -7,6 +7,10 @@ import { transformCurrentListenerRows } from "@/src/infrastructure/repositories/
 import { ItunesService } from "@/src/infrastructure/services/itunes.service";
 import { OpenAIService } from "@/src/infrastructure/services/openai.service";
 import OpenAI from "openai";
+import { IUserRepository } from "../repositories/user.repository.interface";
+import { ITracksRepository } from "../repositories/track.repository.interface";
+import { IOpenAIService } from "../services/openai.service.interface";
+import { IItunesService } from "../services/itunes.service.interface";
 
 type RequiredItemType = {
   id: number;
@@ -29,10 +33,10 @@ export const generateRecommendTrackUseCases = async (
     openAIService,
     itunesService,
   }: {
-    userRepository: UserRepository;
-    trackRepository: TrackRepository;
-    openAIService: OpenAIService;
-    itunesService: ItunesService;
+    userRepository: IUserRepository;
+    trackRepository: ITracksRepository;
+    openAIService: IOpenAIService;
+    itunesService: IItunesService;
   },
   {
     musicEntity,

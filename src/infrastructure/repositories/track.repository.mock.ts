@@ -5,7 +5,7 @@ import {
 } from "@/src/entities/models/track";
 
 export class MockTrackRepository {
-  constructor(public _tracks: Array<TrackInsert>) {}
+  public _tracks: Array<TrackInsert> = [];
 
   set tracks(tracks: Array<TrackInsert>) {
     this._tracks = tracks;

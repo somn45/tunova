@@ -12,6 +12,19 @@ import { MockItunesService } from "../infrastructure/services/itunes.service.moc
 import { mockTracks } from "@/tests/mocks/track";
 
 const getInjection = async () => {
+  if (process.env.NODE_ENV === "test") {
+    const testModule = generateRecommendTrackUseCases;
+
+    const bindingTestModule = testModule.bind(null, {
+      userRepository: new MockUserRepository(),
+      trackRepository: new MockTrackRepository(),
+      openAIService: new MockOpenAIService(),
+      itunesService: new MockItunesService(),
+    });
+
+    return bindingTestModule;
+  }
+
   const supabaseClient = await createClient();
   const openAIClient = new OpenAI();
 

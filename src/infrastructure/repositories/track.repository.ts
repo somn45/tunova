@@ -11,7 +11,7 @@ export class TrackRepository {
     this.supabase = supabaseClient;
   }
   insertTracks = async (
-    tracks: Array<TrackInsert>,
+    newTracks: Array<TrackInsert>,
   ): Promise<
     | {
         insertedTracks: Array<TrackInsertResult>;
@@ -22,7 +22,7 @@ export class TrackRepository {
   > => {
     const { data: insertedTracks, error } = await this.supabase
       .from("tracks")
-      .insert(tracks)
+      .insert(newTracks)
       .select("id, title");
 
     if (!insertedTracks) {
