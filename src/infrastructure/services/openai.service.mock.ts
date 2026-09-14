@@ -1,5 +1,4 @@
 import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
-import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import OpenAI from "openai";
 
 type RequiredItemType = {
@@ -17,10 +16,10 @@ interface MusicEntity {
 }
 
 export class MockOpenAIService {
-  createRecommendTracksResponses = async (
+  async createRecommendTracksResponses(
     _musicEntity: MusicEntity,
     _generateTrackCount: number = 3,
-  ) => {
+  ) {
     const mockOpenAIResponse: OpenAI.Responses.Response = {
       id: "mock_id",
       status: "completed",
@@ -79,5 +78,5 @@ export class MockOpenAIService {
       );
 
     return mockOpenAIResponse;
-  };
+  }
 }

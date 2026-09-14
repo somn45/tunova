@@ -15,16 +15,14 @@ export class MockTrackRepository {
     return this._tracks;
   }
 
-  insertTracks = async (
-    newTracks: Array<TrackInsert>,
-  ): Promise<
+  async insertTracks(newTracks: Array<TrackInsert>): Promise<
     | {
         insertedTracks: Array<TrackInsertResult>;
         success: true;
         message: string;
       }
     | { insertedTracks: null; success: false; message: string }
-  > => {
+  > {
     const insertedTracks = [...this.tracks, ...newTracks].map(
       (track, index) => ({
         ...track,
@@ -54,7 +52,7 @@ export class MockTrackRepository {
       success: true,
       message: "ok",
     };
-  };
+  }
 
   insertTrackGenres = async (trackGenres: Array<TrackGenresInsert>) => {
     if (!trackGenres) {

@@ -52,7 +52,7 @@ export const generateRecommendTrackUseCases = async (
   );
   if (emptyAllMusicEntities) {
     throw new Error(
-      "추천 트랙을 생성하기 위한 취향아 선택되지 않았습니다. 추천 트랙을 생성하려면 적어도 하나의 취향을 선택하셔야 합니다.",
+      "추천 트랙을 생성하기 위한 취향이 선택되지 않았습니다. 추천 트랙을 생성하려면 적어도 하나의 취향을 선택하셔야 합니다.",
     );
   }
 
@@ -68,6 +68,8 @@ export const generateRecommendTrackUseCases = async (
       musicEntity,
       generateTrackCount,
     );
+
+  console.log(openAIPromtptResponse);
 
   const openAIPromptOutput: recommendTracksType = JSON.parse(
     openAIPromtptResponse.output_text,
