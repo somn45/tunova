@@ -30,6 +30,8 @@ export class OpenAIService {
       createRecommendTracksPrompt,
     );
 
+    console.log(openAIPromtptResponse.status);
+
     if (
       openAIPromtptResponse.status === "incomplete" &&
       openAIPromtptResponse.incomplete_details?.reason === "max_output_tokens"

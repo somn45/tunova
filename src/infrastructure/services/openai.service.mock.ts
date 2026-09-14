@@ -1,5 +1,5 @@
 import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
-import OpenAI from "openai";
+import type OpenAI from "openai";
 
 type RequiredItemType = {
   id: number;
@@ -15,45 +15,47 @@ interface MusicEntity {
   genres: Array<string>;
 }
 
+export const MOCK_OPENAI_RESPONSES: OpenAI.Responses.Response = {
+  id: "mock_id",
+  status: "completed",
+  incomplete_details: {
+    reason: undefined,
+  },
+  output_text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
+  created_at: 1752100704,
+  error: null,
+  instructions: "",
+  model: "gpt-4.1-2025-04-14",
+  metadata: {},
+  output: [
+    {
+      id: "msg_abc123",
+      type: "message",
+      status: "completed",
+      role: "assistant",
+      content: [
+        {
+          type: "output_text",
+          text: "여기에 실제 응답 텍스트",
+          annotations: [],
+        },
+      ],
+    },
+  ],
+  object: "response",
+  parallel_tool_calls: false,
+  temperature: null,
+  tool_choice: "none",
+  tools: [],
+  top_p: null,
+};
+
 export class MockOpenAIService {
   async createRecommendTracksResponses(
     _musicEntity: MusicEntity,
     _generateTrackCount: number = 3,
   ) {
-    const mockOpenAIResponse: OpenAI.Responses.Response = {
-      id: "mock_id",
-      status: "completed",
-      incomplete_details: {
-        reason: undefined,
-      },
-      output_text: JSON.stringify(MOCK_RECOMMENDED_TRACKS),
-      created_at: 1752100704,
-      error: null,
-      instructions: "",
-      model: "gpt-4.1-2025-04-14",
-      metadata: {},
-      output: [
-        {
-          id: "msg_abc123",
-          type: "message",
-          status: "completed",
-          role: "assistant",
-          content: [
-            {
-              type: "output_text",
-              text: "여기에 실제 응답 텍스트",
-              annotations: [],
-            },
-          ],
-        },
-      ],
-      object: "response",
-      parallel_tool_calls: false,
-      temperature: null,
-      tool_choice: "none",
-      tools: [],
-      top_p: null,
-    };
+    const mockOpenAIResponse = MOCK_OPENAI_RESPONSES;
 
     if (
       mockOpenAIResponse.status === "incomplete" &&
