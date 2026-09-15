@@ -7,7 +7,7 @@ export class UserRepository {
   getUser = async () => {
     const { data: loggedUserData, error } = await this.supabase.auth.getUser();
     return {
-      success: !!error?.message,
+      success: !!!error?.message,
       getUserMessage: error?.message || "ok",
       data: loggedUserData.user,
     };
@@ -21,8 +21,8 @@ export class UserRepository {
       .insert(listenedTracks);
 
     return {
-      success: !!error?.message,
-      insertCurrentListenersMessage: error?.message || "",
+      success: !!!error?.message,
+      insertCurrentListenersMessage: error?.message || "ok",
     };
   };
 }

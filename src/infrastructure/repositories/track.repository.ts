@@ -45,7 +45,7 @@ export class TrackRepository {
       .from("track_genres")
       .insert(trackGenres);
     return {
-      success: !!error?.message,
+      success: !!!error?.message,
       insertTrackGenreMessage: error?.message || "",
     };
   };
