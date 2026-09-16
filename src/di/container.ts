@@ -10,16 +10,31 @@ import { MockTrackRepository } from "../infrastructure/repositories/track.reposi
 import { MockOpenAIService } from "../infrastructure/services/openai.service.mock";
 import { MockItunesService } from "../infrastructure/services/itunes.service.mock";
 import { mockTracks } from "@/tests/mocks/track";
+import { IUserRepository } from "../application/repositories/user.repository.interface";
+import { ITracksRepository } from "../application/repositories/track.repository.interface";
+import { IItunesService } from "../application/services/itunes.service.interface";
+import { IOpenAIService } from "../application/services/openai.service.interface";
 
-const getInjection = async () => {
+interface GetInjectionParams {
+  openaiService?: IOpenAIService;
+  itunesService?: IItunesService;
+  trackRepository?: ITracksRepository;
+  userRepository?: IUserRepository;
+}
+
+const getInjection = async (infraStructureModule?: GetInjectionParams) => {
   if (process.env.NODE_ENV === "test") {
     const testModule = generateRecommendTrackUseCases;
 
     const bindingTestModule = testModule.bind(null, {
-      userRepository: new MockUserRepository(),
-      trackRepository: new MockTrackRepository(),
-      openAIService: new MockOpenAIService(),
-      itunesService: new MockItunesService(),
+      userRepository:
+        infraStructureModule?.userRepository ?? new MockUserRepository(),
+      trackRepository:
+        infraStructureModule?.trackRepository ?? new MockTrackRepository(),
+      openAIService:
+        infraStructureModule?.openaiService ?? new MockOpenAIService(),
+      itunesService:
+        infraStructureModule?.itunesService ?? new MockItunesService(),
     });
 
     return bindingTestModule;

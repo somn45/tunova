@@ -61,14 +61,15 @@ describe("Generate recommend track 유스케이스 계층", () => {
 
   describe("서비스, 리포지토리 계층에서 에러를 던지거나 {success: false}인 경우", () => {
     test("OpenAI Service에서 추천 트랙 생성 프롬프트 요청 중 에러 발생 시 에러를 던진다", async () => {
-      const createRecommendTracksResponsesSpy = vi.spyOn(
-        MockOpenAIService.prototype,
-        "createRecommendTracksResponses",
-      );
-      createRecommendTracksResponsesSpy.mockRejectedValue(
-        new Error("해당 요청은 수행할 수 없습니다. 다시 시도해 주세요."),
-      );
-      const generateRecommendTrackUseCases = await getInjection();
+      const mockOpenAIService = new MockOpenAIService();
+      mockOpenAIService.createRecommendTracksResponses = () =>
+        Promise.reject(
+          new Error("해당 요청은 수행할 수 없습니다. 다시 시도해 주세요."),
+        );
+
+      const generateRecommendTrackUseCases = await getInjection({
+        openaiService: mockOpenAIService,
+      });
 
       await expect(
         generateRecommendTrackUseCases({
@@ -79,17 +80,17 @@ describe("Generate recommend track 유스케이스 계층", () => {
     });
 
     test("Track Repository에서 트랙 데이터 삽입 실패 시 에러를 던진다.", async () => {
-      const insertTracksSpy = vi.spyOn(
-        MockTrackRepository.prototype,
-        "insertTracks",
-      );
-      insertTracksSpy.mockResolvedValue({
-        insertedTracks: null,
-        success: false,
-        message: "Not Found Tracks",
-      });
+      const mockTrackRepository = new MockTrackRepository();
+      mockTrackRepository.insertTracks = () =>
+        Promise.resolve({
+          insertedTracks: null,
+          success: false,
+          message: "Not Found Tracks",
+        });
 
-      const generateRecommendTrackUseCases = await getInjection();
+      const generateRecommendTrackUseCases = await getInjection({
+        trackRepository: mockTrackRepository,
+      });
 
       await expect(
         generateRecommendTrackUseCases({
@@ -100,14 +101,17 @@ describe("Generate recommend track 유스케이스 계층", () => {
     });
 
     test("User Repository에서 getUser 메서드로 가져온 사용자가 없을 시 에러를 던진다.", async () => {
-      const spy = vi.spyOn(MockUserRepository.prototype, "getUser");
-      spy.mockResolvedValue({
-        success: true,
-        getUserMessage: "ok",
-        data: null,
-      });
+      const mockUserRepository = new MockUserRepository();
+      mockUserRepository.getUser = () =>
+        Promise.resolve({
+          success: true,
+          getUserMessage: "ok",
+          data: null,
+        });
 
-      const generateRecommendTrackUseCases = await getInjection();
+      const generateRecommendTrackUseCases = await getInjection({
+        userRepository: mockUserRepository,
+      });
 
       await expect(
         generateRecommendTrackUseCases({
