@@ -16,6 +16,8 @@ export default function TrackViewContainer({
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
     "tracklist",
   );
+  console.log(currentListeners);
+
   if (!currentListeners || currentListeners.length === 0)
     return (
       <section className="flex grow items-center justify-center bg-indigo-50">

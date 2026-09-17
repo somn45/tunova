@@ -16,7 +16,14 @@ export interface ITrack {
 
 export default async function Tracks() {
   const { data, error } = await executeCurrentListenersQuery();
-  if (!data) return;
+  if (!data || data.length === 0)
+    return (
+      <main>
+        <span>
+          추천 받은 트랙이 존재하지 않습니다. 지금 바로 트랙을 추천받아보세요!
+        </span>
+      </main>
+    );
   const currentListenedTracks: CurrentListeners = data;
   return (
     <main className="flex min-h-0 grow flex-col">

@@ -3,8 +3,8 @@
 import { QueryData } from "@supabase/supabase-js";
 import { createClient } from "../server";
 
-const supabase = await createClient();
 export const executeCurrentListenersQuery = async () => {
+  const supabase = await createClient();
   return await supabase.from("current_listeners").select(`
     profile_id,
     track:tracks (
