@@ -6,17 +6,20 @@ import RecommendTrackCarousel from "./_RecommendTrackCarousel";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { Grid2x2, List, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import clsx from "clsx";
+import { useMediaQuery } from "react-responsive";
 
 export default function TrackViewContainer({
   currentListeners,
 }: {
   currentListeners: CurrentListeners;
 }) {
-  const [viewType, setViewType] = useState<"list" | "grid">("grid");
+  const [viewType, setViewType] = useState<"list" | "grid">("list");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
     "tracklist",
   );
-  console.log(currentListeners);
+  const isTabletDesktop = useMediaQuery({
+    query: "(min-width: 768px)",
+  });
 
   if (!currentListeners || currentListeners.length === 0)
     return (
@@ -33,6 +36,7 @@ export default function TrackViewContainer({
         <div className="flex justify-between px-1">
           <div className="flex gap-2">
             <List
+              aria-label="트랙 리스트형 보기"
               size={24}
               className={clsx(
                 `box-content cursor-pointer rounded-xl p-2 hover:bg-gray-300`,
@@ -43,6 +47,7 @@ export default function TrackViewContainer({
               onClick={() => setViewType("list")}
             />
             <Grid2x2
+              aria-label="트랙 그리드형 보기"
               size={24}
               className={clsx(
                 `box-content cursor-pointer rounded-xl p-2 hover:bg-gray-300`,
@@ -73,22 +78,28 @@ export default function TrackViewContainer({
             )}
           </div>
         </div>
-        {/* 모바일 버전 */}
-        <section className="flex min-h-0 grow md:hidden">
-          {currentScreen === "tracklist" ? (
+        {!isTabletDesktop && (
+          <section className="flex min-h-0 grow md:hidden">
+            {currentScreen === "tracklist" ? (
+              <TrackList
+                currentListeners={currentListeners}
+                viewType={viewType}
+              />
+            ) : (
+              <RecommendTrackCarousel />
+            )}
+          </section>
+        )}
+
+        {isTabletDesktop && (
+          <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
             <TrackList
               currentListeners={currentListeners}
               viewType={viewType}
             />
-          ) : (
-            <RecommendTrackCarousel />
-          )}
-        </section>
-        {/* 테블릿, PC 버전 */}
-        <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
-          <TrackList currentListeners={currentListeners} viewType={viewType} />
-          {currentScreen === "recommend" && <RecommendTrackCarousel />}
-        </section>
+            {currentScreen === "recommend" && <RecommendTrackCarousel />}
+          </section>
+        )}
       </section>
     </>
   );

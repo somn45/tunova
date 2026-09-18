@@ -1,5 +1,5 @@
 import Tracks from "@/app/(main)/tracks/page";
-import TrackViewContainer from "@/app/(main)/tracks/TrackViewContainer";
+import TrackViewContainer from "@/app/(main)/tracks/_TrackViewContainer";
 import {
   CurrentListeners,
   executeCurrentListenersQuery,
@@ -15,7 +15,7 @@ export const mockUserTracks = [
       artist: "The Weeknd",
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/artwork_600x600.jpg",
-      track_genres: [{ genre: "Pop" }, { genre: "Synth-pop" }],
+      track_genres: [{ genre: "Pop" }, { genre: "K-Pop" }],
     },
   },
   {
@@ -26,7 +26,7 @@ export const mockUserTracks = [
       artist: "BTS",
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/artwork_600x600.jpg",
-      track_genres: [{ genre: "K-Pop" }, { genre: "Disco" }],
+      track_genres: [{ genre: "K-Pop" }, { genre: "Dance" }],
     },
   },
   {
@@ -37,13 +37,13 @@ export const mockUserTracks = [
       artist: "Doja Cat",
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/artwork_600x600.jpg",
-      track_genres: [{ genre: "Pop" }, { genre: "Funk" }],
+      track_genres: [{ genre: "Pop" }, { genre: "Jazz" }],
     },
   },
 ];
 
 vi.mock("@/libs/supabase/queries/current-listeners");
-vi.mock("@/app/(main)/tracks/TrackViewContainer", () => ({
+vi.mock("@/app/(main)/tracks/_TrackViewContainer", () => ({
   default: vi.fn(
     ({ currentListeners }: { currentListeners: CurrentListeners }) => {
       return <></>;
@@ -52,6 +52,9 @@ vi.mock("@/app/(main)/tracks/TrackViewContainer", () => ({
 }));
 
 describe("Tracks Page", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
   describe("데이터베이스에서 현재 로그인된 사용자가 듣고 있는 트랙 리스트를 조회하는 데 성공했다면", () => {
     test("Current_Listened_Tracks 데이터를 TrackViewContainer 컴포넌트에 props로 전달한다.", async () => {
       vi.mocked(executeCurrentListenersQuery).mockResolvedValue({

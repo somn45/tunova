@@ -1,5 +1,5 @@
 import GetTrackSection from "./_GetTrackSecton";
-import TrackViewContainer from "./TrackViewContainer";
+import TrackViewContainer from "./_TrackViewContainer";
 import {
   type CurrentListeners,
   executeCurrentListenersQuery,
