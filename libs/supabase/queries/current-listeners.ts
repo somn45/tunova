@@ -1,11 +1,10 @@
-"use server";
+import { Database } from "@/database-generated.types";
+import { QueryData, SupabaseClient } from "@supabase/supabase-js";
 
-import { QueryData } from "@supabase/supabase-js";
-import { createClient } from "../server";
-
-export const executeCurrentListenersQuery = async () => {
-  const supabase = await createClient();
-  return await supabase.from("current_listeners").select(`
+const buildCurrentListenersQuery = async (
+  supabase: SupabaseClient<Database>,
+) => {
+  return supabase.from("current_listeners").select(`
     profile_id,
     track:tracks (
       id,
@@ -20,5 +19,20 @@ export const executeCurrentListenersQuery = async () => {
 };
 
 export type CurrentListeners = QueryData<
-  ReturnType<typeof executeCurrentListenersQuery>
+  ReturnType<typeof buildCurrentListenersQuery>
 >;
+
+export const executeCurrentListenersQuery = async (
+  supabase: SupabaseClient<Database>,
+): Promise<CurrentListeners> => {
+  const currentListenersWithTracksQuery = buildCurrentListenersQuery(supabase);
+
+  type CurrentListenersWithTracks = QueryData<
+    typeof currentListenersWithTracksQuery
+  >;
+  const { data, error } = await currentListenersWithTracksQuery;
+  if (error) throw error;
+
+  const currentListenersWithTracks: CurrentListenersWithTracks = data;
+  return currentListenersWithTracks;
+};

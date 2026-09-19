@@ -5,6 +5,12 @@ import {
   executeCurrentListenersQuery,
 } from "@/libs/supabase/queries/current-listeners";
 import Player from "./_Player";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import { createClient } from "@/libs/supabase/server";
 
 export interface ITrack {
   id: number;
@@ -15,22 +21,20 @@ export interface ITrack {
 }
 
 export default async function Tracks() {
-  const { data, error } = await executeCurrentListenersQuery();
-  if (!data || data.length === 0)
-    return (
-      <main>
-        <span>
-          추천 받은 트랙이 존재하지 않습니다. 지금 바로 트랙을 추천받아보세요!
-        </span>
-      </main>
-    );
-  const currentListenedTracks: CurrentListeners = data;
+  const supabase = await createClient();
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["tracks"],
+    queryFn: () => executeCurrentListenersQuery(supabase),
+  });
   return (
-    <main className="flex min-h-0 grow flex-col">
-      <h1>Tracks</h1>
-      <GetTrackSection />
-      <TrackViewContainer currentListeners={currentListenedTracks} />
-      <Player />
-    </main>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <main className="flex min-h-0 grow flex-col">
+        <h1>Tracks</h1>
+        <GetTrackSection />
+        <TrackViewContainer />
+        <Player />
+      </main>
+    </HydrationBoundary>
   );
 }

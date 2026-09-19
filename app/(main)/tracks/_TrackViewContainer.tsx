@@ -3,25 +3,29 @@
 import { useState } from "react";
 import TrackList from "./_TrackList";
 import RecommendTrackCarousel from "./_RecommendTrackCarousel";
-import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
+import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
 import { Grid2x2, List, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import clsx from "clsx";
-import { useMediaQuery } from "react-responsive";
+import { useQuery } from "@tanstack/react-query";
+import { createClient } from "@/libs/supabase/client";
+import useIsMobile from "@/hooks/useIsMobile";
 
-export default function TrackViewContainer({
-  currentListeners,
-}: {
-  currentListeners: CurrentListeners;
-}) {
+export default function TrackViewContainer() {
+  const supabase = createClient();
+
+  const { data: currentListeners } = useQuery({
+    queryKey: ["tracks"],
+    queryFn: () => executeCurrentListenersQuery(supabase),
+  });
+
   const [viewType, setViewType] = useState<"list" | "grid">("list");
   const [currentScreen, setCurrentScreen] = useState<"tracklist" | "recommend">(
     "tracklist",
   );
-  const isTabletDesktop = useMediaQuery({
-    query: "(min-width: 768px)",
-  });
 
-  if (!currentListeners || currentListeners.length === 0)
+  const isMobile = useIsMobile();
+
+  if (!currentListeners)
     return (
       <section className="flex grow items-center justify-center bg-indigo-50">
         <p>
@@ -78,7 +82,7 @@ export default function TrackViewContainer({
             )}
           </div>
         </div>
-        {!isTabletDesktop && (
+        {isMobile && (
           <section className="flex min-h-0 grow md:hidden">
             {currentScreen === "tracklist" ? (
               <TrackList
@@ -91,7 +95,7 @@ export default function TrackViewContainer({
           </section>
         )}
 
-        {isTabletDesktop && (
+        {!isMobile && (
           <section className="hidden min-h-0 grow overflow-y-auto md:flex md:flex-col xl:flex-row">
             <TrackList
               currentListeners={currentListeners}

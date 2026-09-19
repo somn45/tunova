@@ -28,12 +28,12 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <Providers>
         <body className="flex min-h-full flex-col">
+      <Providers>
           <div id="root">{children}</div>
           <div id="portal-root"></div>
-        </body>
       </Providers>
+        </body>
     </html>
   );
 }
