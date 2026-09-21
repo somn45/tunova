@@ -63,7 +63,6 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
 
   describe("사용자가 의도대로 취향을 선택하지 않았을 경우", () => {
     test("취향을 어떤 항목에서도 1개도 선택하지 않았을 경우 서버에서 에러 응답 메세지를 받는다.", async () => {
-      console.log(document.querySelectorAll("#portal-root").length); // 테스트 시작 시
       const portalRoot = document.createElement("div");
       portalRoot.setAttribute("id", "portal-root");
       document.body.appendChild(portalRoot);

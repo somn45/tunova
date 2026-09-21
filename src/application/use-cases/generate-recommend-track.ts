@@ -69,8 +69,6 @@ export const generateRecommendTrackUseCases = async (
       generateTrackCount,
     );
 
-  console.log(openAIPromtptResponse);
-
   const openAIPromptOutput: recommendTracksType = JSON.parse(
     openAIPromtptResponse.output_text,
   );

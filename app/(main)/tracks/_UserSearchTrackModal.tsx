@@ -9,6 +9,7 @@ import {
   fetchApiSearchArtist,
   generateUserBaseRecommendedTracks,
 } from "@/services/trackServices";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 interface IRecommendedTrack {
@@ -18,6 +19,23 @@ interface IRecommendedTrack {
   genres: string[];
   artwork: string;
   reason: string;
+}
+
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
+
+interface generateRecommendTrackMutateParams {
+  musicEntity: {
+    tracks: Array<RequiredItemType>;
+    artists: Array<RequiredItemType>;
+    genres: Set<string>;
+  };
+  generateTrackCount: number;
 }
 
 export default function UserSearchTrackModal({
@@ -38,11 +56,34 @@ export default function UserSearchTrackModal({
   const [recommendTracks, setRecommendTracks] =
     useState<Array<IRecommendedTrack>>();
   const [errorMsg, setErrorMsg] = useState("");
+  const queryClient = useQueryClient();
+
+  const generateRecommendTrackMutation = useMutation({
+    mutationFn: ({
+      musicEntity,
+      generateTrackCount,
+    }: generateRecommendTrackMutateParams) => {
+      return generateUserBaseRecommendedTracks({
+        musicEntity,
+        generateTrackCount,
+      });
+    },
+    onSuccess: result => {
+      queryClient.invalidateQueries({
+        queryKey: ["tracks"],
+      });
+    },
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        setErrorMsg(error.message);
+      }
+    },
+  });
 
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
 
-    const createTrackPromptResult = await generateUserBaseRecommendedTracks({
+    generateRecommendTrackMutation.mutate({
       musicEntity: {
         tracks: selectedTracks,
         artists: selectedArtists,
@@ -50,11 +91,6 @@ export default function UserSearchTrackModal({
       },
       generateTrackCount,
     });
-
-    if (!createTrackPromptResult.success) {
-      return setErrorMsg(createTrackPromptResult.message);
-    }
-    setRecommendTracks(createTrackPromptResult.data?.recommendTracks);
   };
 
   return (

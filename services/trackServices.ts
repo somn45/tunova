@@ -115,20 +115,28 @@ export const generateUserBaseRecommendedTracks = async ({
   generateTrackCount,
 }: generateUserBaseRecommendedTracksParams) => {
   const { tracks, artists, genres } = musicEntity;
-  const response = await fetch(
-    "http://localhost:3000/api/openai/tracks/by-user",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        tracks,
-        artists,
-        genres: genres.keys().toArray(),
-        generateTrackCount,
-      }),
-    },
-  );
+  try {
+    throw new Error("Supabase DB 에러");
+    const response = await fetch(
+      "http://localhost:3000/api/openai/tracks/by-user",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          tracks,
+          artists,
+          genres: genres.keys().toArray(),
+          generateTrackCount,
+        }),
+      },
+    );
 
-  const result: generateUserBaseRecommendedTracksResult = await response.json();
-
-  return result;
+    const result: generateUserBaseRecommendedTracksResult =
+      await response.json();
+    return result;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw error;
+  }
 };
