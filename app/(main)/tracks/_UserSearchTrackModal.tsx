@@ -55,7 +55,7 @@ export default function UserSearchTrackModal({
   const [generateTrackCount, setGenerateTrackCount] = useState(3);
   const [recommendTracks, setRecommendTracks] =
     useState<Array<IRecommendedTrack>>();
-  const [errorMsg, setErrorMsg] = useState("");
+  const [message, setMessage] = useState("");
   const queryClient = useQueryClient();
 
   const generateRecommendTrackMutation = useMutation({
@@ -72,10 +72,13 @@ export default function UserSearchTrackModal({
       queryClient.invalidateQueries({
         queryKey: ["tracks"],
       });
+      setMessage(
+        `추천 트랙 ${result.data?.recommendTracks.length}곡이 생성되었습니다. 😊`,
+      );
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
-        setErrorMsg(error.message);
+        setMessage(error.message);
       }
     },
   });
@@ -99,6 +102,11 @@ export default function UserSearchTrackModal({
       closeModal={closeModal}
       title="사용자 기반 트랙 검색"
     >
+      {generateRecommendTrackMutation.isPending && (
+        <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-gray-100 opacity-85">
+          <span className="text-xl font-semibold">추천 트랙 생성 중...</span>
+        </div>
+      )}
       <form>
         <AutoComplete
           scope="트랙"
@@ -144,7 +152,7 @@ export default function UserSearchTrackModal({
           <li onClick={() => setGenerateTrackCount(20)}>20</li>
         </ul>
 
-        <span>{errorMsg}</span>
+        <span>{message}</span>
         <input type="submit" value="제출" onClick={submitUserTaste} />
       </form>
       <ul data-testid="recommend-tracks">

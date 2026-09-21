@@ -23,7 +23,7 @@ export default function Modal({
         >
           <section
             onClick={e => e.stopPropagation()}
-            className="min-h-30 bg-white p-5"
+            className="relative min-h-30 bg-white p-5"
           >
             <h2>{title}</h2>
             {children}

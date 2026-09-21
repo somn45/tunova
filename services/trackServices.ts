@@ -116,7 +116,7 @@ export const generateUserBaseRecommendedTracks = async ({
 }: generateUserBaseRecommendedTracksParams) => {
   const { tracks, artists, genres } = musicEntity;
   try {
-    throw new Error("Supabase DB 에러");
+    Promise.resolve((resolve: unknown) => setTimeout(() => resolve, 3000));
     const response = await fetch(
       "http://localhost:3000/api/openai/tracks/by-user",
       {
