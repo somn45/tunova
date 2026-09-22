@@ -140,3 +140,16 @@ export const generateUserBaseRecommendedTracks = async ({
     throw error;
   }
 };
+
+export const deleteTrack = async (trackId: number) => {
+  try {
+    const response = await fetch("http://localhost:3000/api/tracks", {
+      method: "PUT",
+      body: JSON.stringify({ trackId }),
+    });
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};

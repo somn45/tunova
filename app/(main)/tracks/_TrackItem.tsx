@@ -2,7 +2,9 @@
 
 import { GENRE_TAILWIND_MAP } from "@/constants/tracks";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
-import { CirclePlay } from "lucide-react";
+import { deleteTrack } from "@/services/trackServices";
+import { useMutation } from "@tanstack/react-query";
+import { CirclePlay, Trash } from "lucide-react";
 import { useState } from "react";
 
 export default function Track({
@@ -13,6 +15,12 @@ export default function Track({
   viewType: "list" | "grid";
 }) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
+
+  const deleteTrackMutation = useMutation({
+    mutationFn: (trackId: number) => {
+      return deleteTrack(trackId);
+    },
+  });
   if (viewType === "grid") {
     return (
       <li
@@ -56,6 +64,13 @@ export default function Track({
           </li>
         ))}
       </ul>
+      <div className="flex items-center">
+        <Trash
+          size={24}
+          className="cursor-pointer"
+          onClick={() => deleteTrackMutation.mutate(track.id)}
+        />
+      </div>
     </li>
   );
 }
