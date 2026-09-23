@@ -30,7 +30,9 @@ export async function POST(request: NextRequest): Promise<
   const { generateTrackCount, ...musicEntity } = body;
 
   try {
-    const generateRecommendTrackUseCases = await getInjection();
+    const generateRecommendTrackUseCases = await getInjection(
+      "GenerateRecommendTrack",
+    );
 
     const openAIPromptOutput = await generateRecommendTrackUseCases({
       musicEntity,
