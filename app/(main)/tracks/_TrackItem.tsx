@@ -20,7 +20,29 @@ export default function Track({
     mutationFn: (trackId: number) => {
       return deleteTrack(trackId);
     },
+    onMutate: (deleteTrackId, context) => {
+      const previousTracks: CurrentListeners | undefined =
+        context.client.getQueryData(["tracks"]);
+      if (!previousTracks) {
+        throw new Error("캐시된 트랙 데이터가 없습니다.");
+      }
+      context.client.setQueryData(
+        ["tracks"],
+        previousTracks.filter(
+          trackData => trackData.track.id !== deleteTrackId,
+        ),
+      );
+
+      return previousTracks;
+    },
+    onError(_error, _deleteTrackId, onMutateResult, context) {
+      context.client.setQueryData(["tracks"], onMutateResult);
+    },
+    onSettled(_data, _error, _variables, _onMutateResult, context) {
+      context.client.invalidateQueries({ queryKey: ["tracks"] });
+    },
   });
+
   if (viewType === "grid") {
     return (
       <li
