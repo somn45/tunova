@@ -11,7 +11,9 @@ describe("Generate recommend track 유스케이스 계층", () => {
   });
   describe("유스케이스 내 모든 과정이 성공적으로 지나갔다면", () => {
     test("생성된 추천 트랙이 포함된 프롬프트 객체를 반환한다.", async () => {
-      const generateRecommendTrackUseCases = await getInjection();
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+      );
       const openAIPromptOutput = await generateRecommendTrackUseCases({
         musicEntity: mockMusicEntity,
         generateTrackCount: 3,
@@ -29,7 +31,9 @@ describe("Generate recommend track 유스케이스 계층", () => {
         genres: [],
       };
 
-      const generateRecommendTrackUseCases = await getInjection();
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+      );
 
       await expect(
         generateRecommendTrackUseCases({
@@ -48,7 +52,9 @@ describe("Generate recommend track 유스케이스 계층", () => {
         genres: ["K-Pop", "Dance", "J-Pop", "Rock", "Blues", "Pop"],
       };
 
-      const generateRecommendTrackUseCases = await getInjection();
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+      );
 
       await expect(
         generateRecommendTrackUseCases({
@@ -67,9 +73,12 @@ describe("Generate recommend track 유스케이스 계층", () => {
           new Error("해당 요청은 수행할 수 없습니다. 다시 시도해 주세요."),
         );
 
-      const generateRecommendTrackUseCases = await getInjection({
-        openaiService: mockOpenAIService,
-      });
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+        {
+          openaiService: mockOpenAIService,
+        },
+      );
 
       await expect(
         generateRecommendTrackUseCases({
@@ -88,9 +97,12 @@ describe("Generate recommend track 유스케이스 계층", () => {
           message: "Not Found Tracks",
         });
 
-      const generateRecommendTrackUseCases = await getInjection({
-        trackRepository: mockTrackRepository,
-      });
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+        {
+          trackRepository: mockTrackRepository,
+        },
+      );
 
       await expect(
         generateRecommendTrackUseCases({
@@ -109,9 +121,12 @@ describe("Generate recommend track 유스케이스 계층", () => {
           data: null,
         });
 
-      const generateRecommendTrackUseCases = await getInjection({
-        userRepository: mockUserRepository,
-      });
+      const generateRecommendTrackUseCases = await getInjection(
+        "GenerateRecommendTrack",
+        {
+          userRepository: mockUserRepository,
+        },
+      );
 
       await expect(
         generateRecommendTrackUseCases({

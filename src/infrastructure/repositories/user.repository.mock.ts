@@ -1,7 +1,8 @@
+import { IUserRepository } from "@/src/application/repositories/user.repository.interface";
 import { CurrentListenersInsert } from "@/src/entities/models/user";
 import { User } from "@supabase/supabase-js";
 
-export class MockUserRepository {
+export class MockUserRepository implements IUserRepository {
   public _user: User | null = null;
 
   set user(user: User | null) {
@@ -49,6 +50,27 @@ export class MockUserRepository {
     return {
       success: true,
       insertCurrentListenersMessage: "ok",
+    };
+  };
+
+  deleteCurrentListener = async (userId: string, trackId: number) => {
+    if (!userId) {
+      return {
+        success: false,
+        deleteCurrentListenerMessage: "Not Found User ID",
+      };
+    }
+
+    if (!trackId) {
+      return {
+        success: false,
+        deleteCurrentListenerMessage: "Not Found User ID",
+      };
+    }
+
+    return {
+      success: true,
+      deleteCurrentListenerMessage: "트랙 삭제 완료",
     };
   };
 }

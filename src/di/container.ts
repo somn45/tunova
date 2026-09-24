@@ -13,6 +13,22 @@ import { IUserRepository } from "../application/repositories/user.repository.int
 import { ITracksRepository } from "../application/repositories/track.repository.interface";
 import { IItunesService } from "../application/services/itunes.service.interface";
 import { IOpenAIService } from "../application/services/openai.service.interface";
+import { deleteTrackUseCases } from "../application/use-cases/delete-track";
+import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
+
+type RequiredItemType = {
+  id: number;
+  name: string;
+  artwork: string;
+  artist?: string;
+  releaseDate?: string;
+};
+
+interface MusicEntity {
+  tracks: Array<RequiredItemType>;
+  artists: Array<RequiredItemType>;
+  genres: Array<string>;
+}
 
 type UseCasesTypes = "GenerateRecommendTrack" | "DeleteRecommendTrack";
 
@@ -23,10 +39,33 @@ interface GetInjectionParams {
   userRepository?: IUserRepository;
 }
 
-const getInjection = async (
+interface GetInjectionValueMap {
+  GenerateRecommendTrack: ({
+    musicEntity,
+    generateTrackCount,
+  }: {
+    musicEntity: MusicEntity;
+    generateTrackCount: number;
+  }) => Promise<recommendTracksType>;
+  DeleteRecommendTrack: ({ trackId }: { trackId: number }) => Promise<string>;
+}
+async function getInjection(
+  useCasesType: "GenerateRecommendTrack",
+  infraStructureModule?: GetInjectionParams,
+): Promise<GetInjectionValueMap[typeof useCasesType]>;
+
+async function getInjection(
+  useCasesType: "DeleteRecommendTrack",
+  infraStructureModule?: GetInjectionParams,
+): Promise<GetInjectionValueMap[typeof useCasesType]>;
+
+async function getInjection(
   useCasesType: UseCasesTypes,
   infraStructureModule?: GetInjectionParams,
-) => {
+): Promise<GetInjectionValueMap[UseCasesTypes]> {
+  const supabaseClient = await createClient();
+  const openAIClient = new OpenAI();
+
   if (useCasesType === "GenerateRecommendTrack") {
     if (process.env.NODE_ENV === "test") {
       const testModule = generateRecommendTrackUseCases;
@@ -45,9 +84,6 @@ const getInjection = async (
       return bindingTestModule;
     }
 
-    const supabaseClient = await createClient();
-    const openAIClient = new OpenAI();
-
     const originModule = generateRecommendTrackUseCases;
 
     const bindingModule = originModule.bind(null, {
@@ -59,8 +95,15 @@ const getInjection = async (
     return bindingModule;
   }
   if (useCasesType === "DeleteRecommendTrack") {
+    const originModule = deleteTrackUseCases;
+
+    const bindingModule = originModule.bind(null, {
+      userRepository: new UserRepository(supabaseClient),
+    });
+
+    return bindingModule;
   }
   throw new Error("잘못된 유스케이스 타입 할당");
-};
+}
 
 export default getInjection;

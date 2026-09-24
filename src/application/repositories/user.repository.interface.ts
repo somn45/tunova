@@ -7,5 +7,17 @@ export interface IUserRepository {
     getUserMessage: string;
     data: User | null;
   }>;
-  insertCurrentListeners(listenedTracks: Array<CurrentListenersInsert>): {};
+  insertCurrentListeners(
+    listenedTracks: Array<CurrentListenersInsert>,
+  ): Promise<{
+    success: boolean;
+    insertCurrentListenersMessage: string;
+  }>;
+  deleteCurrentListener(
+    userId: string,
+    trackId: number,
+  ): Promise<{
+    success: boolean;
+    deleteCurrentListenerMessage: string;
+  }>;
 }
