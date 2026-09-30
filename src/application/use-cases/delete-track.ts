@@ -9,6 +9,8 @@ export const deleteTrackUseCases = async (
     throw new Error("Unauthenticate Error");
   }
 
+  console.log(trackId, loggedUser);
+
   const { success, deleteCurrentListenerMessage } =
     await userRepository.deleteCurrentListener(loggedUser.id, trackId);
   if (!success) {

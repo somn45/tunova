@@ -63,9 +63,6 @@ async function getInjection(
   useCasesType: UseCasesTypes,
   infraStructureModule?: GetInjectionParams,
 ): Promise<GetInjectionValueMap[UseCasesTypes]> {
-  const supabaseClient = await createClient();
-  const openAIClient = new OpenAI();
-
   if (useCasesType === "GenerateRecommendTrack") {
     if (process.env.NODE_ENV === "test") {
       const testModule = generateRecommendTrackUseCases;
@@ -84,6 +81,9 @@ async function getInjection(
       return bindingTestModule;
     }
 
+    const supabaseClient = await createClient();
+    const openAIClient = new OpenAI();
+
     const originModule = generateRecommendTrackUseCases;
 
     const bindingModule = originModule.bind(null, {
@@ -95,6 +95,19 @@ async function getInjection(
     return bindingModule;
   }
   if (useCasesType === "DeleteRecommendTrack") {
+    if (process.env.NODE_ENV === "test") {
+      const testModule = deleteTrackUseCases;
+
+      const bindingTestModule = testModule.bind(null, {
+        userRepository:
+          infraStructureModule?.userRepository ?? new MockUserRepository(),
+      });
+      return bindingTestModule;
+    }
+
+    const supabaseClient = await createClient();
+    const openAIClient = new OpenAI();
+
     const originModule = deleteTrackUseCases;
 
     const bindingModule = originModule.bind(null, {
