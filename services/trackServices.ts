@@ -131,6 +131,8 @@ export const generateUserBaseRecommendedTracks = async ({
 
     const result: generateUserBaseRecommendedTracksResult =
       await response.json();
+
+    if (!result.success) throw new Error(result.message);
     return result;
   } catch (error) {
     if (error instanceof Error) {

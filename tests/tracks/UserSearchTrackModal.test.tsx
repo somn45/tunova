@@ -3,24 +3,56 @@ import {
   MOCK_ITUNES_SEARCH_RESULT,
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
+import * as generateUserBaseRecommendedTracksModule from "@/services/trackServices";
+import { transformMusicEntity } from "@/utils/transformMusicEntity";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+function makeFakeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+}
+
+const queryClient = makeFakeQueryClient();
+
 describe("UserSearchTrackModal 모달 컴포넌트", () => {
   const user = userEvent.setup();
+
+  beforeEach(() => {
+    queryClient.clear();
+    queryClient.setQueryData(["tracks"], []);
+  });
 
   afterEach(() => {
     cleanup();
     document.querySelectorAll("#portal-root").forEach(el => el.remove());
   });
 
+  // 계획 : 사용자가 특정 트랙, 장르를 눌렀을 때의 상태 변화도 테스트 코드에 포함
   describe("사용자가 의도대로 취향을 선택하고 제출 시", () => {
     test("OpenAI API에서 생성된 추천 트랙을 받는다.", async () => {
+      const generateUserBaseRecommendedTracksSpy = vi.spyOn(
+        generateUserBaseRecommendedTracksModule,
+        "generateUserBaseRecommendedTracks",
+      );
+
       const portalRoot = document.createElement("div");
       portalRoot.setAttribute("id", "portal-root");
       document.body.appendChild(portalRoot);
 
-      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />);
+      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
 
       const trackInput = screen.getByLabelText("트랙");
       await user.type(trackInput, "h");
@@ -47,17 +79,21 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
       const submit = screen.getByText("제출");
       await user.click(submit);
 
-      const recommendTrackItems =
-        await screen.findAllByTestId("recommend-track");
-      screen.debug();
-      expect(recommendTrackItems).toHaveLength(
-        MOCK_RECOMMENDED_TRACKS.recommendTracks.length,
-      );
-      recommendTrackItems.forEach((item, index) => {
-        expect(item).toHaveTextContent(
-          MOCK_RECOMMENDED_TRACKS.recommendTracks[index].title,
-        );
+      expect(generateUserBaseRecommendedTracksSpy).toHaveBeenCalledTimes(1);
+      expect(generateUserBaseRecommendedTracksSpy).toHaveBeenCalledWith({
+        musicEntity: {
+          tracks: [transformMusicEntity(MOCK_ITUNES_SEARCH_RESULT.results[1])],
+          artists: [],
+          genres: new Set(),
+        },
+        generateTrackCount: 3,
       });
+
+      expect(
+        screen.getByText(
+          `추천 트랙 ${MOCK_RECOMMENDED_TRACKS.recommendTracks.length}곡이 생성되었습니다. 😊`,
+        ),
+      );
     });
   });
 
@@ -67,7 +103,13 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
       portalRoot.setAttribute("id", "portal-root");
       document.body.appendChild(portalRoot);
 
-      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />);
+      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
 
       const trackInput = screen.getByLabelText("트랙");
       await user.type(trackInput, "h");
@@ -94,8 +136,13 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
       portalRoot.setAttribute("id", "portal-root");
       document.body.appendChild(portalRoot);
 
-      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />);
-
+      render(<UserSearchTrackModal isOpen={true} closeModal={() => {}} />, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
       const trackInput = screen.getByLabelText("트랙");
       await user.type(trackInput, "h");
 

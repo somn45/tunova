@@ -77,7 +77,9 @@ export default function UserSearchTrackModal({
       );
     },
     onError: (error: unknown) => {
+      console.log("에러", error);
       if (error instanceof Error) {
+        console.log("onError에서 포착된 에러", error);
         setMessage(error.message);
       }
     },
