@@ -23,10 +23,12 @@ export interface ITrack {
 export default async function Tracks() {
   const supabase = await createClient();
   const queryClient = new QueryClient();
+
   await queryClient.prefetchQuery({
     queryKey: ["tracks"],
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
+
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <main className="flex min-h-0 grow flex-col">

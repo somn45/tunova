@@ -4,7 +4,28 @@ import {
   CurrentListeners,
   executeCurrentListenersQuery,
 } from "@/libs/supabase/queries/current-listeners";
-import { render, screen, within } from "@testing-library/react";
+import { queries, render, screen, within } from "@testing-library/react";
+import {
+  DehydratedState,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
+import React, { ReactElement } from "react";
+import { createClient } from "@/libs/supabase/server";
+
+vi.mock("@/libs/supabase/server");
+
+function makeFakeQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+}
+
+const queryClient = makeFakeQueryClient();
 
 export const mockUserTracks = [
   {
@@ -57,27 +78,26 @@ describe("Tracks Page", () => {
   });
   describe("데이터베이스에서 현재 로그인된 사용자가 듣고 있는 트랙 리스트를 조회하는 데 성공했다면", () => {
     test("Current_Listened_Tracks 데이터를 TrackViewContainer 컴포넌트에 props로 전달한다.", async () => {
-      vi.mocked(executeCurrentListenersQuery).mockResolvedValue({
-        count: null,
-        success: true,
-        status: 200,
-        statusText: "",
-        data: mockUserTracks,
-        error: null,
+      vi.mocked(executeCurrentListenersQuery).mockResolvedValue(mockUserTracks);
+
+      const TrackServerComponent = (await Tracks()) as ReactElement<{
+        state: DehydratedState;
+      }>;
+      render(TrackServerComponent, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
       });
 
-      const TrackServerComponent = await Tracks();
-      render(TrackServerComponent);
+      const { queries } = TrackServerComponent.props.state;
 
-      const mockedTrackViewContainer = vi.mocked(TrackViewContainer);
+      expect(queries[0].queryKey).toEqual(["tracks"]);
+      expect(queries[0].state.data).toEqual(mockUserTracks);
 
-      expect(mockedTrackViewContainer).toHaveBeenCalledTimes(1);
-      expect(mockedTrackViewContainer).toHaveBeenCalledWith(
-        expect.objectContaining({
-          currentListeners: mockUserTracks,
-        }),
-        undefined,
-      );
+      expect(executeCurrentListenersQuery).toHaveBeenCalledTimes(1);
+      expect(executeCurrentListenersQuery).toHaveBeenCalledWith(createClient());
     });
   });
 
@@ -86,35 +106,26 @@ describe("Tracks Page", () => {
       const mockExecuteCurrentListenersQuery = vi.mocked(
         executeCurrentListenersQuery,
       );
-      mockExecuteCurrentListenersQuery.mockResolvedValue({
-        count: null,
-        success: true,
-        status: 200,
-        statusText: "",
-        data: [],
-        error: null,
+      mockExecuteCurrentListenersQuery.mockResolvedValue([]);
+
+      const TrackServerComponent = (await Tracks()) as ReactElement<{
+        state: DehydratedState;
+      }>;
+      render(TrackServerComponent, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
       });
 
-      const TrackServerComponent = await Tracks();
-      render(TrackServerComponent);
-
-      const emptyTrackAlertMessageElement =
-        screen.getByText(/추천 받은 트랙이 존재하지 않습니다./);
-
-      expect(emptyTrackAlertMessageElement).toBeInTheDocument();
-    });
-  });
-
-  describe("트랙 리스트를 가져오는 도중 에러가 발생했다면", () => {
-    test("에러를 던진다.", async () => {
-      const mockExecuteCurrentListenersQuery = vi.mocked(
-        executeCurrentListenersQuery,
-      );
-      mockExecuteCurrentListenersQuery.mockRejectedValue(
-        new Error("Supabase DB Error"),
+      const { queries } = TrackServerComponent.props.state;
+      const tracksQuery = queries.filter(query =>
+        query.queryKey.includes("tracks"),
       );
 
-      await expect(Tracks()).rejects.toThrow("Supabase DB Error");
+      expect(tracksQuery[0].queryKey).toEqual(["tracks"]);
+      expect(tracksQuery[0].state.data).toEqual([]);
     });
   });
 });

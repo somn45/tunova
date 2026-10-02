@@ -3,7 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import { mockUserTracks } from "./page.test";
 import user from "@testing-library/user-event";
 import * as Track from "@/app/(main)/tracks/_TrackItem";
-import { act } from "react";
+
+vi.mock("@/libs/supabase/client");
 
 describe("TrackViewContainer 컴포넌트", () => {
   beforeEach(() => {
