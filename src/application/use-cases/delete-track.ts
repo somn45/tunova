@@ -1,15 +1,17 @@
 import { IUserRepository } from "../repositories/user.repository.interface";
 
-export const deleteTrackUseCases = async (
+export const deleteTrackUseCase = async (
   { userRepository }: { userRepository: IUserRepository },
   { trackId }: { trackId: number },
 ) => {
+  if (!trackId) {
+    throw new Error("Not Found Track ID");
+  }
+
   const { data: loggedUser } = await userRepository.getUser();
   if (!loggedUser) {
     throw new Error("Unauthenticate Error");
   }
-
-  console.log(trackId, loggedUser);
 
   const { success, deleteCurrentListenerMessage } =
     await userRepository.deleteCurrentListener(loggedUser.id, trackId);

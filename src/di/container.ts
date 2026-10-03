@@ -13,7 +13,7 @@ import { IUserRepository } from "../application/repositories/user.repository.int
 import { ITracksRepository } from "../application/repositories/track.repository.interface";
 import { IItunesService } from "../application/services/itunes.service.interface";
 import { IOpenAIService } from "../application/services/openai.service.interface";
-import { deleteTrackUseCases } from "../application/use-cases/delete-track";
+import { deleteTrackUseCase } from "../application/use-cases/delete-track";
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 
 type RequiredItemType = {
@@ -96,7 +96,7 @@ async function getInjection(
   }
   if (useCasesType === "DeleteRecommendTrack") {
     if (process.env.NODE_ENV === "test") {
-      const testModule = deleteTrackUseCases;
+      const testModule = deleteTrackUseCase;
 
       const bindingTestModule = testModule.bind(null, {
         userRepository:
@@ -108,7 +108,7 @@ async function getInjection(
     const supabaseClient = await createClient();
     const openAIClient = new OpenAI();
 
-    const originModule = deleteTrackUseCases;
+    const originModule = deleteTrackUseCase;
 
     const bindingModule = originModule.bind(null, {
       userRepository: new UserRepository(supabaseClient),
