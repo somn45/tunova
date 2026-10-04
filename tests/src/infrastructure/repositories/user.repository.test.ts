@@ -1,6 +1,20 @@
 import { CurrentListenersInsert } from "@/src/entities/models/user";
 import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
+
+function createMockPostgrestError(
+  overrides: Partial<PostgrestError> = {},
+): PostgrestError {
+  return {
+    name: "PostgrestError",
+    message: "",
+    details: "",
+    hint: "",
+    code: "",
+    toJSON: () => ({ name: "", message: "", details: "", hint: "", code: "" }),
+    ...overrides,
+  };
+}
 
 const mockSupabaseClient = {
   auth: {
@@ -17,6 +31,13 @@ const mockSupabaseClient = {
   from: vi.fn().mockReturnValue({
     insert: vi.fn().mockResolvedValue({
       error: null,
+    }),
+    delete: vi.fn().mockReturnValue({
+      eq: vi.fn().mockReturnValue({
+        eq: vi.fn().mockResolvedValue({
+          error: null,
+        }),
+      }),
     }),
   }),
 } as unknown as SupabaseClient;
@@ -63,6 +84,47 @@ describe("User Repository", () => {
 
       expect(getUserResult.success).toBeTruthy();
       expect(getUserResult.insertCurrentListenersMessage).toEqual("ok");
+    });
+  });
+
+  describe("Delete Current Listeners", () => {
+    test("current_listeners 테이블 내 데이터 삭제 성공 시 success: true가 포함된 객체를 반환한다", async () => {
+      const userRepository = new UserRepository(mockSupabaseClient);
+
+      const deleteCurrentListenerResult =
+        await userRepository.deleteCurrentListener("1", 1);
+
+      expect(deleteCurrentListenerResult.success).toBeTruthy();
+      expect(deleteCurrentListenerResult.deleteCurrentListenerMessage).toEqual(
+        "트랙 삭제 완료",
+      );
+    });
+
+    test("current_listeners 데이터 삭제 실패 시 supabase에서 반환된 에러 메세지가 포함된 객체를 반환한다", async () => {
+      const deleteCurrentListenerMutation =
+        mockSupabaseClient.from("current_listeners").delete;
+
+      vi.mocked(
+        deleteCurrentListenerMutation().eq("profile_id", 1).eq,
+      ).mockResolvedValue({
+        data: null,
+        error: createMockPostgrestError({
+          message: "Not Found profile_id",
+        }),
+        success: false,
+        count: null,
+        status: 500,
+        statusText: "",
+      });
+
+      const userRepository = new UserRepository(mockSupabaseClient);
+      const deleteCurrentListenerResult =
+        await userRepository.deleteCurrentListener("1", 1);
+
+      expect(deleteCurrentListenerResult.success).toBeFalsy();
+      expect(deleteCurrentListenerResult.deleteCurrentListenerMessage).toEqual(
+        "Not Found profile_id",
+      );
     });
   });
 });

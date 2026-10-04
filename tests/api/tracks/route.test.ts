@@ -29,7 +29,7 @@ describe("/tracks Route Handler", () => {
     test("에러 메세지가 포함된 JSON 객체를 반환한다", async () => {
       const deleteTrackUsecasesSpy = vi.spyOn(
         deleteTrackUseCasesModule,
-        "deleteTrackUseCases",
+        "deleteTrackUseCase",
       );
       deleteTrackUsecasesSpy.mockRejectedValue(
         new Error("Unauthenticate Error"),
