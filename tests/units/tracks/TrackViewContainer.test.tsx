@@ -3,7 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import user from "@testing-library/user-event";
 import * as Track from "@/app/(main)/tracks/_TrackItem";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { mockCurrentListenersWithTrack } from "../mocks/track";
+import { mockCurrentListenersWithTrack } from "@/tests/fixture/current_listener";
 
 vi.mock("@/libs/supabase/client");
 vi.mock("@/libs/supabase/queries/current-listeners");

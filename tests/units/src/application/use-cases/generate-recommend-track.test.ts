@@ -3,7 +3,7 @@ import getInjection from "@/src/di/container";
 import { MockTrackRepository } from "@/src/infrastructure/repositories/track.repository.mock";
 import { MockUserRepository } from "@/src/infrastructure/repositories/user.repository.mock";
 import { MockOpenAIService } from "@/src/infrastructure/services/openai.service.mock";
-import { mockMusicEntity } from "@/tests/mocks/track";
+import { mockMusicEntity } from "@/tests/fixture/track";
 
 describe("Generate recommend track 유스케이스 계층", () => {
   beforeEach(() => {

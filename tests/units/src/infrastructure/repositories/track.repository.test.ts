@@ -1,20 +1,10 @@
 import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
-import { mockTracks } from "@/tests/mocks/track";
+import {
+  createMockPostgrestError,
+  createMockPostgrestResponseFailure,
+} from "@/tests/factories/createPostgrestSingleResponse";
+import { mockTracks } from "@/tests/fixture/track";
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-
-function createMockPostgrestError(
-  overrides: Partial<PostgrestError> = {},
-): PostgrestError {
-  return {
-    name: "PostgrestError",
-    message: "",
-    details: "",
-    hint: "",
-    code: "",
-    toJSON: () => ({ name: "", message: "", details: "", hint: "", code: "" }),
-    ...overrides,
-  };
-}
 
 const mockSupabaseClient = {
   from: vi.fn().mockReturnValue({
@@ -53,14 +43,13 @@ describe("Track Repository", () => {
     test("tracks 테이블 삽입 실패 시 에러 메세지가 포함된 객체를 반환한다", async () => {
       vi.mocked(
         mockSupabaseClient.from("trakcs").insert([]).select,
-      ).mockResolvedValue({
-        data: null,
-        error: createMockPostgrestError({ message: "Supabase Database Error" }),
-        success: false,
-        count: null,
-        status: 500,
-        statusText: "",
-      });
+      ).mockResolvedValue(
+        createMockPostgrestResponseFailure({
+          error: createMockPostgrestError({
+            message: "Supabase Database Error",
+          }),
+        }),
+      );
       const trackRepository = new TrackRepository(mockSupabaseClient);
 
       const insertTracksResult = await trackRepository.insertTracks(mockTracks);

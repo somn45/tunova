@@ -1,20 +1,11 @@
-import { CurrentListenersInsert } from "@/src/entities/models/user";
 import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
-import { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-
-function createMockPostgrestError(
-  overrides: Partial<PostgrestError> = {},
-): PostgrestError {
-  return {
-    name: "PostgrestError",
-    message: "",
-    details: "",
-    hint: "",
-    code: "",
-    toJSON: () => ({ name: "", message: "", details: "", hint: "", code: "" }),
-    ...overrides,
-  };
-}
+import type { PostgrestResponseFailure } from "@supabase/postgrest-js";
+import {
+  createMockPostgrestError,
+  createMockPostgrestResponseFailure,
+} from "@/tests/factories/createPostgrestSingleResponse";
+import { mockCurrentListenersInsert } from "@/tests/fixture/current_listener";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 const mockSupabaseClient = {
   auth: {
@@ -64,23 +55,9 @@ describe("User Repository", () => {
     test("current_listeners 테이블 삽입 성공 시 {success: true} 속성이 포함된 객체를 반환한다", async () => {
       const userRepository = new UserRepository(mockSupabaseClient);
 
-      const mockCurrentListeners: Array<CurrentListenersInsert> = [
-        {
-          profile_id: "1",
-          current_listened_track_id: 1,
-        },
-        {
-          profile_id: "1",
-          current_listened_track_id: 2,
-        },
-        {
-          profile_id: "2",
-          current_listened_track_id: 2,
-        },
-      ];
-
-      const getUserResult =
-        await userRepository.insertCurrentListeners(mockCurrentListeners);
+      const getUserResult = await userRepository.insertCurrentListeners(
+        mockCurrentListenersInsert,
+      );
 
       expect(getUserResult.success).toBeTruthy();
       expect(getUserResult.insertCurrentListenersMessage).toEqual("ok");
@@ -106,16 +83,13 @@ describe("User Repository", () => {
 
       vi.mocked(
         deleteCurrentListenerMutation().eq("profile_id", 1).eq,
-      ).mockResolvedValue({
-        data: null,
-        error: createMockPostgrestError({
-          message: "Not Found profile_id",
+      ).mockResolvedValue(
+        createMockPostgrestResponseFailure({
+          error: createMockPostgrestError({
+            message: "Not Found profile_id",
+          }),
         }),
-        success: false,
-        count: null,
-        status: 500,
-        statusText: "",
-      });
+      );
 
       const userRepository = new UserRepository(mockSupabaseClient);
       const deleteCurrentListenerResult =
