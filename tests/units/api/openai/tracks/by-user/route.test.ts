@@ -2,7 +2,7 @@ import { POST } from "@/app/api/openai/tracks/by-user/route";
 import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import * as generateRecommendTrackUseCasesModule from "@/src/application/use-cases/generate-recommend-track";
-import { mockMusicEntity } from "@/tests/mocks/track";
+import { mockMusicEntity } from "@/tests/fixture/track";
 import { NextRequest } from "next/server";
 import { OpenAIError } from "openai";
 

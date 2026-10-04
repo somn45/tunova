@@ -7,7 +7,7 @@ import {
 import { mockCurrentListenersInsert } from "@/tests/fixture/current_listener";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-const mockSupabaseClient = {
+const mockCreateClientResult = {
   auth: {
     getUser: vi.fn().mockResolvedValue({
       data: {
@@ -31,16 +31,18 @@ const mockSupabaseClient = {
       }),
     }),
   }),
-} as unknown as SupabaseClient;
+};
 
 vi.mock("@/libs/supabase/server", () => ({
-  createClient: vi.fn().mockResolvedValue(mockSupabaseClient),
+  createClient: vi.fn().mockResolvedValue(mockCreateClientResult),
 }));
+
+const supabaseClient = mockCreateClientResult as unknown as SupabaseClient;
 
 describe("User Repository", () => {
   describe("Get User", () => {
     test("현재 로그인 중인 사용자의 정보를 가져온다", async () => {
-      const userRepository = new UserRepository(mockSupabaseClient);
+      const userRepository = new UserRepository(supabaseClient);
 
       const getUserResult = await userRepository.getUser();
 
@@ -53,7 +55,7 @@ describe("User Repository", () => {
 
   describe("Insert Current Listeners", () => {
     test("current_listeners 테이블 삽입 성공 시 {success: true} 속성이 포함된 객체를 반환한다", async () => {
-      const userRepository = new UserRepository(mockSupabaseClient);
+      const userRepository = new UserRepository(supabaseClient);
 
       const getUserResult = await userRepository.insertCurrentListeners(
         mockCurrentListenersInsert,
@@ -66,7 +68,7 @@ describe("User Repository", () => {
 
   describe("Delete Current Listeners", () => {
     test("current_listeners 테이블 내 데이터 삭제 성공 시 success: true가 포함된 객체를 반환한다", async () => {
-      const userRepository = new UserRepository(mockSupabaseClient);
+      const userRepository = new UserRepository(supabaseClient);
 
       const deleteCurrentListenerResult =
         await userRepository.deleteCurrentListener("1", 1);
@@ -79,7 +81,7 @@ describe("User Repository", () => {
 
     test("current_listeners 데이터 삭제 실패 시 supabase에서 반환된 에러 메세지가 포함된 객체를 반환한다", async () => {
       const deleteCurrentListenerMutation =
-        mockSupabaseClient.from("current_listeners").delete;
+        mockCreateClientResult.from("current_listeners").delete;
 
       vi.mocked(
         deleteCurrentListenerMutation().eq("profile_id", 1).eq,
@@ -91,7 +93,7 @@ describe("User Repository", () => {
         }),
       );
 
-      const userRepository = new UserRepository(mockSupabaseClient);
+      const userRepository = new UserRepository(supabaseClient);
       const deleteCurrentListenerResult =
         await userRepository.deleteCurrentListener("1", 1);
 

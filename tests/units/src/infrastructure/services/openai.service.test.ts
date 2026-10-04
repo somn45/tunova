@@ -1,7 +1,7 @@
 import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
 import { OpenAIService } from "@/src/infrastructure/services/openai.service";
 import { MOCK_OPENAI_RESPONSES } from "@/src/infrastructure/services/openai.service.mock";
-import { mockMusicEntity } from "@/tests/mocks/track";
+import { mockMusicEntity } from "@/tests/fixture/track";
 import type OpenAI from "openai";
 
 const mockOpenAI = {
