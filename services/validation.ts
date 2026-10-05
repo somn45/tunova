@@ -1,18 +1,6 @@
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
+import { SerializedMusicEntity } from "@/types/track";
 
-interface ValidateMusicEntityParams {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
-
-export const validateMusicEntity = (musicEntity: ValidateMusicEntityParams) => {
+export const validateMusicEntity = (musicEntity: SerializedMusicEntity) => {
   const { tracks, artists, genres } = musicEntity;
   const emptyAllMusicEntities = [tracks, artists, genres].every(
     entity => entity.length === 0,

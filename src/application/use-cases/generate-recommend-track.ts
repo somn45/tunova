@@ -1,30 +1,13 @@
+"use server";
+
 import type { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
-import { createClient } from "@/libs/supabase/server";
-import { TrackRepository } from "@/src/infrastructure/repositories/track.repository";
 import { transformTrackGenreRows } from "@/src/infrastructure/repositories/track.repository.mapper";
-import { UserRepository } from "@/src/infrastructure/repositories/user.repository";
 import { transformCurrentListenerRows } from "@/src/infrastructure/repositories/user.repository.mapper";
-import { ItunesService } from "@/src/infrastructure/services/itunes.service";
-import { OpenAIService } from "@/src/infrastructure/services/openai.service";
-import OpenAI from "openai";
 import { IUserRepository } from "../repositories/user.repository.interface";
 import { ITracksRepository } from "../repositories/track.repository.interface";
 import { IOpenAIService } from "../services/openai.service.interface";
 import { IItunesService } from "../services/itunes.service.interface";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
+import type { SerializedMusicEntity } from "@/types/track";
 
 export const generateRecommendTrackUseCases = async (
   {
@@ -42,7 +25,7 @@ export const generateRecommendTrackUseCases = async (
     musicEntity,
     generateTrackCount = 3,
   }: {
-    musicEntity: MusicEntity;
+    musicEntity: SerializedMusicEntity;
     generateTrackCount: number;
   },
 ) => {

@@ -1,19 +1,6 @@
 import { MOCK_RECOMMENDED_TRACKS } from "@/constants/tracks";
+import { SerializedMusicEntity } from "@/types/track";
 import type OpenAI from "openai";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
 
 export const MOCK_OPENAI_RESPONSES: OpenAI.Responses.Response = {
   id: "mock_id",
@@ -52,7 +39,7 @@ export const MOCK_OPENAI_RESPONSES: OpenAI.Responses.Response = {
 
 export class MockOpenAIService {
   async createRecommendTracksResponses(
-    _musicEntity: MusicEntity,
+    _musicEntity: SerializedMusicEntity,
     _generateTrackCount: number = 3,
   ) {
     const mockOpenAIResponse = MOCK_OPENAI_RESPONSES;

@@ -1,46 +1,22 @@
-interface ITunesSearchResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: "track";
-    trackId: number;
-    trackName: string;
-    artistName: string;
-    releaseDate: string;
-    artworkUrl60: string;
-  }>;
-}
-
-interface ITunesSearchArtistResult {
-  resultCount: number;
-  results: Array<{
-    wrapperType: "artist";
-    artistId: number;
-    artistName: string;
-  }>;
-}
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist: string;
-};
+import type {
+  ITunesSearchArtistResult,
+  ITunesSearchResult,
+} from "@/services/trackServices";
+import { Seed } from "@/types/track";
 
 export function transformMusicEntity(
   origin: ITunesSearchResult["results"][number],
-): RequiredItemType & { releaseDate: string };
+): Seed & { releaseDate: string };
 
 export function transformMusicEntity(
   origin: ITunesSearchArtistResult["results"][number],
-): Pick<RequiredItemType, "id" | "name">;
+): Pick<Seed, "id" | "name">;
 
 export function transformMusicEntity(
   origin:
     | ITunesSearchResult["results"][number]
     | ITunesSearchArtistResult["results"][number],
-):
-  | (RequiredItemType & { releaseDate: string })
-  | Pick<RequiredItemType, "id" | "name"> {
+): (Seed & { releaseDate: string }) | Pick<Seed, "id" | "name"> {
   if ("trackName" in origin) {
     return {
       id: origin.trackId,

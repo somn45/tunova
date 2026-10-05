@@ -1,75 +1,45 @@
 "use client";
 
+import { Seed } from "@/types/track";
 import { useState } from "react";
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface TrackSearchResult {
-  id: number;
-  name: string;
-  artist: string;
-  artwork: string;
-}
-
-interface ArtistSearchResult {
-  id: number;
-  name: string;
-  artwork: string;
-}
-
 interface useSelectTrackResult {
-  tracks: Array<TrackSearchResult>;
+  tracks: Array<Seed>;
   searchTrack: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  selectTrack: (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => void;
-  selectedTracks: Array<RequiredItemType>;
+  selectTrack: (e: React.MouseEvent<HTMLLIElement>, item: Seed) => void;
+  selectedTracks: Array<Seed>;
 }
 
 interface useSelectArtistResult {
-  artists: Array<ArtistSearchResult>;
+  artists: Array<Seed>;
   searchArtist: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  selectArtist: (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => void;
-  selectedArtists: Array<RequiredItemType>;
+  selectArtist: (e: React.MouseEvent<HTMLLIElement>, item: Seed) => void;
+  selectedArtists: Array<Seed>;
 }
 
 // 트랙 검색 결과 함수 반환 시
 function useSelectMusicEntity(
   kind: "track",
-  search: (query: string) => Promise<Array<TrackSearchResult>>,
+  search: (query: string) => Promise<Array<Seed>>,
 ): useSelectTrackResult;
 
 // 아티스트 검색 결과 함수 반환 시
 function useSelectMusicEntity(
   kind: "artist",
-  search: (query: string) => Promise<Array<ArtistSearchResult>>,
+  search: (query: string) => Promise<Array<Seed>>,
 ): useSelectArtistResult;
 
 function useSelectMusicEntity(
   kind: "track" | "artist",
-  search: (
-    query: string,
-  ) => Promise<TrackSearchResult[] | ArtistSearchResult[]>,
+  search: (query: string) => Promise<Seed[]>,
 ) {
-  const [items, setItems] = useState<
-    TrackSearchResult[] | ArtistSearchResult[]
-  >([]);
+  const [items, setItems] = useState<Seed[]>([]);
   const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
     new Set(),
   );
-  const [selectedTracks, setSelectedTracks] = useState<
-    Map<number, RequiredItemType>
-  >(new Map());
+  const [selectedTracks, setSelectedTracks] = useState<Map<number, Seed>>(
+    new Map(),
+  );
 
   const searchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -77,10 +47,7 @@ function useSelectMusicEntity(
     setItems(searchQueryResults);
   };
 
-  const selectTrack = (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => {
+  const selectTrack = (e: React.MouseEvent<HTMLLIElement>, item: Seed) => {
     e.preventDefault();
     setSelectedTrackIds(prevState => new Set(prevState).add(item.id));
     setSelectedTracks(prevState => new Map(prevState).set(item.id, item));

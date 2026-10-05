@@ -1,27 +1,17 @@
 "use client";
 
+import type { Seed } from "@/types/track";
 import { useState } from "react";
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface AutoCompleteProps<T extends RequiredItemType> {
+interface AutoCompleteProps<T extends Seed> {
   scope: string;
   items: Array<T>;
   onChangeKeyword: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
-  selectedItems: Array<RequiredItemType>;
-  selectItem: (
-    e: React.MouseEvent<HTMLLIElement>,
-    item: RequiredItemType,
-  ) => void;
+  selectedItems: Array<Seed>;
+  selectItem: (e: React.MouseEvent<HTMLLIElement>, item: Seed) => void;
 }
 
-export default function AutoComplete<T extends RequiredItemType>({
+export default function AutoComplete<T extends Seed>({
   scope,
   items,
   onChangeKeyword,

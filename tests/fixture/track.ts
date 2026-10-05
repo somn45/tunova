@@ -1,19 +1,5 @@
-import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
-import { Track } from "@/src/entities/models/track";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
+import type { Track } from "@/src/entities/models/track";
+import type { SerializedMusicEntity } from "@/types/track";
 
 export const mockTracks: Track[] = [
   {
@@ -45,7 +31,7 @@ export const mockTracks: Track[] = [
   },
 ];
 
-export const mockMusicEntity: MusicEntity = {
+export const mockMusicEntity: SerializedMusicEntity = {
   tracks: [
     {
       id: 1,

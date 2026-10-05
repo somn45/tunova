@@ -1,3 +1,4 @@
+import type { MusicEntity } from "@/types/track";
 import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
 export interface ITunesSearchResult {
@@ -12,7 +13,7 @@ export interface ITunesSearchResult {
   }>;
 }
 
-interface ITunesSearchArtistResult {
+export interface ITunesSearchArtistResult {
   resultCount: number;
   results: Array<{
     wrapperType: "artist";
@@ -28,20 +29,8 @@ interface ITunesSearchAlbumResult {
   }>;
 }
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
 interface generateUserBaseRecommendedTracksParams {
-  musicEntity: {
-    tracks: Array<RequiredItemType>;
-    artists: Array<RequiredItemType>;
-    genres: Set<string>;
-  };
+  musicEntity: MusicEntity;
   generateTrackCount: number;
 }
 

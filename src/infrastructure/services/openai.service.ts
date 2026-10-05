@@ -1,25 +1,12 @@
 import { writePromptCreateRecommendTracks } from "@/libs/openai/prompt/recommendTracksByUser";
+import { SerializedMusicEntity } from "@/types/track";
 import type OpenAI from "openai";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
 
 export class OpenAIService {
   constructor(private openAIClient: OpenAI) {}
 
   createRecommendTracksResponses = async (
-    musicEntity: MusicEntity,
+    musicEntity: SerializedMusicEntity,
     generateTrackCount: number = 3,
   ) => {
     const createRecommendTracksPrompt = writePromptCreateRecommendTracks({

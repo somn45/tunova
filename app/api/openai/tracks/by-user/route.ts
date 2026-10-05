@@ -1,20 +1,13 @@
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import getInjection from "@/src/di/container";
+import type { Seed } from "@/types/track";
 import { NextRequest, NextResponse } from "next/server";
 import { APIError } from "openai";
 import { OpenAIError } from "openai/index.js";
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
 interface CreateTracksByUserBody {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
+  tracks: Array<Seed>;
+  artists: Array<Seed>;
   genres: Array<string>;
   generateTrackCount: number;
 }

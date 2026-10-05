@@ -9,6 +9,7 @@ import {
   fetchApiSearchArtist,
   generateUserBaseRecommendedTracks,
 } from "@/services/trackServices";
+import type { MusicEntity } from "@/types/track";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -21,20 +22,8 @@ interface IRecommendedTrack {
   reason: string;
 }
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
 interface generateRecommendTrackMutateParams {
-  musicEntity: {
-    tracks: Array<RequiredItemType>;
-    artists: Array<RequiredItemType>;
-    genres: Set<string>;
-  };
+  musicEntity: MusicEntity;
   generateTrackCount: number;
 }
 
@@ -87,6 +76,8 @@ export default function UserSearchTrackModal({
 
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
+
+    console.log(selectedGenres);
 
     generateRecommendTrackMutation.mutate({
       musicEntity: {

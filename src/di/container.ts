@@ -15,20 +15,7 @@ import { IItunesService } from "../application/services/itunes.service.interface
 import { IOpenAIService } from "../application/services/openai.service.interface";
 import { deleteTrackUseCase } from "../application/use-cases/delete-track";
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
-
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
-  genres: Array<string>;
-}
+import type { SerializedMusicEntity } from "@/types/track";
 
 type UseCasesTypes = "GenerateRecommendTrack" | "DeleteRecommendTrack";
 
@@ -44,7 +31,7 @@ interface GetInjectionValueMap {
     musicEntity,
     generateTrackCount,
   }: {
-    musicEntity: MusicEntity;
+    musicEntity: SerializedMusicEntity;
     generateTrackCount: number;
   }) => Promise<recommendTracksType>;
   DeleteRecommendTrack: ({ trackId }: { trackId: number }) => Promise<string>;

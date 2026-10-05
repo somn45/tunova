@@ -1,4 +1,5 @@
 import { GENRE_ID_MAP } from "@/constants/tracks";
+import type { Seed } from "@/types/track";
 import { zodTextFormat } from "openai/helpers/zod.mjs";
 import { z } from "zod";
 
@@ -16,17 +17,9 @@ const RecommendedTracks = z.object({
   recommendTracks: z.array(TrackSchema),
 });
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
 interface MusicEntity {
-  tracks: Array<RequiredItemType>;
-  artists: Array<RequiredItemType>;
+  tracks: Array<Seed>;
+  artists: Array<Seed>;
   genres: Array<string>;
 }
 

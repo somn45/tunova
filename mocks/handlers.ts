@@ -3,6 +3,7 @@ import {
   MOCK_ITUNES_SEARCH_RESULT,
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
+import { Seed } from "@/types/track";
 import { http, HttpResponse } from "msw";
 import { success, z } from "zod";
 
@@ -12,20 +13,11 @@ interface SearchMusicEntityParams {
   entity: "musicTrack" | "musicArtist";
 }
 
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
 interface IRecommendedTrack {
   id: number;
   title: string;
   artist: string;
   genres: string[];
-  artwork: string;
   reason: string;
 }
 
@@ -120,8 +112,8 @@ export const handlers = [
   http.post<
     never,
     {
-      tracks: Array<RequiredItemType>;
-      artists: Array<RequiredItemType>;
+      tracks: Array<Seed>;
+      artists: Array<Seed>;
       genres: Array<string>;
     }
   >("/api/openai/tracks/by-user", async ({ request }) => {

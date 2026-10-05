@@ -1,18 +1,6 @@
-type RequiredItemType = {
-  id: number;
-  name: string;
-  artwork: string;
-  artist?: string;
-  releaseDate?: string;
-};
-
-type SearchArtistResult = {
-  artwork: string;
-  id: number;
-  name: string;
-};
+import type { Seed } from "@/types/track";
 
 export interface IItunesService {
-  searchTrack(query: string, limit?: number): Promise<Array<RequiredItemType>>;
-  searchArtist(query: string): Promise<Array<SearchArtistResult>>;
+  searchTrack(query: string, limit?: number): Promise<Array<Seed>>;
+  searchArtist(query: string): Promise<Array<Seed>>;
 }
