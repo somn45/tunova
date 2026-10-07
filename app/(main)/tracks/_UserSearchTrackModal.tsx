@@ -14,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import GenreSelect from "./_GenreSelect";
 import SelectGenerateTrackCountBox from "./_SelectGenerateTrackCountBox";
+import useSearchSeed from "@/hooks/useSearchSeed";
 
 interface IRecommendedTrack {
   id: number;
@@ -36,11 +37,11 @@ export default function UserSearchTrackModal({
   isOpen: boolean;
   closeModal: () => void;
 }) {
-  const { tracks, searchTrack, selectTrack, selectedTracks } =
-    useSelectMusicEntity("track", fetchApiSearchTrack);
+  const [tracks, searchTracks] = useSearchSeed("track", { limit: 5 });
+  const [artists, searchArtists] = useSearchSeed("artist", { limit: 5 });
+  const { selectTrack, selectedTracks } = useSelectMusicEntity("track");
 
-  const { artists, searchArtist, selectArtist, selectedArtists } =
-    useSelectMusicEntity("artist", fetchApiSearchArtist);
+  const { selectArtist, selectedArtists } = useSelectMusicEntity("artist");
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
   const [generateTrackCount, setGenerateTrackCount] = useState(3);
@@ -105,7 +106,7 @@ export default function UserSearchTrackModal({
         <AutoComplete
           scope="트랙"
           items={tracks}
-          onChangeKeyword={e => searchTrack(e)}
+          onChangeKeyword={e => searchTracks(e)}
           selectedItems={selectedTracks}
           selectItem={selectTrack}
         />
@@ -114,7 +115,7 @@ export default function UserSearchTrackModal({
         <AutoComplete
           scope="아티스트"
           items={artists}
-          onChangeKeyword={e => searchArtist(e)}
+          onChangeKeyword={e => searchArtists(e)}
           selectedItems={selectedArtists}
           selectItem={selectArtist}
         />
