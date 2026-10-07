@@ -12,6 +12,8 @@ import {
 import type { MusicEntity } from "@/types/track";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import GenreSelect from "./_GenreSelect";
+import SelectGenerateTrackCountBox from "./_SelectGenerateTrackCountBox";
 
 interface IRecommendedTrack {
   id: number;
@@ -77,8 +79,6 @@ export default function UserSearchTrackModal({
   const submitUserTaste = async (e: React.MouseEvent<HTMLInputElement>) => {
     e.preventDefault();
 
-    console.log(selectedGenres);
-
     generateRecommendTrackMutation.mutate({
       musicEntity: {
         tracks: selectedTracks,
@@ -101,6 +101,7 @@ export default function UserSearchTrackModal({
         </div>
       )}
       <form>
+        <label htmlFor="track">트랙</label>
         <AutoComplete
           scope="트랙"
           items={tracks}
@@ -108,6 +109,8 @@ export default function UserSearchTrackModal({
           selectedItems={selectedTracks}
           selectItem={selectTrack}
         />
+
+        <label htmlFor="artist">아티스트</label>
         <AutoComplete
           scope="아티스트"
           items={artists}
@@ -117,33 +120,15 @@ export default function UserSearchTrackModal({
         />
 
         <label>장르</label>
-        <ul>
-          {[...selectedGenres].map(genre => (
-            <li key={genre}>{genre}</li>
-          ))}
-        </ul>
-        <ul className="h-40 overflow-y-scroll">
-          {GENRE_ID_MAP.entries()
-            .toArray()
-            .map(([genre, key]) => (
-              <li
-                key={key}
-                onClick={() =>
-                  setSelectedGenres(prevState => prevState.add(genre))
-                }
-              >
-                {genre}
-              </li>
-            ))}
-        </ul>
+        <GenreSelect
+          selectedGenres={selectedGenres}
+          setSelectedGenres={setSelectedGenres}
+        />
 
         <label>트랙 생성 숫자 ${generateTrackCount}곡</label>
-        <ul>
-          <li onClick={() => setGenerateTrackCount(1)}>1</li>
-          <li onClick={() => setGenerateTrackCount(3)}>3</li>
-          <li onClick={() => setGenerateTrackCount(10)}>10</li>
-          <li onClick={() => setGenerateTrackCount(20)}>20</li>
-        </ul>
+        <SelectGenerateTrackCountBox
+          setGenerateTrackCount={setGenerateTrackCount}
+        />
 
         <span>{message}</span>
         <input type="submit" value="제출" onClick={submitUserTaste} />

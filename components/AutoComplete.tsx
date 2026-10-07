@@ -41,7 +41,6 @@ export default function AutoComplete<T extends Seed>({
         onFocus={() => setIsShowComboBox(true)}
         onBlur={() => setIsShowComboBox(false)}
       >
-        <label htmlFor="track">{scope}</label>
         <input
           id="track"
           type="text"
