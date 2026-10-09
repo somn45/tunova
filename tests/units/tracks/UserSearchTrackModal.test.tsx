@@ -4,7 +4,7 @@ import {
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
 import * as generateUserBaseRecommendedTracksModule from "@/services/trackServices";
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
+import { normalizeMusicEntity } from "@/utils/normalizeMusicEntity";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -82,7 +82,7 @@ describe("UserSearchTrackModal 모달 컴포넌트", () => {
       expect(generateUserBaseRecommendedTracksSpy).toHaveBeenCalledTimes(1);
       expect(generateUserBaseRecommendedTracksSpy).toHaveBeenCalledWith({
         musicEntity: {
-          tracks: [transformMusicEntity(MOCK_ITUNES_SEARCH_RESULT.results[1])],
+          tracks: [normalizeMusicEntity(MOCK_ITUNES_SEARCH_RESULT.results[1])],
           artists: [],
           genres: new Set(),
         },

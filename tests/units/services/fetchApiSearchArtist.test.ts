@@ -6,7 +6,6 @@ import {
   MOCK_ITUNES_SEARCH_ARTIST_RESULT,
 } from "@/constants/tracks";
 import { fetchApiSearchArtist } from "@/services/trackServices";
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
 describe("fetchApiSearchArtist fetch 함수", () => {
   beforeEach(() => {
@@ -36,9 +35,8 @@ describe("fetchApiSearchArtist fetch 함수", () => {
       (artist, index) => {
         const expectedLookupAlbumResult =
           MOCK_ITUNES_SEARCH_ALBUM_RESULTS[index].results[1];
-        const transformedArtist = transformMusicEntity(artist);
         return {
-          ...transformedArtist,
+          ...artist,
           artwork: expectedLookupAlbumResult.artworkUrl60,
         };
       },

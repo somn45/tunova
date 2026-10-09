@@ -1,5 +1,4 @@
 import type { MusicEntity } from "@/types/track";
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
 export interface ITunesSearchResult {
   resultCount: number;

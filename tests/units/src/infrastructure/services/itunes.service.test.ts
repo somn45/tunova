@@ -1,6 +1,5 @@
 import { ITunesSearchResult } from "@/services/trackServices";
 import { ItunesService } from "@/src/infrastructure/services/itunes.service";
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
 interface ITunesSearchArtistResult {
   resultCount: number;
@@ -110,9 +109,7 @@ describe("Itunes Service", () => {
       }));
 
       const itunesService = new ItunesService();
-      const searchTrackResult = mockITunesSearchResult.results.map(track =>
-        transformMusicEntity(track),
-      );
+      const searchTrackResult = mockITunesSearchResult.results;
 
       expect(await itunesService.searchTrack("mock query")).toEqual(
         searchTrackResult,
@@ -151,7 +148,7 @@ describe("Itunes Service", () => {
 
       const itunesService = new ItunesService();
       const searchArtistResult = mockArtistSearchResult.results.map(artist => ({
-        ...transformMusicEntity(artist),
+        ...artist,
         artwork: artist.artwork,
       }));
 

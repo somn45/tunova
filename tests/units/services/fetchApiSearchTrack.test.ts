@@ -1,6 +1,5 @@
 import { MOCK_ITUNES_SEARCH_RESULT } from "@/constants/tracks";
 import { fetchApiSearchTrack } from "@/services/trackServices";
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
 
 describe("fetchApiSearchTrack", () => {
   beforeEach(() => {
@@ -13,10 +12,7 @@ describe("fetchApiSearchTrack", () => {
     );
 
     const searchTrackResult = await fetchApiSearchTrack("mock query");
-    const expectedAPIResult = MOCK_ITUNES_SEARCH_RESULT.results.map(track => {
-      const transformedTrack = transformMusicEntity(track);
-      return transformedTrack;
-    });
+    const expectedAPIResult = MOCK_ITUNES_SEARCH_RESULT.results;
     expect(searchTrackResult).toEqual(expectedAPIResult);
   });
 });
