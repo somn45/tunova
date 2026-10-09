@@ -3,57 +3,17 @@
 import { Seed } from "@/types/track";
 import { useState } from "react";
 
-interface useSelectTrackResult {
-  selectTrack: (e: React.MouseEvent<HTMLLIElement>, item: Seed) => void;
-  selectedTracks: Array<Seed>;
-}
-
-interface useSelectArtistResult {
-  selectArtist: (e: React.MouseEvent<HTMLLIElement>, item: Seed) => void;
-  selectedArtists: Array<Seed>;
-}
-
-// 트랙 검색 결과 함수 반환 시
-function useSelectMusicEntity(kind: "track"): useSelectTrackResult;
-
-// 아티스트 검색 결과 함수 반환 시
-function useSelectMusicEntity(kind: "artist"): useSelectArtistResult;
-
-function useSelectMusicEntity(kind: "track" | "artist") {
-  const [selectedTrackIds, setSelectedTrackIds] = useState<Set<number>>(
-    new Set(),
-  );
-  const [selectedTracks, setSelectedTracks] = useState<Map<number, Seed>>(
+function useSelectMusicEntity() {
+  const [selectedEntities, setSelectedEntities] = useState<Map<number, Seed>>(
     new Map(),
   );
 
-  const selectTrack = (e: React.MouseEvent<HTMLLIElement>, item: Seed) => {
+  const selectEntity = (e: React.MouseEvent<HTMLLIElement>, item: Seed) => {
     e.preventDefault();
-    setSelectedTrackIds(prevState => new Set(prevState).add(item.id));
-    setSelectedTracks(prevState => new Map(prevState).set(item.id, item));
+    setSelectedEntities(prevState => new Map(prevState).set(item.id, item));
   };
 
-  const getSelectedTracks = () => {
-    const trackIds = selectedTrackIds.keys().toArray();
-    const tracks = trackIds
-      .map(trackId => {
-        const selectedTrack = selectedTracks.get(trackId);
-        return selectedTrack;
-      })
-      .filter(track => !!track);
-    return tracks ?? [];
-  };
-
-  if (kind === "track") {
-    return {
-      selectTrack: selectTrack,
-      selectedTracks: getSelectedTracks(),
-    };
-  }
-  return {
-    selectArtist: selectTrack,
-    selectedArtists: getSelectedTracks(),
-  };
+  return [selectEntity, selectedEntities.values().toArray()] as const;
 }
 
 export default useSelectMusicEntity;

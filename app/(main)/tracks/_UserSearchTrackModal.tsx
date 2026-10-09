@@ -2,13 +2,8 @@
 
 import AutoComplete from "@/components/AutoComplete";
 import Modal from "@/components/Modal";
-import { GENRE_ID_MAP } from "@/constants/tracks";
 import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
-import {
-  fetchApiSearchTrack,
-  fetchApiSearchArtist,
-  generateUserBaseRecommendedTracks,
-} from "@/services/trackServices";
+import { generateUserBaseRecommendedTracks } from "@/services/trackServices";
 import type { MusicEntity } from "@/types/track";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -39,9 +34,8 @@ export default function UserSearchTrackModal({
 }) {
   const [tracks, searchTracks] = useSearchSeed("track", { limit: 5 });
   const [artists, searchArtists] = useSearchSeed("artist", { limit: 5 });
-  const { selectTrack, selectedTracks } = useSelectMusicEntity("track");
-
-  const { selectArtist, selectedArtists } = useSelectMusicEntity("artist");
+  const [selectTrack, selectedTracks] = useSelectMusicEntity();
+  const [selectArtist, selectedArtists] = useSelectMusicEntity();
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
   const [generateTrackCount, setGenerateTrackCount] = useState(3);
