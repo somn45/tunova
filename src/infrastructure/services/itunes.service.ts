@@ -1,5 +1,3 @@
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
-
 export interface ITunesSearchResult {
   resultCount: number;
   results: Array<{
@@ -45,9 +43,7 @@ export class ItunesService {
     );
     const searchTrackResult: ITunesSearchResult = await response.json();
 
-    return searchTrackResult.results.map(track => {
-      return transformMusicEntity(track);
-    });
+    return searchTrackResult.results;
   };
 
   searchArtist = async (query: string) => {
@@ -74,7 +70,7 @@ export class ItunesService {
         const artistSignatureAlbum = searchAlbumResult.results[1];
 
         return {
-          ...transformMusicEntity(artist),
+          ...artist,
           artwork: artistSignatureAlbum.artworkUrl60 ?? "",
         };
       }),

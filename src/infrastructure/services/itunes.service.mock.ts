@@ -1,4 +1,3 @@
-import { transformMusicEntity } from "@/utils/transformMusicEntity";
 import { ITunesSearchResult } from "./itunes.service";
 
 interface ITunesSearchArtistResult {
@@ -73,9 +72,7 @@ export class MockItunesService {
       ],
     };
 
-    return mockITunesSearchResult.results.map(track => {
-      return transformMusicEntity(track);
-    });
+    return mockITunesSearchResult.results;
   };
 
   searchArtist = async (query: string = "mock query") => {
@@ -106,7 +103,7 @@ export class MockItunesService {
       ],
     };
     return mockArtistSearchResult.results.map(artist => ({
-      ...transformMusicEntity(artist),
+      ...artist,
       artwork: artist.artwork,
     }));
   };

@@ -63,9 +63,7 @@ export const fetchApiSearchTrack = async (query: string, limit: number = 5) => {
   );
   const searchTrackResult: ITunesSearchResult = await response.json();
 
-  return searchTrackResult.results.map(track => {
-    return transformMusicEntity(track);
-  });
+  return searchTrackResult.results;
 };
 
 export const fetchApiSearchArtist = async (query: string) => {
@@ -90,7 +88,7 @@ export const fetchApiSearchArtist = async (query: string) => {
       const artistSignatureAlbum = searchAlbumResult.results[1];
 
       return {
-        ...transformMusicEntity(artist),
+        ...artist,
         artwork: artistSignatureAlbum.artworkUrl60 ?? "",
       };
     }),
@@ -143,3 +141,10 @@ export const deleteTrack = async (trackId: number) => {
     throw error;
   }
 };
+
+export type SearchTrackReturnType = Awaited<
+  ReturnType<typeof fetchApiSearchTrack>
+>;
+export type SearchArtistReturnType = Awaited<
+  ReturnType<typeof fetchApiSearchArtist>
+>;
