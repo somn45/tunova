@@ -1,4 +1,5 @@
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
+import { ITunesSearchResult } from "@/services/trackServices";
 
 export const GENRE_ID_MAP = new Map<string, number>([
   ["Blues", 2],
@@ -47,7 +48,7 @@ export const GENRE_TAILWIND_MAP: Record<string, { bg: string; text: string }> =
     "K-Pop": { bg: "bg-indigo-100", text: "text-indigo-700" },
   };
 
-export const MOCK_ITUNES_SEARCH_RESULT = {
+export const MOCK_ITUNES_SEARCH_RESULT: ITunesSearchResult = {
   resultCount: 10,
   results: [
     {
@@ -141,7 +142,7 @@ export const MOCK_ITUNES_SEARCH_RESULT = {
         "https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/78/90/12/example10.jpg/60x60bb.jpg",
     },
   ],
-} as const;
+};
 
 export const MOCK_ITUNES_SEARCH_ARTIST_RESULT = {
   resultCount: 3,

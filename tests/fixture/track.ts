@@ -1,5 +1,31 @@
 import type { Track } from "@/src/entities/models/track";
-import type { SerializedMusicEntity } from "@/types/track";
+import type { Seed, SerializedMusicEntity } from "@/types/track";
+
+export const mockSeed: Seed = {
+  id: 1,
+  name: "Blueming",
+  artwork: "https://example.com/artwork/blueming.jpg",
+  artist: "IU",
+  releaseDate: "2019-11-18",
+};
+
+export const mockSeedMinimal: Seed = {
+  id: 2,
+  name: "Untitled",
+  artwork: "https://example.com/artwork/untitled.jpg",
+};
+
+export const mockSeeds: Seed[] = [
+  mockSeed,
+  mockSeedMinimal,
+  {
+    id: 3,
+    name: "Dynamite",
+    artwork: "https://example.com/artwork/dynamite.jpg",
+    artist: "BTS",
+    releaseDate: "2020-08-21",
+  },
+];
 
 export const mockTracks: Track[] = [
   {

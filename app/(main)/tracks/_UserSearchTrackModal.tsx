@@ -11,15 +11,6 @@ import GenreSelect from "./_GenreSelect";
 import SelectGenerateTrackCountBox from "./_SelectGenerateTrackCountBox";
 import useSearchSeed from "@/hooks/useSearchSeed";
 
-interface IRecommendedTrack {
-  id: number;
-  title: string;
-  artist: string;
-  genres: string[];
-  artwork: string;
-  reason: string;
-}
-
 interface generateRecommendTrackMutateParams {
   musicEntity: MusicEntity;
   generateTrackCount: number;
@@ -39,8 +30,6 @@ export default function UserSearchTrackModal({
 
   const [selectedGenres, setSelectedGenres] = useState<Set<string>>(new Set());
   const [generateTrackCount, setGenerateTrackCount] = useState(3);
-  const [recommendTracks, setRecommendTracks] =
-    useState<Array<IRecommendedTrack>>();
   const [message, setMessage] = useState("");
   const queryClient = useQueryClient();
 
@@ -117,7 +106,9 @@ export default function UserSearchTrackModal({
         <label>장르</label>
         <GenreSelect
           selectedGenres={selectedGenres}
-          setSelectedGenres={setSelectedGenres}
+          selectGenre={genre =>
+            setSelectedGenres(prevState => prevState.add(genre))
+          }
         />
 
         <label>트랙 생성 숫자 ${generateTrackCount}곡</label>
@@ -128,13 +119,6 @@ export default function UserSearchTrackModal({
         <span>{message}</span>
         <input type="submit" value="제출" onClick={submitUserTaste} />
       </form>
-      <ul data-testid="recommend-tracks">
-        {recommendTracks?.map(track => (
-          <li key={track.id} data-testid="recommend-track">
-            {track.title}
-          </li>
-        ))}
-      </ul>
     </Modal>
   );
 }

@@ -3,12 +3,12 @@ import { Dispatch, SetStateAction } from "react";
 
 interface GenreSelectProps {
   selectedGenres: Set<string>;
-  setSelectedGenres: Dispatch<SetStateAction<Set<string>>>;
+  selectGenre: (genre: string) => void;
 }
 
 export default function GenreSelect({
   selectedGenres,
-  setSelectedGenres,
+  selectGenre,
 }: GenreSelectProps) {
   return (
     <>
@@ -21,12 +21,7 @@ export default function GenreSelect({
         {GENRE_ID_MAP.entries()
           .toArray()
           .map(([genre, key]) => (
-            <li
-              key={key}
-              onClick={() =>
-                setSelectedGenres(prevState => prevState.add(genre))
-              }
-            >
+            <li key={key} onClick={() => selectGenre(genre)}>
               {genre}
             </li>
           ))}

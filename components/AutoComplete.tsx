@@ -48,7 +48,10 @@ export default function AutoComplete<T extends Seed>({
           placeholder={`${scope} 검색`}
         />
         {isShowComboBox && (
-          <ul className="flex h-40 flex-col gap-2 overflow-y-scroll">
+          <ul
+            aria-label="search-entity-result"
+            className="flex h-40 flex-col gap-2 overflow-y-scroll"
+          >
             {items.map(item => (
               <li
                 key={item.id}
