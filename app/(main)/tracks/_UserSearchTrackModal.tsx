@@ -113,6 +113,7 @@ export default function UserSearchTrackModal({
 
         <label>트랙 생성 숫자 ${generateTrackCount}곡</label>
         <SelectGenerateTrackCountBox
+          currentGenerateTrackCount={generateTrackCount}
           setGenerateTrackCount={setGenerateTrackCount}
         />
 
