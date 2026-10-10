@@ -1,7 +1,7 @@
 import AutoComplete from "@/components/AutoComplete";
 import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
 import { render, renderHook, screen, within } from "@testing-library/react";
-import { mockSeed, mockSeeds } from "../fixture/track";
+import { mockSeed, mockSeeds } from "@/tests/fixture/track";
 import userEvent from "@testing-library/user-event";
 import { Seed } from "@/types/track";
 

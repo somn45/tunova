@@ -12,12 +12,12 @@ export default function GenreSelect({
 }: GenreSelectProps) {
   return (
     <>
-      <ul>
+      <ul aria-label="selected-genre-list">
         {[...selectedGenres].map(genre => (
           <li key={genre}>{genre}</li>
         ))}
       </ul>
-      <ul className="h-40 overflow-y-scroll">
+      <ul aria-label="genre-entity-list" className="h-40 overflow-y-scroll">
         {GENRE_ID_MAP.entries()
           .toArray()
           .map(([genre, key]) => (
