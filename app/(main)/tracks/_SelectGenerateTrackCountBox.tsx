@@ -31,7 +31,7 @@ export default function SelectGenerateTrackCountBox({
   setGenerateTrackCount,
 }: SelectGenerateTrackCountBox) {
   return (
-    <ul>
+    <ul aria-label="generate-track-count-radio-list">
       <GenerateTrackCountOption
         generateTrackCount={1}
         currentGenerateTrackCount={currentGenerateTrackCount}
