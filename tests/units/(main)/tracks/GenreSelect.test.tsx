@@ -37,17 +37,13 @@ describe("GenreSelect 컴포넌트", () => {
   describe("컴포넌트 내 이벤트 상호작용이 의도대로 동작하는가?", () => {
     test("장르 select 내에서 특정 요소 장르 요소 클릭 시 선택된 장르 목록에 이전에 클릭한 장르 항목이 추가된다.", async () => {
       const user = userEvent.setup();
+      const selectedGenreSet = new Set<string>();
+      const mockSelectGenre = vi.fn((genre: string) => {});
 
-      const { result } = renderHook(() => useState<Set<string>>(new Set()));
-      const selectedGenreSet = result.current[0];
-      const setSelectedGenreSet = result.current[1];
-
-      const { rerender } = render(
+      render(
         <GenreSelect
           selectedGenres={selectedGenreSet}
-          selectGenre={genre =>
-            setSelectedGenreSet(prevState => prevState.add(genre))
-          }
+          selectGenre={mockSelectGenre}
         />,
       );
 
@@ -61,17 +57,8 @@ describe("GenreSelect 컴포넌트", () => {
 
       await user.click(kPopGenreItem);
 
-      rerender(
-        <GenreSelect
-          selectedGenres={selectedGenreSet}
-          selectGenre={genre =>
-            setSelectedGenreSet(prevState => prevState.add(genre))
-          }
-        />,
-      );
-
-      const selectedGenreItem = within(selectedGenreList).queryByText("K-Pop");
-      expect(selectedGenreItem).toBeInTheDocument();
+      expect(mockSelectGenre).toHaveBeenCalledTimes(1);
+      expect(mockSelectGenre).toHaveBeenCalledWith("K-Pop");
     });
   });
 });

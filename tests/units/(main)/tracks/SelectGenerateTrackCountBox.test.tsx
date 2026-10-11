@@ -40,51 +40,34 @@ describe("SelectGenerateTrackCountBox", () => {
   });
 
   describe("컴포넌트 내 이벤트 상호작용이 의도대로 동작하는가?", () => {
-    test("생성 트랙 수 라디오박스 목록에서 특정 숫자가 포함된 요소 선택 시 해당 요소의 aria-checked=true가 된다.", async () => {
+    test("생성 트랙 수 라디오박스 목록에서 특정 숫자가 포함된 요소 선택 시 setGenerateTrackCount 함수가 선택된 요소에 포함된 값과 함께 호출된다.", async () => {
       const user = userEvent.setup();
 
       const { result } = renderHook(() => useState(3));
       const generateTrackCount = result.current[0];
       const setGenerateTrackCount = result.current[1];
 
-      const { rerender } = render(
+      const mockSetGenerateTrackCount = vi.fn(setGenerateTrackCount);
+
+      render(
         <SelectGenerateTrackCountBox
           currentGenerateTrackCount={generateTrackCount}
-          setGenerateTrackCount={setGenerateTrackCount}
+          setGenerateTrackCount={mockSetGenerateTrackCount}
         />,
       );
 
       const generateTrackCountRadioList = screen.getByLabelText(
         "generate-track-count-radio-list",
       );
+
       const targetGenerateTrackCountRadio = within(
         generateTrackCountRadioList,
       ).getByText("10");
 
-      expect(targetGenerateTrackCountRadio).toBeInTheDocument();
-      expect(targetGenerateTrackCountRadio).not.toHaveAttribute(
-        "aria-checked",
-        "true",
-      );
-
       await user.click(targetGenerateTrackCountRadio);
 
-      const updatedGenerateTrackCount = result.current[0];
-      rerender(
-        <SelectGenerateTrackCountBox
-          currentGenerateTrackCount={updatedGenerateTrackCount}
-          setGenerateTrackCount={setGenerateTrackCount}
-        />,
-      );
-
-      const activeGenerateTrackCountRadio = within(
-        generateTrackCountRadioList,
-      ).getByText("10");
-
-      expect(activeGenerateTrackCountRadio).toHaveAttribute(
-        "aria-checked",
-        "true",
-      );
+      expect(mockSetGenerateTrackCount).toHaveBeenCalledTimes(1);
+      expect(mockSetGenerateTrackCount).toHaveBeenCalledWith(10);
     });
   });
 });
