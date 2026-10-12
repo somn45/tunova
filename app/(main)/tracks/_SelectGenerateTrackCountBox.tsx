@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { Dispatch, SetStateAction } from "react";
 
 interface SelectGenerateTrackCountBox {
@@ -17,11 +18,24 @@ function GenerateTrackCountOption({
   const isChecked = currentGenerateTrackCount === generateTrackCount;
   return (
     <li
-      className={`${isChecked ? "font-semibold text-black" : "font-normal text-gray-600"} cursor-pointer`}
-      aria-checked={isChecked}
-      onClick={() => setGenerateTrackCount(generateTrackCount)}
+      className={clsx(
+        `flex size-8 items-center justify-center rounded-md p-2`,
+        {
+          "bg-gray-300": !isChecked,
+          "bg-sky-700 text-white": isChecked,
+        },
+      )}
     >
-      {generateTrackCount}
+      <button
+        aria-checked={isChecked}
+        onClick={e => {
+          e.preventDefault();
+          setGenerateTrackCount(generateTrackCount);
+        }}
+        className="font-semibold"
+      >
+        {generateTrackCount}
+      </button>
     </li>
   );
 }
@@ -31,7 +45,7 @@ export default function SelectGenerateTrackCountBox({
   setGenerateTrackCount,
 }: SelectGenerateTrackCountBox) {
   return (
-    <ul aria-label="generate-track-count-radio-list">
+    <ul aria-label="generate-track-count-radio-list" className="flex gap-4">
       <GenerateTrackCountOption
         generateTrackCount={1}
         currentGenerateTrackCount={currentGenerateTrackCount}

@@ -12,6 +12,20 @@ export default function GenreSelect({
 }: GenreSelectProps) {
   return (
     <>
+      <ul data-testid={`selected-genre-list`} className="flex gap-2">
+        {selectedGenres &&
+          selectedGenres
+            .keys()
+            .toArray()
+            .map(genre => (
+              <li
+                key={genre}
+                className="flex gap-0.5 rounded-md bg-emerald-400 px-3 py-2"
+              >
+                <span className="text-sm">{genre}</span>
+              </li>
+            ))}
+      </ul>
       <ul aria-label="selected-genre-list">
         {[...selectedGenres].map(genre => (
           <li key={genre}>{genre}</li>

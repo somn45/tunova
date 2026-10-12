@@ -46,6 +46,7 @@ export default function AutoComplete<T extends Seed>({
           type="text"
           onChange={onChangeKeyword}
           placeholder={`${scope} 검색`}
+          className="b-gray-400 h-8 border pl-1"
         />
         {isShowComboBox && (
           <ul

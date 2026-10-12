@@ -84,41 +84,60 @@ export default function UserSearchTrackModal({
           <span className="text-xl font-semibold">추천 트랙 생성 중...</span>
         </div>
       )}
-      <form>
-        <label htmlFor="track">트랙</label>
-        <AutoComplete
-          scope="트랙"
-          items={tracks}
-          onChangeKeyword={e => searchTracks(e)}
-          selectedItems={selectedTracks}
-          selectItem={selectTrack}
-        />
+      <form className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="track" className="text-lg font-semibold">
+            트랙
+          </label>
+          <AutoComplete
+            scope="트랙"
+            items={tracks}
+            onChangeKeyword={e => searchTracks(e)}
+            selectedItems={selectedTracks}
+            selectItem={selectTrack}
+          />
+        </div>
 
-        <label htmlFor="artist">아티스트</label>
-        <AutoComplete
-          scope="아티스트"
-          items={artists}
-          onChangeKeyword={e => searchArtists(e)}
-          selectedItems={selectedArtists}
-          selectItem={selectArtist}
-        />
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="artist" className="text-lg font-semibold">
+            아티스트
+          </label>
+          <AutoComplete
+            scope="아티스트"
+            items={artists}
+            onChangeKeyword={e => searchArtists(e)}
+            selectedItems={selectedArtists}
+            selectItem={selectArtist}
+          />
+        </div>
 
-        <label>장르</label>
-        <GenreSelect
-          selectedGenres={selectedGenres}
-          selectGenre={genre =>
-            setSelectedGenres(prevState => prevState.add(genre))
-          }
-        />
+        <div className="flex flex-col gap-0.5">
+          <label htmlFor="genre" className="text-lg font-semibold">
+            장르
+          </label>
+          <GenreSelect
+            selectedGenres={selectedGenres}
+            selectGenre={genre =>
+              setSelectedGenres(prevState => prevState.add(genre))
+            }
+          />
+        </div>
 
-        <label>트랙 생성 숫자 ${generateTrackCount}곡</label>
+        <label htmlFor="track-count" className="text-lg font-semibold">
+          트랙 생성 수
+        </label>
         <SelectGenerateTrackCountBox
           currentGenerateTrackCount={generateTrackCount}
           setGenerateTrackCount={setGenerateTrackCount}
         />
 
         <span>{message}</span>
-        <input type="submit" value="제출" onClick={submitUserTaste} />
+        <input
+          type="submit"
+          value="제출"
+          onClick={submitUserTaste}
+          className="w-full cursor-pointer rounded-lg bg-green-200 p-2 font-semibold hover:bg-green-500 focus:bg-green-50"
+        />
       </form>
     </Modal>
   );
