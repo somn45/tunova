@@ -46,6 +46,7 @@ export default function Track({
   if (viewType === "grid") {
     return (
       <li
+        aria-label="그리드형 트랙 항목"
         onMouseOver={() => setOnHoverTrackImg(true)}
         onMouseOut={() => setOnHoverTrackImg(false)}
         className="relative cursor-pointer justify-items-center p-2"
@@ -64,7 +65,10 @@ export default function Track({
     );
   }
   return (
-    <li className="flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2">
+    <li
+      aria-label="리스트형 트랙 항목"
+      className="flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2"
+    >
       <div className="flex flex-5 items-center gap-2">
         <img
           src={track.artwork!}
@@ -87,11 +91,13 @@ export default function Track({
         ))}
       </ul>
       <div className="flex items-center">
-        <Trash
-          size={24}
+        <button
+          aria-label="트랙 삭제 버튼"
           className="cursor-pointer"
           onClick={() => deleteTrackMutation.mutate(track.id)}
-        />
+        >
+          <Trash size={24} />
+        </button>
       </div>
     </li>
   );
