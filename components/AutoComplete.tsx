@@ -1,7 +1,8 @@
 "use client";
 
 import type { Seed } from "@/types/track";
-import { useState } from "react";
+import clsx from "clsx";
+import { useEffect, useRef, useState } from "react";
 
 interface AutoCompleteProps<T extends Seed> {
   scope: string;
@@ -18,7 +19,20 @@ export default function AutoComplete<T extends Seed>({
   selectedItems,
   selectItem,
 }: AutoCompleteProps<T>) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isFocusSearchBar, setIsFocusSearchBar] = useState(false);
   const [isShowComboBox, setIsShowComboBox] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    console.log(!!searchQuery && isFocusSearchBar);
+    if (!!searchQuery && isFocusSearchBar) {
+      setIsShowComboBox(true);
+    } else {
+      setIsShowComboBox(false);
+    }
+  }, [searchQuery, isFocusSearchBar]);
 
   return (
     <>
@@ -36,22 +50,28 @@ export default function AutoComplete<T extends Seed>({
             </li>
           ))}
       </ul>
-      <div
-        tabIndex={0}
-        onFocus={() => setIsShowComboBox(true)}
-        onBlur={() => setIsShowComboBox(false)}
-      >
+      <div className="relative">
         <input
           id="track"
           type="text"
-          onChange={onChangeKeyword}
+          value={searchQuery}
+          onChange={e => {
+            setSearchQuery(e.target.value);
+            onChangeKeyword(e);
+          }}
           placeholder={`${scope} 검색`}
-          className="b-gray-400 h-8 border pl-1"
+          tabIndex={0}
+          onFocus={() => setIsFocusSearchBar(true)}
+          onBlur={() => setIsFocusSearchBar(false)}
+          className={clsx(`b-gray-400 h-8 w-full border pl-1 outline-none`, {
+            "border-gray-100": isShowComboBox,
+            "border-black": !isShowComboBox,
+          })}
         />
         {isShowComboBox && (
           <ul
             aria-label="search-entity-result"
-            className="flex h-40 flex-col gap-2 overflow-y-scroll"
+            className="absolute top-full z-30 flex h-40 flex-col gap-2 overflow-y-scroll bg-white p-2"
           >
             {items.map(item => (
               <li
