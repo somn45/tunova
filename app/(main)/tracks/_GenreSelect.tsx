@@ -1,5 +1,5 @@
-import { GENRE_ID_MAP } from "@/constants/tracks";
-import { Dispatch, SetStateAction } from "react";
+import { GENRE_ID_MAP, ITUNES_GENRES } from "@/constants/tracks";
+import { Dispatch, SetStateAction, useState } from "react";
 
 interface GenreSelectProps {
   selectedGenres: Set<string>;
@@ -10,8 +10,10 @@ export default function GenreSelect({
   selectedGenres,
   selectGenre,
 }: GenreSelectProps) {
+  const [genreEntities, setGenreEntities] = useState<string[]>(ITUNES_GENRES);
+
   return (
-    <>
+    <section className="flex flex-col gap-2">
       <ul data-testid={`selected-genre-list`} className="flex gap-2">
         {selectedGenres &&
           selectedGenres
@@ -26,20 +28,27 @@ export default function GenreSelect({
               </li>
             ))}
       </ul>
-      <ul aria-label="selected-genre-list">
-        {[...selectedGenres].map(genre => (
-          <li key={genre}>{genre}</li>
+      <input
+        id="genre"
+        type="text"
+        onChange={e =>
+          setGenreEntities(
+            ITUNES_GENRES.filter(genre => {
+              const regExp = new RegExp(e.target.value, "i");
+              return genre.match(regExp);
+            }),
+          )
+        }
+        placeholder="장르 선택"
+        className="b-gray-400 h-8 w-full border pl-1 outline-none"
+      />
+      <ul aria-label="genre-entity-list" className="h-32 overflow-y-scroll">
+        {genreEntities.map(genre => (
+          <li key={genre} onClick={() => selectGenre(genre)}>
+            {genre}
+          </li>
         ))}
       </ul>
-      <ul aria-label="genre-entity-list" className="h-40 overflow-y-scroll">
-        {GENRE_ID_MAP.entries()
-          .toArray()
-          .map(([genre, key]) => (
-            <li key={key} onClick={() => selectGenre(genre)}>
-              {genre}
-            </li>
-          ))}
-      </ul>
-    </>
+    </section>
   );
 }

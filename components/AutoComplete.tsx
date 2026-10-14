@@ -23,10 +23,7 @@ export default function AutoComplete<T extends Seed>({
   const [isFocusSearchBar, setIsFocusSearchBar] = useState(false);
   const [isShowComboBox, setIsShowComboBox] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
-    console.log(!!searchQuery && isFocusSearchBar);
     if (!!searchQuery && isFocusSearchBar) {
       setIsShowComboBox(true);
     } else {

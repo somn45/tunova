@@ -24,6 +24,8 @@ export const GENRE_ID_MAP = new Map<string, number>([
   ["K-Pop", 51],
 ]);
 
+export const ITUNES_GENRES = GENRE_ID_MAP.keys().toArray();
+
 export const GENRE_TAILWIND_MAP: Record<string, { bg: string; text: string }> =
   {
     Blues: { bg: "bg-sky-100", text: "text-sky-700" },
