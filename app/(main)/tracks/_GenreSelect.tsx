@@ -40,11 +40,15 @@ export default function GenreSelect({
           )
         }
         placeholder="장르 선택"
-        className="b-gray-400 h-8 w-full border pl-1 outline-none"
+        className="b-gray-400 h-8 w-full rounded-sm border border-2 border-gray-600 pl-1 outline-none"
       />
       <ul aria-label="genre-entity-list" className="h-32 overflow-y-scroll">
         {genreEntities.map(genre => (
-          <li key={genre} onClick={() => selectGenre(genre)}>
+          <li
+            key={genre}
+            onClick={() => selectGenre(genre)}
+            className="h-8 cursor-pointer py-1 hover:bg-gray-200"
+          >
             {genre}
           </li>
         ))}

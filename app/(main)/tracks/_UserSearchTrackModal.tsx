@@ -84,9 +84,9 @@ export default function UserSearchTrackModal({
           <span className="text-xl font-semibold">추천 트랙 생성 중...</span>
         </div>
       )}
-      <form className="flex flex-col gap-1.5">
-        <div className="flex flex-col gap-0.5">
-          <label htmlFor="track" className="text-lg font-semibold">
+      <form className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="track" className="w-fit text-lg font-semibold">
             트랙
           </label>
           <AutoComplete
@@ -99,7 +99,7 @@ export default function UserSearchTrackModal({
         </div>
 
         <div className="flex flex-col gap-0.5">
-          <label htmlFor="artist" className="text-lg font-semibold">
+          <label htmlFor="artist" className="w-fit text-lg font-semibold">
             아티스트
           </label>
           <AutoComplete
