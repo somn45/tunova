@@ -85,7 +85,7 @@ export default function UserSearchTrackModal({
         </div>
       )}
       <form className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           <label htmlFor="track" className="w-fit text-lg font-semibold">
             트랙
           </label>

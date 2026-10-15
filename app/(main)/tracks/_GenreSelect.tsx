@@ -13,7 +13,7 @@ export default function GenreSelect({
   const [genreEntities, setGenreEntities] = useState<string[]>(ITUNES_GENRES);
 
   return (
-    <section className="flex flex-col gap-2">
+    <section>
       <ul data-testid={`selected-genre-list`} className="flex gap-2">
         {selectedGenres &&
           selectedGenres
@@ -40,7 +40,7 @@ export default function GenreSelect({
           )
         }
         placeholder="장르 선택"
-        className="b-gray-400 h-8 w-full rounded-sm border border-2 border-gray-600 pl-1 outline-none"
+        className="b-gray-400 h-10 w-full rounded-sm border-2 border-gray-600 pl-1 outline-none md:w-3/4"
       />
       <ul aria-label="genre-entity-list" className="h-32 overflow-y-scroll">
         {genreEntities.map(genre => (

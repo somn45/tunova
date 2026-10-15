@@ -23,7 +23,7 @@ export default function Modal({
         >
           <section
             onClick={e => e.stopPropagation()}
-            className="relative m-2 min-h-30 w-full bg-white p-5"
+            className="relative m-2 min-h-30 w-full rounded-md bg-white p-5 md:w-1/2 md:max-w-150 xl:max-w-200"
           >
             {children}
           </section>

@@ -19,7 +19,7 @@ function GenerateTrackCountOption({
   return (
     <li
       className={clsx(
-        `flex size-8 items-center justify-center rounded-md p-2`,
+        `flex size-8 cursor-pointer items-center justify-center rounded-md p-2`,
         {
           "bg-gray-300": !isChecked,
           "bg-sky-700 text-white": isChecked,
