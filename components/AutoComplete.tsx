@@ -47,7 +47,11 @@ export default function AutoComplete<T extends Seed>({
             </li>
           ))}
       </ul>
-      <div className="relative w-full">
+      <div
+        onFocus={() => setIsFocusSearchBar(true)}
+        onBlur={() => setIsFocusSearchBar(false)}
+        className="relative w-full"
+      >
         <input
           id="track"
           type="text"
@@ -58,8 +62,6 @@ export default function AutoComplete<T extends Seed>({
           }}
           placeholder={`${scope} 검색`}
           tabIndex={0}
-          onFocus={() => setIsFocusSearchBar(true)}
-          onBlur={() => setIsFocusSearchBar(false)}
           className={clsx(
             `b-gray-400 h-10 w-full rounded-sm border-2 pl-1 outline-none md:w-3/4`,
             {
@@ -71,9 +73,10 @@ export default function AutoComplete<T extends Seed>({
         {isShowComboBox && (
           <ul
             aria-label="search-entity-result"
+            tabIndex={0}
             className="absolute top-full z-30 mt-2 flex h-40 w-full flex-col gap-2 overflow-y-scroll bg-white p-2 md:w-3/4"
           >
-            {items.map(item => (
+            {items.map((item, index) => (
               <li
                 key={item.id}
                 data-testid="search-track-result"

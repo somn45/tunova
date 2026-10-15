@@ -14,7 +14,7 @@ export default function GenreSelect({
 
   return (
     <section>
-      <ul data-testid={`selected-genre-list`} className="flex gap-2">
+      <ul aria-label={`selected-genre-list`} className="flex gap-2">
         {selectedGenres &&
           selectedGenres
             .keys()

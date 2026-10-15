@@ -1,6 +1,5 @@
 import AutoComplete from "@/components/AutoComplete";
-import useSelectMusicEntity from "@/hooks/useSelectMusicEntity";
-import { render, renderHook, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { mockSeed, mockSeeds } from "@/tests/fixture/track";
 import userEvent from "@testing-library/user-event";
 import { Seed } from "@/types/track";
@@ -43,6 +42,7 @@ describe("AutoComplete 컴포넌트", () => {
 
       const searchBar = screen.getByPlaceholderText(`${scope} 검색`);
       await user.click(searchBar);
+      await user.type(searchBar, "h");
 
       const searchEntityResults = screen.getAllByTestId("search-track-result");
       searchEntityResults.forEach((entity, index) => {
@@ -105,6 +105,7 @@ describe("AutoComplete 컴포넌트", () => {
 
       const searchBar = screen.getByPlaceholderText(`${scope} 검색`);
       await user.click(searchBar);
+      await user.type(searchBar, "h");
 
       const searchEntityList = screen.getByLabelText("search-entity-result");
       const searchEntityItems =
