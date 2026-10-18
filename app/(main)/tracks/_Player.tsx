@@ -2,6 +2,7 @@
 
 import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
+import { getTrackVideoId } from "@/services/db/trackVideoServices";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlay, FastForward, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -32,6 +33,8 @@ interface YTSearchResult {
 }
 
 export default function Player() {
+  const [videoId, setVideoId] = useState("");
+
   const supabase = createClient();
 
   const { data: currentListeners } = useQuery({
@@ -39,42 +42,49 @@ export default function Player() {
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
 
-  const [videoId, setVideoId] = useState("");
-
-  const playerRef = useRef<HTMLDivElement>(null);
-
-  const getTrackVideoId = async () => {
-    if (!currentListeners) return;
-
-    const YOUTUBE_API = "https://www.googleapis.com/youtube/v3/search";
-    const youtubeParams = {
-      part: "snippet", // videoId만 필요하여 "id"로 변경해도 무방함
-      q: currentListeners[0].track.title,
-      key: process.env.NEXT_PUBLIC_YOUTUBE_API_KEY ?? "",
-      maxResults: "20",
-    };
-
-    const ytSearchParams = new URLSearchParams(youtubeParams).toString();
-
-    const getVideoResponse = await fetch(`${YOUTUBE_API}?${ytSearchParams}`);
-    const getVideoResult: YTSearchResult = await getVideoResponse.json();
-    const target = getVideoResult.items.filter((item, i) => {
-      const regExp = new RegExp("official", "i");
-      return regExp.test(item.snippet.title);
-    });
-
-    const itemMatchArtist = getVideoResult.items.filter(item => {
-      if (!currentListeners[0].track.artist) return false;
-      const regExp = new RegExp(currentListeners[0].track.artist, "i");
-      return regExp.test(item.snippet.title);
-    });
-
-    const videoId = itemMatchArtist[0].id.videoId;
-    setVideoId(videoId);
+  const getVideos = async () => {
+    if (currentListeners) {
+      const videos = await getTrackVideoId(currentListeners[0]);
+      localStorage.setItem("videos", JSON.stringify(videos));
+    }
   };
 
   useEffect(() => {
-    getTrackVideoId();
+    const stringifyVideos = localStorage.getItem("videos");
+    if (!stringifyVideos) return;
+    if (!currentListeners || currentListeners.length === 0) return;
+
+    const getVideoResult = JSON.parse(
+      stringifyVideos,
+    ) as YTSearchResult["items"];
+    const videos = getVideoResult;
+
+    const officialVideoWeights = new Array(videos.length).fill(0);
+    const array = officialVideoWeights.map((weight, i) => {
+      if (videos[i].id.kind !== "youtube#video") return -1;
+
+      let videoWeight = weight;
+      if (
+        currentListeners[0].track.artist &&
+        new RegExp(currentListeners[0].track.artist, "i").test(
+          videos[i].snippet.title,
+        )
+      )
+        videoWeight += 1;
+      if (
+        currentListeners[0].track.artist &&
+        new RegExp(currentListeners[0].track.artist, "i").test(
+          videos[i].snippet.channelTitle,
+        )
+      )
+        videoWeight += 3;
+      if (/\bofficial\b/i.test(videos[i].snippet.title)) videoWeight += 1;
+      if (/\b(live|cover|karaoke)\b/i.test(videos[i].snippet.title))
+        videoWeight -= 3;
+      return videoWeight;
+    });
+
+    const officialVideo = videos[array.indexOf(Math.max(...array))];
   }, []);
 
   return (
