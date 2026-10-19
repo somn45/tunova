@@ -25,7 +25,7 @@ export default function TrackViewContainer() {
 
   const isMobile = useIsMobile();
 
-  if (!currentListeners)
+  if (!currentListeners || currentListeners.length === 0)
     return (
       <section className="flex grow items-center justify-center bg-indigo-50">
         <p>

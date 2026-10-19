@@ -1,8 +1,8 @@
 "use client";
 
+import usePickOfficialVideo from "@/hooks/usePickOfficialVideo";
 import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
-import { getTrackVideoId } from "@/services/db/trackVideoServices";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlay, FastForward, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -42,51 +42,14 @@ export default function Player() {
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
 
-  const getVideos = async () => {
-    if (currentListeners) {
-      const videos = await getTrackVideoId(currentListeners[0]);
-      localStorage.setItem("videos", JSON.stringify(videos));
-    }
-  };
+  const firstCurrentListener =
+    currentListeners && currentListeners.length !== 0
+      ? currentListeners[0]
+      : undefined;
 
-  useEffect(() => {
-    const stringifyVideos = localStorage.getItem("videos");
-    if (!stringifyVideos) return;
-    if (!currentListeners || currentListeners.length === 0) return;
-
-    const getVideoResult = JSON.parse(
-      stringifyVideos,
-    ) as YTSearchResult["items"];
-    const videos = getVideoResult;
-
-    const officialVideoWeights = new Array(videos.length).fill(0);
-    const array = officialVideoWeights.map((weight, i) => {
-      if (videos[i].id.kind !== "youtube#video") return -1;
-
-      let videoWeight = weight;
-      if (
-        currentListeners[0].track.artist &&
-        new RegExp(currentListeners[0].track.artist, "i").test(
-          videos[i].snippet.title,
-        )
-      )
-        videoWeight += 1;
-      if (
-        currentListeners[0].track.artist &&
-        new RegExp(currentListeners[0].track.artist, "i").test(
-          videos[i].snippet.channelTitle,
-        )
-      )
-        videoWeight += 3;
-      if (/\bofficial\b/i.test(videos[i].snippet.title)) videoWeight += 1;
-      if (/\b(live|cover|karaoke)\b/i.test(videos[i].snippet.title))
-        videoWeight -= 3;
-      return videoWeight;
-    });
-
-    const officialVideo = videos[array.indexOf(Math.max(...array))];
-  }, []);
-
+  if (!currentListeners || currentListeners.length === 0) {
+    return <section></section>;
+  }
   return (
     <section className="fixed bottom-10 flex h-50 w-full justify-center">
       <div className="flex w-full flex-col md:flex-row">
