@@ -47,6 +47,10 @@ export default function Player() {
       ? currentListeners[0]
       : undefined;
 
+  const trackVideoId = usePickOfficialVideo(firstCurrentListener?.track);
+
+  console.log(trackVideoId);
+
   if (!currentListeners || currentListeners.length === 0) {
     return <section></section>;
   }

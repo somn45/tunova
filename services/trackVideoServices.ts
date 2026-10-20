@@ -26,7 +26,7 @@ export interface YTSearchResult {
 }
 
 interface getTrackVideoResponse {
-  data: YTSearchItem;
+  data: string;
   success: boolean;
   message: string;
 }
@@ -36,8 +36,6 @@ export const getTrackVideo = async (
 ) => {
   if (!track) return null;
 
-  console.log(track);
-
   const response = await fetch("http://localhost:3000/api/videos", {
     method: "POST",
     body: JSON.stringify({ track }),
@@ -46,5 +44,5 @@ export const getTrackVideo = async (
   const getVideoResult: getTrackVideoResponse = await response.json();
 
   if (!getVideoResult.success) throw new Error(getVideoResult.message);
-  return getVideoResult;
+  return getVideoResult.data;
 };

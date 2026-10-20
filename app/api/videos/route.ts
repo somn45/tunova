@@ -33,6 +33,20 @@ export async function POST(request: NextRequest) {
   const { track }: { track: CurrentListeners[number]["track"] } =
     await request.json();
 
+  const supabase = await createClient();
+  const { data: trackVideoIdData } = await supabase
+    .from("tracks")
+    .select("video_id")
+    .eq("id", track.id);
+
+  if (trackVideoIdData) {
+    return NextResponse.json({
+      data: trackVideoIdData[0].video_id,
+      success: true,
+      message: "ok",
+    });
+  }
+
   const youtubeParams = {
     part: "snippet",
     q: `${track.title} ${track.artist} official`,
@@ -70,14 +84,13 @@ export async function POST(request: NextRequest) {
 
   const officialVideo = videos[array.indexOf(Math.max(...array))];
 
-  const supabase = await createClient();
   await supabase
     .from("tracks")
     .update({ video_id: officialVideo.id.videoId })
     .eq("id", track.id);
 
   return NextResponse.json({
-    data: officialVideo,
+    data: officialVideo.id.videoId,
     success: true,
     message: "ok",
   });
