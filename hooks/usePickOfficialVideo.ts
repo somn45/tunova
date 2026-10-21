@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 const usePickOfficialVideo = (track?: CurrentListeners[number]["track"]) => {
-  const { data: videoId } = useQuery({
+  const { data: videoId, error } = useQuery({
     queryKey: ["videos", track?.id],
     queryFn: () => getTrackVideo(track),
     enabled: !!track,
@@ -19,7 +19,7 @@ const usePickOfficialVideo = (track?: CurrentListeners[number]["track"]) => {
     }
   }, [videoId]);
 
-  return videoId;
+  return error?.message;
 };
 
 export default usePickOfficialVideo;

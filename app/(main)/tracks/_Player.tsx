@@ -38,7 +38,7 @@ export default function Player() {
 
   const supabase = createClient();
 
-  const { playlist, addTracks } = usePlaylist();
+  const { playlist, currentPlayingTrackId, addTracks } = usePlaylist();
   const { data: currentListeners } = useQuery({
     queryKey: ["tracks"],
     queryFn: () => executeCurrentListenersQuery(supabase),
@@ -50,16 +50,19 @@ export default function Player() {
     }
   }, [currentListeners?.length]);
 
+  useEffect(() => {
+    if (currentPlayingTrackId) {
+      setVideoId(playlist.get(currentPlayingTrackId) || "");
+    }
+  }, [currentPlayingTrackId]);
+
   const firstCurrentListener =
     currentListeners && currentListeners.length !== 0
       ? currentListeners[0]
       : undefined;
 
-  const trackVideoId = usePickOfficialVideo(firstCurrentListener?.track);
+  const pickTrackVideoError = usePickOfficialVideo(firstCurrentListener?.track);
 
-  if (!currentListeners || currentListeners.length === 0) {
-    return <section></section>;
-  }
   return (
     <section className="fixed bottom-10 flex h-50 w-full justify-center">
       <div className="flex w-full flex-col md:flex-row">
@@ -85,12 +88,3 @@ export default function Player() {
     </section>
   );
 }
-
-/*
-        <div
-          ref={playerRef}
-          className="flex grow-3 items-center justify-center bg-rose-500 md:w-80 md:grow-0"
-        >
-          <Play size={32} className="text-white" />
-        </div>
-*/

@@ -4,6 +4,7 @@ import { create } from "zustand";
 interface PlaylistState {
   tracks: CurrentListeners;
   playlist: Map<number, string>;
+  currentPlayingTrackId: number | null;
   addTracks: (newTracks: CurrentListeners) => void;
   setTrackInPlaylist: (videoId: string, trackId: number) => void;
 }
@@ -11,6 +12,7 @@ interface PlaylistState {
 const usePlaylist = create<PlaylistState>(set => ({
   tracks: [],
   playlist: new Map(),
+  currentPlayingTrackId: null,
   addTracks: currentListeners =>
     set(state => ({ tracks: [...currentListeners] })),
   setTrackInPlaylist: (videoId, trackId) =>
@@ -23,6 +25,9 @@ const usePlaylist = create<PlaylistState>(set => ({
       state.playlist.set(trackId, videoId);
       return {
         playlist: state.playlist,
+        currentPlayingTrackId: !state.currentPlayingTrackId
+          ? trackId
+          : state.currentPlayingTrackId,
       };
     }),
 }));
