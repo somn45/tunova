@@ -3,6 +3,7 @@
 import usePickOfficialVideo from "@/hooks/usePickOfficialVideo";
 import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
+import usePlaylist from "@/stores/playlistStore";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlay, FastForward, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -37,10 +38,17 @@ export default function Player() {
 
   const supabase = createClient();
 
+  const { playlist, addTracks } = usePlaylist();
   const { data: currentListeners } = useQuery({
     queryKey: ["tracks"],
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
+
+  useEffect(() => {
+    if (currentListeners) {
+      addTracks(currentListeners);
+    }
+  }, [currentListeners?.length]);
 
   const firstCurrentListener =
     currentListeners && currentListeners.length !== 0
@@ -48,8 +56,6 @@ export default function Player() {
       : undefined;
 
   const trackVideoId = usePickOfficialVideo(firstCurrentListener?.track);
-
-  console.log(trackVideoId);
 
   if (!currentListeners || currentListeners.length === 0) {
     return <section></section>;
