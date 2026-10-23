@@ -4,6 +4,7 @@ import usePickOfficialVideo from "@/hooks/usePickOfficialVideo";
 import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
 import usePlaylist from "@/stores/playlistStore";
+import loadYTScript from "@/utils/loadYTScript";
 import { useQuery } from "@tanstack/react-query";
 import { CirclePlay, FastForward, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -56,6 +57,31 @@ export default function Player() {
     }
   }, [currentPlayingTrackId]);
 
+  const onPlayerReady = (event: YT.PlayerEvent) => {
+    console.log(event);
+  };
+
+  useEffect(() => {
+    let player: YT.Player | null = null;
+    const initPlayer = async () => {
+      const YT = await loadYTScript();
+      console.log("Youtube API 로드 완료", YT.Player);
+      player = new YT.Player("player", {
+        events: {
+          onReady: onPlayerReady,
+        },
+      });
+    };
+
+    initPlayer();
+
+    return () => {
+      if (player) {
+        player.destroy();
+      }
+    };
+  }, []);
+
   const firstCurrentListener =
     currentListeners && currentListeners.length !== 0
       ? currentListeners[0]
@@ -70,7 +96,7 @@ export default function Player() {
           id="player"
           width="320"
           height="200"
-          src={`http://www.youtube.com/embed/${videoId}`}
+          src={`http://www.youtube.com/embed/${videoId}?enablejsapi=1`}
         ></iframe>
         <div className="flex justify-center gap-10 px-2 md:w-[calc(100%-300px)] md:flex-col md:items-center md:p-3">
           <div className="flex w-[calc(100%-136px)] md:w-3/4 md:text-center">
