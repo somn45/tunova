@@ -1,6 +1,7 @@
 "use client";
 
 import usePickOfficialVideo from "@/hooks/usePickOfficialVideo";
+import usePlayer from "@/hooks/usePlayer";
 import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
 import usePlaylist from "@/stores/playlistStore";
@@ -57,35 +58,14 @@ export default function Player() {
     }
   }, [currentPlayingTrackId]);
 
-  const onPlayerReady = (event: YT.PlayerEvent) => {
-    console.log(event);
-  };
-
-  useEffect(() => {
-    let player: YT.Player | null = null;
-    const initPlayer = async () => {
-      const YT = await loadYTScript();
-      console.log("Youtube API 로드 완료", YT.Player);
-      player = new YT.Player("player", {
-        events: {
-          onReady: onPlayerReady,
-        },
-      });
-    };
-
-    initPlayer();
-
-    return () => {
-      if (player) {
-        player.destroy();
-      }
-    };
-  }, []);
+  const [player] = usePlayer();
 
   const firstCurrentListener =
     currentListeners && currentListeners.length !== 0
       ? currentListeners[0]
       : undefined;
+
+  console.log(player);
 
   const pickTrackVideoError = usePickOfficialVideo(firstCurrentListener?.track);
 
