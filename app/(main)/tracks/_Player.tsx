@@ -36,11 +36,11 @@ interface YTSearchResult {
 }
 
 export default function Player() {
+  const playerContainerRef = useRef<HTMLIFrameElement>(null);
   const [videoId, setVideoId] = useState("");
+  const { playlist, currentPlayingTrackId, addTracks } = usePlaylist();
 
   const supabase = createClient();
-
-  const { playlist, currentPlayingTrackId, addTracks } = usePlaylist();
   const { data: currentListeners } = useQuery({
     queryKey: ["tracks"],
     queryFn: () => executeCurrentListenersQuery(supabase),
@@ -58,14 +58,12 @@ export default function Player() {
     }
   }, [currentPlayingTrackId]);
 
-  const [player] = usePlayer();
+  const [player] = usePlayer(playerContainerRef.current);
 
   const firstCurrentListener =
     currentListeners && currentListeners.length !== 0
       ? currentListeners[0]
       : undefined;
-
-  console.log(player);
 
   const pickTrackVideoError = usePickOfficialVideo(firstCurrentListener?.track);
 
@@ -73,6 +71,7 @@ export default function Player() {
     <section className="fixed bottom-10 flex h-50 w-full justify-center">
       <div className="flex w-full flex-col md:flex-row">
         <iframe
+          ref={playerContainerRef}
           id="player"
           width="320"
           height="200"

@@ -26,7 +26,6 @@ const loadYTScript = (): Promise<typeof window.YT> => {
 
     // 스크립트를 HTML에 배치하여 로드 시작
     document.head.appendChild(tag);
-    console.log(document.head);
   });
 };
 
