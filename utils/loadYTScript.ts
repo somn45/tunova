@@ -10,6 +10,7 @@ const loadYTScript = (): Promise<typeof window.YT> => {
 
     // 스크립트 중복 배치 방지
     if (document.querySelector("[src='https://www.youtube.com/iframe_api']")) {
+      resolve(window.YT);
       return;
     }
 
