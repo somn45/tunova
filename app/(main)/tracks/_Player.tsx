@@ -46,7 +46,9 @@ export default function Player() {
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
 
-  const { playlist } = usePlaylist();
+  const { playlist, setTrackInPlaylist } = usePlaylist();
+
+  const playlistRef = useRef(playlist);
 
   const onPlayerReady = async (e: YT.PlayerEvent) => {
     console.log(currentListeners);
@@ -56,13 +58,36 @@ export default function Player() {
         queryKey: ["videos", firstPlayedTrack.id],
         queryFn: () => getTrackVideo(firstPlayedTrack),
       });
+
       if (!getVideoIdResult) return;
+
       e.target.cueVideoById(getVideoIdResult);
       e.target.cuePlaylist(getVideoIdResult);
+      setTrackInPlaylist(getVideoIdResult, firstPlayedTrack.id);
     }
   };
 
-  const onPlayerStateChange = (e: YT.OnStateChangeEvent) => {};
+  const onPlayerStateChange = (e: YT.OnStateChangeEvent) => {
+    if (!currentListeners || currentListeners.length === 0) return;
+
+    if (
+      e.data === window.YT.PlayerState.BUFFERING &&
+      e.target.getCurrentTime() === 0
+    ) {
+      const currentPlayingTrackId = playlistRef.current.get(
+        e.target.getVideoData().video_id,
+      );
+      const target = currentListeners?.findIndex(
+        currentListener => currentListener.track.id === currentPlayingTrackId,
+      );
+      if (target < 0) return;
+
+      const currentListenerToPlayed = {
+        prev: currentListeners[target - 1],
+        next: currentListeners[target + 1],
+      };
+    }
+  };
 
   useEffect(() => {
     const initPlayer = async () => {
