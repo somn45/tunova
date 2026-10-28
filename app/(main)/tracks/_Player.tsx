@@ -6,6 +6,7 @@ import { createClient } from "@/libs/supabase/client";
 import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
 import { getTrackVideo } from "@/services/trackVideoServices";
 import usePlaylist from "@/stores/playlistStore";
+import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CirclePlay, FastForward, Play } from "lucide-react";
@@ -46,12 +47,15 @@ export default function Player() {
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
 
-  const { playlist, setTrackInPlaylist } = usePlaylist();
+  const { playlist, position, setTrackInPlaylist } = usePlaylist();
 
   const playlistRef = useRef(playlist);
 
+  useEffect(() => {
+    playlistRef.current = new Map([...playlist]);
+  }, [playlist.keys().toArray().join(", ")]);
+
   const onPlayerReady = async (e: YT.PlayerEvent) => {
-    console.log(currentListeners);
     if (currentListeners) {
       const firstPlayedTrack = currentListeners[0].track;
       const getVideoIdResult = await queryClient.fetchQuery({
@@ -67,7 +71,7 @@ export default function Player() {
     }
   };
 
-  const onPlayerStateChange = (e: YT.OnStateChangeEvent) => {
+  const onPlayerStateChange = async (e: YT.OnStateChangeEvent) => {
     if (!currentListeners || currentListeners.length === 0) return;
 
     if (
@@ -77,15 +81,36 @@ export default function Player() {
       const currentPlayingTrackId = playlistRef.current.get(
         e.target.getVideoData().video_id,
       );
+
       const target = currentListeners?.findIndex(
         currentListener => currentListener.track.id === currentPlayingTrackId,
       );
       if (target < 0) return;
 
-      const currentListenerToPlayed = {
-        prev: currentListeners[target - 1],
-        next: currentListeners[target + 1],
-      };
+      const currentListenerToPlayed = [
+        currentListeners[target - 1],
+        currentListeners[target + 1],
+      ];
+
+      const videoIdToNextPlayed = await Promise.all(
+        currentListenerToPlayed.map(async currentListener => {
+          if (!currentListener) return null;
+          const getVideoIdData = await getVideoIdQuery(
+            queryClient,
+            currentListener.track,
+          );
+          return getVideoIdData;
+        }),
+      );
+
+      videoIdToNextPlayed.forEach((getVideoIdData, index) => {
+        if (!getVideoIdData || !getVideoIdData.videoId) return;
+        setTrackInPlaylist(
+          getVideoIdData.videoId,
+          getVideoIdData.trackId,
+          !!index,
+        );
+      });
     }
   };
 

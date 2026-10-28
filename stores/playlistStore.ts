@@ -4,29 +4,34 @@ import { create } from "zustand";
 interface PlaylistState {
   tracks: CurrentListeners;
   playlist: Map<string, number>;
-  currentPlayingTrackId: number | null;
+  position: number;
   addTracks: (newTracks: CurrentListeners) => void;
-  setTrackInPlaylist: (videoId: string, trackId: number) => void;
+  setTrackInPlaylist: (
+    videoId: string,
+    trackId: number,
+    isNextPlayed?: boolean,
+  ) => void;
 }
 
 const usePlaylist = create<PlaylistState>(set => ({
   tracks: [],
   playlist: new Map(),
-  currentPlayingTrackId: null,
+  position: 0,
   addTracks: currentListeners => set(() => ({ tracks: [...currentListeners] })),
-  setTrackInPlaylist: (videoId, trackId) =>
+  setTrackInPlaylist: (videoId, trackId, isNextPlayed = true) =>
     set(state => {
       if (state.playlist.get(videoId)) {
         return {
-          playlist: state.playlist,
+          playlist: new Map([...state.playlist]),
         };
       }
-      state.playlist.set(videoId, trackId);
+
+      const newPlaylist = isNextPlayed
+        ? new Map([...state.playlist, [videoId, trackId]])
+        : new Map([[videoId, trackId], ...state.playlist]);
+
       return {
-        playlist: state.playlist,
-        currentPlayingTrackId: !state.currentPlayingTrackId
-          ? trackId
-          : state.currentPlayingTrackId,
+        playlist: newPlaylist,
       };
     }),
 }));
