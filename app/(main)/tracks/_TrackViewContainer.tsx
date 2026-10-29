@@ -36,7 +36,7 @@ export default function TrackViewContainer() {
     );
   return (
     <>
-      <section className="flex min-h-0 grow flex-col gap-2">
+      <section className="flex min-h-0 grow flex-col gap-2 pb-50">
         <div className="flex justify-between px-1">
           <div className="flex gap-2">
             <List

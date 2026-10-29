@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
     .select("video_id")
     .eq("id", track.id);
 
-    if (trackVideoIdData && trackVideoIdData[0].video_id) {    return NextResponse.json({
+  if (trackVideoIdData && trackVideoIdData[0].video_id) {
+    return NextResponse.json({
       data: trackVideoIdData[0].video_id,
       success: true,
       message: "ok",
