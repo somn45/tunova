@@ -9,7 +9,7 @@ import usePlaylist from "@/stores/playlistStore";
 import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CirclePlay, FastForward, Play } from "lucide-react";
+import { CirclePlay, EthernetPort, FastForward, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface YTSearchSnippet {
@@ -47,13 +47,18 @@ export default function Player() {
     queryFn: () => executeCurrentListenersQuery(supabase),
   });
 
-  const { playlist, position, setTrackInPlaylist } = usePlaylist();
+  const { playlist, position, setPosition, setTrackInPlaylist } = usePlaylist();
 
   const playlistRef = useRef(playlist);
+  const positionRef = useRef(0);
 
   useEffect(() => {
     playlistRef.current = new Map([...playlist]);
   }, [playlist.keys().toArray().join(", ")]);
+
+  useEffect(() => {
+    positionRef.current = position;
+  }, [position]);
 
   const onPlayerReady = async (e: YT.PlayerEvent) => {
     if (currentListeners) {
@@ -73,6 +78,14 @@ export default function Player() {
 
   const onPlayerStateChange = async (e: YT.OnStateChangeEvent) => {
     if (!currentListeners || currentListeners.length === 0) return;
+
+    if (e.data === window.YT.PlayerState.ENDED) {
+      const nextPlaying = currentListeners[positionRef.current + 1];
+      if (nextPlaying.track.video_id) {
+        e.target.loadVideoById(nextPlaying.track.video_id);
+        setPosition(positionRef.current + 1);
+      }
+    }
 
     if (
       e.data === window.YT.PlayerState.BUFFERING &&
@@ -111,6 +124,16 @@ export default function Player() {
           !!index,
         );
       });
+
+      if (videoIdToNextPlayed[0] && videoIdToNextPlayed[0].videoId) {
+        const videoList = playlistRef.current.keys().toArray();
+        const indexOfVideoList = videoList.indexOf(
+          videoIdToNextPlayed[0].videoId,
+        );
+        if (indexOfVideoList < 0) {
+          setPosition(positionRef.current + 1);
+        }
+      }
     }
   };
 

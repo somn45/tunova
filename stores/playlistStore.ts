@@ -11,6 +11,7 @@ interface PlaylistState {
     trackId: number,
     isNextPlayed?: boolean,
   ) => void;
+  setPosition: (position: number) => void;
 }
 
 const usePlaylist = create<PlaylistState>(set => ({
@@ -34,6 +35,7 @@ const usePlaylist = create<PlaylistState>(set => ({
         playlist: newPlaylist,
       };
     }),
+  setPosition: position => set(() => ({ position })),
 }));
 
 export default usePlaylist;

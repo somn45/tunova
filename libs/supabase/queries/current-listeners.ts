@@ -11,6 +11,7 @@ const buildCurrentListenersQuery = async (
       title,
       artist,
       artwork,
+      video_id,
       track_genres (
         genre
       )
