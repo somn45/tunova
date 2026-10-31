@@ -3,10 +3,12 @@
 import { GENRE_TAILWIND_MAP } from "@/constants/tracks";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { deleteTrack } from "@/services/trackServices";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CirclePlay, Trash } from "lucide-react";
 import { useContext, useState } from "react";
 import { PlayerContext } from "./PlayerProvider";
+import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
+import usePlaylist from "@/stores/playlistStore";
 
 export default function Track({
   track,
@@ -17,8 +19,8 @@ export default function Track({
 }) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
   const player = useContext(PlayerContext);
-
-  console.log(player);
+  const { playlist, setTrackInPlaylist, resetPlaylist } = usePlaylist();
+  const queryClient = useQueryClient();
 
   const deleteTrackMutation = useMutation({
     mutationFn: (trackId: number) => {
@@ -47,6 +49,16 @@ export default function Track({
     },
   });
 
+  const playTrack = async (e: React.MouseEvent<HTMLLIElement>) => {
+    e.preventDefault();
+    const getVideoIdData = await getVideoIdQuery(queryClient, track);
+    if (getVideoIdData && getVideoIdData.videoId) {
+      resetPlaylist();
+      setTrackInPlaylist(getVideoIdData.videoId, getVideoIdData.trackId);
+      player?.loadVideoById(getVideoIdData.videoId);
+    }
+  };
+
   if (viewType === "grid") {
     return (
       <li
@@ -68,9 +80,11 @@ export default function Track({
       </li>
     );
   }
+
   return (
     <li
       aria-label="리스트형 트랙 항목"
+      onDoubleClick={playTrack}
       className="flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2"
     >
       <div className="flex flex-5 items-center gap-2">

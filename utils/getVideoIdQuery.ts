@@ -2,7 +2,7 @@
 
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { getTrackVideo } from "@/services/trackVideoServices";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
 
 export const getVideoIdQuery = async (
   queryClient: QueryClient,

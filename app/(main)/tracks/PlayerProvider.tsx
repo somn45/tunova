@@ -55,9 +55,11 @@ export default function PlayerProvider() {
     if (!currentListeners || currentListeners.length === 0) return;
 
     if (e.data === window.YT.PlayerState.ENDED) {
-      const nextPlaying = currentListeners[positionRef.current + 1];
-      if (nextPlaying.track.video_id) {
-        e.target.loadVideoById(nextPlaying.track.video_id);
+      const nextPlaying = playlistRef.current.keys().toArray()[
+        positionRef.current + 1
+      ];
+      if (nextPlaying) {
+        e.target.loadVideoById(nextPlaying);
         setPosition(positionRef.current + 1);
       }
     }
