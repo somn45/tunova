@@ -19,7 +19,7 @@ export default function Modal({
       {createPortal(
         <div
           onClick={closeModal}
-          className="fixed top-0 left-0 flex h-screen w-full items-center justify-center bg-black/60"
+          className="fixed top-0 left-0 z-50 flex h-screen w-full items-center justify-center bg-black/60"
         >
           <section
             onClick={e => e.stopPropagation()}

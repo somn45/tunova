@@ -5,7 +5,8 @@ import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { deleteTrack } from "@/services/trackServices";
 import { useMutation } from "@tanstack/react-query";
 import { CirclePlay, Trash } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { PlayerContext } from "./PlayerProvider";
 
 export default function Track({
   track,
@@ -15,6 +16,9 @@ export default function Track({
   viewType: "list" | "grid";
 }) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
+  const player = useContext(PlayerContext);
+
+  console.log(player);
 
   const deleteTrackMutation = useMutation({
     mutationFn: (trackId: number) => {
