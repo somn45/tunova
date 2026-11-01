@@ -32,6 +32,7 @@ export default function PlayerProvider() {
 
   const { playlist, position, setPosition, setTrackInPlaylist } = usePlaylist();
 
+  const currentListenerRef = useRef(currentListeners);
   const playlistRef = useRef(playlist);
   const positionRef = useRef(0);
 
@@ -52,7 +53,8 @@ export default function PlayerProvider() {
   };
 
   const onPlayerStateChange = async (e: YT.OnStateChangeEvent) => {
-    if (!currentListeners || currentListeners.length === 0) return;
+    if (!currentListenerRef.current || currentListenerRef.current.length === 0)
+      return;
 
     if (e.data === window.YT.PlayerState.ENDED) {
       const nextPlaying = playlistRef.current.keys().toArray()[
@@ -60,8 +62,27 @@ export default function PlayerProvider() {
       ];
       if (nextPlaying) {
         e.target.loadVideoById(nextPlaying);
-        setPosition(positionRef.current + 1);
+      } else {
+        const currentPlayingTrackId = playlistRef.current.get(
+          e.target.getVideoData().video_id,
+        );
+        const playingTrackIndex = currentListenerRef.current.findIndex(
+          currentListener => currentListener.track.id === currentPlayingTrackId,
+        );
+
+        const nextOrderCurrentlistener =
+          currentListenerRef.current[playingTrackIndex + 1];
+        if (!nextOrderCurrentlistener) return;
+
+        const getVideoIdData = await getVideoIdQuery(
+          queryClient,
+          nextOrderCurrentlistener.track,
+        );
+        if (!getVideoIdData || !getVideoIdData.videoId) return;
+        setTrackInPlaylist(getVideoIdData.videoId, getVideoIdData.trackId);
+        playerRef.current?.loadVideoById(getVideoIdData.videoId);
       }
+      setPosition(positionRef.current + 1);
     }
 
     if (
@@ -72,14 +93,14 @@ export default function PlayerProvider() {
         e.target.getVideoData().video_id,
       );
 
-      const target = currentListeners?.findIndex(
+      const target = currentListenerRef.current?.findIndex(
         currentListener => currentListener.track.id === currentPlayingTrackId,
       );
       if (target < 0) return;
 
       const currentListenerToPlayed = [
-        currentListeners[target - 1],
-        currentListeners[target + 1],
+        currentListenerRef.current[target - 1],
+        currentListenerRef.current[target + 1],
       ];
 
       const videoIdToNextPlayed = await Promise.all(
@@ -137,6 +158,14 @@ export default function PlayerProvider() {
   useEffect(() => {
     positionRef.current = position;
   }, [position]);
+
+  useEffect(() => {
+    currentListenerRef.current = currentListeners;
+  }, [
+    currentListeners
+      ?.map(currentListener => currentListener.track.id)
+      .join(", "),
+  ]);
 
   return (
     <CurrentListenersContext.Provider value={currentListeners}>

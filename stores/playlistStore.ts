@@ -11,6 +11,7 @@ interface PlaylistState {
     trackId: number,
     isNextPlayed?: boolean,
   ) => void;
+  deleteTrackInPlaylist: (trackId: number) => void;
   resetPlaylist: () => void;
   setPosition: (position: number) => void;
 }
@@ -41,6 +42,14 @@ const usePlaylist = create<PlaylistState>(set => ({
       playlist: new Map(),
       position: 0,
     })),
+  deleteTrackInPlaylist: trackId =>
+    set(state => {
+      const deleteTarget = state.playlist
+        .entries()
+        .toArray()
+        .filter(playlistItem => playlistItem[1] !== trackId);
+      return { playlist: new Map([...deleteTarget]) };
+    }),
   setPosition: position => set(() => ({ position })),
 }));
 

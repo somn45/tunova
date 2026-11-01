@@ -19,7 +19,8 @@ export default function Track({
 }) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
   const player = useContext(PlayerContext);
-  const { playlist, setTrackInPlaylist, resetPlaylist } = usePlaylist();
+  const { setTrackInPlaylist, resetPlaylist, deleteTrackInPlaylist } =
+    usePlaylist();
   const queryClient = useQueryClient();
 
   const deleteTrackMutation = useMutation({
@@ -27,6 +28,7 @@ export default function Track({
       return deleteTrack(trackId);
     },
     onMutate: (deleteTrackId, context) => {
+      context.client.cancelQueries();
       const previousTracks: CurrentListeners | undefined =
         context.client.getQueryData(["tracks"]);
       if (!previousTracks) {
@@ -40,6 +42,9 @@ export default function Track({
       );
 
       return previousTracks;
+    },
+    onSuccess(_data, variables, _onMutateResult, _context) {
+      deleteTrackInPlaylist(variables);
     },
     onError(_error, _deleteTrackId, onMutateResult, context) {
       context.client.setQueryData(["tracks"], onMutateResult);
