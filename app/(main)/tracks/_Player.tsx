@@ -1,6 +1,9 @@
 "use client";
 
-import { CirclePlay, FastForward } from "lucide-react";
+import { CirclePause, CirclePlay, FastForward } from "lucide-react";
+import { useContext, useState } from "react";
+import { PlayerContext } from "./PlayerProvider";
+import usePlaylist from "@/stores/playlistStore";
 
 interface YTSearchSnippet {
   channelId: string;
@@ -28,6 +31,35 @@ interface YTSearchResult {
 }
 
 export default function Player() {
+  const player = useContext(PlayerContext);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { playlist, position, setPosition } = usePlaylist();
+
+  const play = () => {
+    player?.playVideo();
+    setIsPlaying(prevState => !prevState);
+  };
+
+  const pause = () => {
+    player?.pauseVideo();
+    setIsPlaying(prevState => !prevState);
+  };
+
+  const loadPreviousVideo = () => {
+    const previousVideoId = playlist.keys().toArray()[position - 1];
+    if (previousVideoId) {
+      player?.loadVideoById(previousVideoId);
+      setPosition(position - 1);
+    }
+  };
+
+  const loadNextVideo = () => {
+    const nextVideoId = playlist.keys().toArray()[position + 1];
+    if (nextVideoId) {
+      player?.loadVideoById(nextVideoId);
+      setPosition(position + 1);
+    }
+  };
   return (
     <section className="fixed bottom-10 z-20 flex h-50 w-full justify-center bg-indigo-300">
       <div className="flex w-full flex-col md:flex-row">
@@ -39,9 +71,25 @@ export default function Player() {
             </span>
           </div>
           <div className="flex h-8 min-h-0 w-30 justify-center gap-4">
-            <FastForward size={32} className="rotate-180 cursor-pointer" />
-            <CirclePlay size={32} className="cursor-pointer" />
-            <FastForward size={32} className="cursor-pointer" />
+            <FastForward
+              size={32}
+              onClick={loadPreviousVideo}
+              className="rotate-180 cursor-pointer"
+            />
+            {isPlaying ? (
+              <CirclePause
+                size={32}
+                onClick={pause}
+                className="cursor-pointer"
+              />
+            ) : (
+              <CirclePlay size={32} onClick={play} className="cursor-pointer" />
+            )}
+            <FastForward
+              size={32}
+              onClick={loadNextVideo}
+              className="cursor-pointer"
+            />
           </div>
         </div>
       </div>
