@@ -26,6 +26,16 @@ interface ITunesSearchAlbumResult {
   }>;
 }
 
+export interface SearchArtistReturnType {
+  resultCount: number;
+  results: Array<{
+    wrapperType: "artist";
+    artistId: number;
+    artistName: string;
+    artworkUrl60: string;
+  }>;
+}
+
 export class ItunesService {
   searchTrack = async (query: string, limit: number = 5) => {
     const itunesTrackParams = {

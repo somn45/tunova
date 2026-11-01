@@ -1,6 +1,12 @@
-import type { Seed } from "@/types/track";
+import {
+  ITunesSearchResult,
+  SearchArtistReturnType,
+} from "@/services/trackServices";
 
 export interface IItunesService {
-  searchTrack(query: string, limit?: number): Promise<Array<Seed>>;
-  searchArtist(query: string): Promise<Array<Seed>>;
+  searchTrack(
+    query: string,
+    limit?: number,
+  ): Promise<ITunesSearchResult["results"]>;
+  searchArtist(query: string): Promise<SearchArtistReturnType>;
 }

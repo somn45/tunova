@@ -70,7 +70,7 @@ export const generateRecommendTrackUseCases = async (
       const searchTrackResult = await itunesService.searchTrack(track.title);
       return {
         ...track,
-        artwork: searchTrackResult[0].artwork,
+        artwork: searchTrackResult[0].artworkUrl60,
         release_date: searchTrackResult[0].releaseDate,
       };
     }),
