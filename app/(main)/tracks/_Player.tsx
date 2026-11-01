@@ -4,6 +4,7 @@ import { CirclePause, CirclePlay, FastForward } from "lucide-react";
 import { useContext, useState } from "react";
 import { PlayerContext } from "./PlayerProvider";
 import usePlaylist from "@/stores/playlistStore";
+import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 
 interface YTSearchSnippet {
   channelId: string;
@@ -30,7 +31,12 @@ interface YTSearchResult {
   };
 }
 
-export default function Player() {
+export default function Player({
+  currentPlayingTrack,
+}: {
+  currentPlayingTrack: CurrentListeners[number]["track"] | null;
+}) {
+  console.log(currentPlayingTrack);
   const player = useContext(PlayerContext);
   const [isPlaying, setIsPlaying] = useState(false);
   const { playlist, position, setPosition } = usePlaylist();
@@ -64,10 +70,13 @@ export default function Player() {
     <section className="fixed bottom-10 z-20 flex h-50 w-full justify-center bg-indigo-300">
       <div className="flex w-full flex-col md:flex-row">
         <div id="player"></div>
-        <div className="flex items-center justify-center gap-10 px-2 md:w-[calc(100%-300px)] md:flex-col md:items-center md:p-3">
-          <div className="flex w-[calc(100%-136px)] md:w-3/4 md:text-center">
-            <span className="w-full overflow-hidden text-nowrap text-ellipsis">
-              트랙 제목이 너무 길어서 곤란해지면 어쩌지?
+        <div className="flex items-center justify-center gap-8 px-2 md:w-[calc(100%-300px)] md:flex-col md:items-center md:p-3">
+          <div className="flex w-[calc(100%-136px)] flex-col gap-2 md:w-3/4 md:text-center">
+            <span className="w-full overflow-hidden text-lg font-bold text-nowrap text-ellipsis">
+              {currentPlayingTrack ? currentPlayingTrack.title : "트랙 제목"}
+            </span>
+            <span className="text-md w-full overflow-hidden font-semibold text-nowrap text-ellipsis text-gray-500">
+              {currentPlayingTrack ? currentPlayingTrack.artist : "아티스트"}
             </span>
           </div>
           <div className="flex h-8 min-h-0 w-30 justify-center gap-4">

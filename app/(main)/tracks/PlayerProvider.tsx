@@ -21,6 +21,10 @@ export const CurrentListenersContext = createContext<
 export const PlayerContext = createContext<YT.Player | null>(null);
 
 export default function PlayerProvider() {
+  const [currentPlayingTrack, setCurrentPlayingTrack] = useState<
+    CurrentListeners[number]["track"] | null
+  >(null);
+
   const playerRef = useRef<YT.Player>(null);
 
   const supabase = createClient();
@@ -98,6 +102,8 @@ export default function PlayerProvider() {
       );
       if (target < 0) return;
 
+      setCurrentPlayingTrack(currentListenerRef.current[target].track);
+
       const currentListenerToPlayed = [
         currentListenerRef.current[target - 1],
         currentListenerRef.current[target + 1],
@@ -172,7 +178,7 @@ export default function PlayerProvider() {
       <PlayerContext.Provider value={playerRef.current}>
         <GetTrackSection />
         <TrackViewContainer />
-        <Player />
+        <Player currentPlayingTrack={currentPlayingTrack} />
       </PlayerContext.Provider>
     </CurrentListenersContext.Provider>
   );
