@@ -5,22 +5,26 @@ import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { deleteTrack } from "@/services/trackServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CirclePlay, Trash } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { PlayerContext } from "./PlayerProvider";
 import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import usePlaylist from "@/stores/playlistStore";
+import clsx from "clsx";
 
-export default function Track({
-  track,
-  viewType,
-}: {
+interface TrackItemProps {
   track: CurrentListeners[number]["track"];
   viewType: "list" | "grid";
-}) {
+  isPlaying: boolean;
+}
+
+export default function Track({ track, viewType, isPlaying }: TrackItemProps) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
   const player = useContext(PlayerContext);
   const { setTrackInPlaylist, resetPlaylist, deleteTrackInPlaylist } =
     usePlaylist();
+
+  console.log(isPlaying);
+
   const queryClient = useQueryClient();
 
   const deleteTrackMutation = useMutation({
@@ -70,7 +74,7 @@ export default function Track({
         aria-label="그리드형 트랙 항목"
         onMouseOver={() => setOnHoverTrackImg(true)}
         onMouseOut={() => setOnHoverTrackImg(false)}
-        className="relative cursor-pointer justify-items-center p-2"
+        className={clsx(`relative cursor-pointer justify-items-center p-2`)}
       >
         <img
           src={track.artwork!}
@@ -90,7 +94,13 @@ export default function Track({
     <li
       aria-label="리스트형 트랙 항목"
       onDoubleClick={playTrack}
-      className="flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2"
+      className={clsx(
+        `flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2`,
+        {
+          "rounded-md border-2 border-indigo-300": isPlaying,
+          "border-none": !isPlaying,
+        },
+      )}
     >
       <div className="flex flex-5 items-center gap-2">
         <img

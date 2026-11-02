@@ -1,6 +1,9 @@
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import clsx from "clsx";
 import Track from "./_TrackItem";
+import usePlaylist from "@/stores/playlistStore";
+import { useContext, useEffect } from "react";
+import { PlayerContext } from "./PlayerProvider";
 
 interface TrackListProps {
   currentListeners: CurrentListeners;
@@ -11,6 +14,8 @@ export default function TrackList({
   currentListeners,
   viewType,
 }: TrackListProps) {
+  const { currentPlayingTrack } = usePlaylist();
+
   return (
     <section className="@container flex min-h-0 w-full grow basis-0 flex-col items-center gap-3 bg-indigo-50 py-5 pt-2 md:grow-2 xl:grow">
       <ul
@@ -24,7 +29,12 @@ export default function TrackList({
         )}
       >
         {currentListeners.map(({ track }) => (
-          <Track key={track.id} track={track} viewType={viewType} />
+          <Track
+            key={track.id}
+            track={track}
+            viewType={viewType}
+            isPlaying={currentPlayingTrack?.id === track.id}
+          />
         ))}
       </ul>
     </section>

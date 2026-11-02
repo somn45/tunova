@@ -31,15 +31,11 @@ interface YTSearchResult {
   };
 }
 
-export default function Player({
-  currentPlayingTrack,
-}: {
-  currentPlayingTrack: CurrentListeners[number]["track"] | null;
-}) {
-  console.log(currentPlayingTrack);
+export default function Player() {
   const player = useContext(PlayerContext);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { playlist, position, setPosition } = usePlaylist();
+  const { playlist, currentPlayingTrack, position, setPosition } =
+    usePlaylist();
 
   const play = () => {
     player?.playVideo();
