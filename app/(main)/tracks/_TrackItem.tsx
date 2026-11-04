@@ -5,7 +5,7 @@ import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { deleteTrack } from "@/services/trackServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CirclePlay, Trash } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { PlayerContext } from "./PlayerProvider";
 import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import usePlaylist from "@/stores/playlistStore";
@@ -20,10 +20,14 @@ interface TrackItemProps {
 export default function Track({ track, viewType, isPlaying }: TrackItemProps) {
   const [onHoverTrackImg, setOnHoverTrackImg] = useState(false);
   const player = useContext(PlayerContext);
-  const { setTrackInPlaylist, resetPlaylist, deleteTrackInPlaylist } =
-    usePlaylist();
+  const {
+    currentPlayingTrack,
+    setTrackInPlaylist,
+    resetPlaylist,
+    deleteTrackInPlaylist,
+  } = usePlaylist();
 
-  console.log(isPlaying);
+  const itemRef = useRef<HTMLLIElement | null>(null);
 
   const queryClient = useQueryClient();
 
@@ -68,6 +72,19 @@ export default function Track({ track, viewType, isPlaying }: TrackItemProps) {
     }
   };
 
+  useEffect(() => {
+    if (
+      currentPlayingTrack &&
+      currentPlayingTrack.id.toString() === itemRef.current?.id
+    ) {
+      console.log(
+        itemRef.current.scrollIntoView({
+          behavior: "smooth",
+        }),
+      );
+    }
+  }, [currentPlayingTrack]);
+
   if (viewType === "grid") {
     return (
       <li
@@ -92,8 +109,10 @@ export default function Track({ track, viewType, isPlaying }: TrackItemProps) {
 
   return (
     <li
+      id={track.id.toString()}
       aria-label="리스트형 트랙 항목"
       onDoubleClick={playTrack}
+      ref={itemRef}
       className={clsx(
         `flex justify-between py-4 hover:cursor-pointer hover:bg-indigo-200 lg:px-2`,
         {
