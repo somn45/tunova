@@ -29,14 +29,17 @@ describe("TrackList 컴포넌트", () => {
       const MockTrackItemComponent = vi.mocked(Track);
 
       expect(MockTrackItemComponent.mock.calls[0][0]).toEqual({
+        isPlaying: false,
         track: currentListeners[0].track,
         viewType,
       });
       expect(MockTrackItemComponent.mock.calls[1][0]).toEqual({
+        isPlaying: false,
         track: currentListeners[1].track,
         viewType,
       });
       expect(MockTrackItemComponent.mock.calls[2][0]).toEqual({
+        isPlaying: false,
         track: currentListeners[2].track,
         viewType,
       });

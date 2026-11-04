@@ -1,17 +1,11 @@
-import GetTrackSection from "./_GetTrackSecton";
-import TrackViewContainer from "./_TrackViewContainer";
-import {
-  type CurrentListeners,
-  executeCurrentListenersQuery,
-} from "@/libs/supabase/queries/current-listeners";
-import Player from "./_Player";
+import { executeCurrentListenersQuery } from "@/libs/supabase/queries/current-listeners";
 import {
   dehydrate,
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
 import { createClient } from "@/libs/supabase/server";
-import PlayerProvider from "./PlayerProvider";
+import PlayerProvider from "./_PlayerProvider";
 
 export interface ITrack {
   id: number;

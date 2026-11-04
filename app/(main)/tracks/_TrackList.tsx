@@ -3,7 +3,7 @@ import clsx from "clsx";
 import Track from "./_TrackItem";
 import usePlaylist from "@/stores/playlistStore";
 import { useContext, useEffect } from "react";
-import { PlayerContext } from "./PlayerProvider";
+import { PlayerContext } from "./_PlayerProvider";
 
 interface TrackListProps {
   currentListeners: CurrentListeners;

@@ -2,7 +2,7 @@
 
 import { CirclePause, CirclePlay, FastForward } from "lucide-react";
 import { useContext, useState } from "react";
-import { PlayerContext } from "./PlayerProvider";
+import { PlayerContext } from "./_PlayerProvider";
 import usePlaylist from "@/stores/playlistStore";
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 

@@ -6,7 +6,7 @@ import { deleteTrack } from "@/services/trackServices";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CirclePlay, Trash } from "lucide-react";
 import { useContext, useEffect, useRef, useState } from "react";
-import { PlayerContext } from "./PlayerProvider";
+import { PlayerContext } from "./_PlayerProvider";
 import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import usePlaylist from "@/stores/playlistStore";
 import clsx from "clsx";

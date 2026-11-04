@@ -10,7 +10,7 @@ import usePlaylist from "@/stores/playlistStore";
 import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef } from "react";
 import TrackViewContainer from "./_TrackViewContainer";
 import Player from "./_Player";
 import GetTrackSection from "./_GetTrackSecton";

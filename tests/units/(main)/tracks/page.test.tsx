@@ -1,10 +1,9 @@
 import Tracks from "@/app/(main)/tracks/page";
-import TrackViewContainer from "@/app/(main)/tracks/_TrackViewContainer";
 import {
   CurrentListeners,
   executeCurrentListenersQuery,
 } from "@/libs/supabase/queries/current-listeners";
-import { queries, render, screen, within } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import {
   DehydratedState,
   QueryClient,
@@ -37,6 +36,7 @@ export const mockUserTracks = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "Pop" }, { genre: "K-Pop" }],
+      video_id: "mock_videoId",
     },
   },
   {
@@ -48,6 +48,7 @@ export const mockUserTracks = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "K-Pop" }, { genre: "Dance" }],
+      video_id: "mock_videoId",
     },
   },
   {
@@ -59,12 +60,13 @@ export const mockUserTracks = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "Pop" }, { genre: "Jazz" }],
+      video_id: "mock_videoId",
     },
   },
 ];
 
 vi.mock("@/libs/supabase/queries/current-listeners");
-vi.mock("@/app/(main)/tracks/_TrackViewContainer", () => ({
+vi.mock("@/app/(main)/tracks/_PlayerProvider", () => ({
   default: vi.fn(
     ({ currentListeners }: { currentListeners: CurrentListeners }) => {
       return <></>;
