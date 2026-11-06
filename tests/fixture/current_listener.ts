@@ -26,6 +26,7 @@ export const mockCurrentListenersWithTrack: CurrentListeners = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music116/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "Pop" }, { genre: "K-Pop" }],
+      video_id: "mock_video_id_1",
     },
   },
   {
@@ -37,6 +38,7 @@ export const mockCurrentListenersWithTrack: CurrentListeners = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "K-Pop" }, { genre: "Dance" }],
+      video_id: "mock_video_id_2",
     },
   },
   {
@@ -48,6 +50,7 @@ export const mockCurrentListenersWithTrack: CurrentListeners = [
       artwork:
         "https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/artwork_600x600.jpg",
       track_genres: [{ genre: "Pop" }, { genre: "Jazz" }],
+      video_id: null,
     },
   },
 ];

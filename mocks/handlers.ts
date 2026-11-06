@@ -3,6 +3,7 @@ import {
   MOCK_ITUNES_SEARCH_RESULT,
   MOCK_RECOMMENDED_TRACKS,
 } from "@/constants/tracks";
+import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import { Seed } from "@/types/track";
 import { http, HttpResponse } from "msw";
 import { success, z } from "zod";
@@ -163,4 +164,16 @@ export const handlers = [
       data: MOCK_GET_TRACK_RESPONSES,
     });
   }),
+  http.post<never, { track: CurrentListeners[number]["track"] }>(
+    "http://localhost:3000/api/videos",
+    async ({ request }) => {
+      const { track } = await request.json();
+
+      return HttpResponse.json({
+        data: "mock_video_id",
+        success: true,
+        message: "ok",
+      });
+    },
+  ),
 ];
