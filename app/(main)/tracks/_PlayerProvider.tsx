@@ -43,7 +43,6 @@ export default function PlayerProvider() {
   const positionRef = useRef(0);
 
   const onPlayerReady = async (e: YT.PlayerEvent) => {
-    console.log(e.target.cueVideoById);
     if (currentListeners) {
       const firstPlayedTrack = currentListeners[0].track;
       const getVideoIdResult = await queryClient.fetchQuery({
@@ -55,6 +54,7 @@ export default function PlayerProvider() {
 
       e.target.cueVideoById(getVideoIdResult);
       setTrackInPlaylist(getVideoIdResult, firstPlayedTrack.id);
+      console.log(playlist);
     }
   };
 
