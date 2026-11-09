@@ -170,7 +170,10 @@ export const handlers = [
       const { track } = await request.json();
 
       return HttpResponse.json({
-        data: "mock_video_id",
+        data: new Map([
+          [1, "mock_video_id_1"],
+          [2, "mock_video_id_2"],
+        ]).get(track.id),
         success: true,
         message: "ok",
       });

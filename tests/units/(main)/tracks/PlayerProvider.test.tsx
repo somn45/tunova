@@ -1,5 +1,4 @@
 import PlayerProvider from "@/app/(main)/tracks/_PlayerProvider";
-import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import usePlaylist from "@/stores/playlistStore";
 import { mockCurrentListenersWithTrack } from "@/tests/fixture/current_listener";
 import loadYTScript from "@/utils/loadYTScript";
@@ -37,8 +36,10 @@ vi.mock("@/utils/loadYTScript", () => ({
     Player: mockPlayer,
   }),
 }));
+vi.mock("@/app/(main)/tracks/_TrackViewContainer");
 
 const mockSetTrackInPlaylist = vi.fn();
+const mockSetCurrentPlayingTrack = vi.fn();
 
 function makeFakeQueryClient() {
   return new QueryClient({
@@ -62,11 +63,22 @@ describe("PlayerProvider 컴포넌트", () => {
     ) {
       return {
         cueVideoById: mockCueVideoById,
+        getCurrentTime: () => 0,
+        getVideoData: () => ({
+          video_id: "mock_video_id_1",
+        }),
       };
     });
     usePlaylist.setState({
       setTrackInPlaylist: mockSetTrackInPlaylist,
+      setCurrentPlayingTrack: mockSetCurrentPlayingTrack,
     });
+    window.YT = {
+      PlayerState: {
+        ENDED: 0,
+        BUFFERING: 3,
+      },
+    } as typeof window.YT;
   });
   describe("Player 로드 테스트 케이스", () => {
     test("Player 로드가 완료되면 ref에 player 객체를 할당하고 onReady 함수에서 cueVideoById 메서드를 호출한다.", async () => {
@@ -95,10 +107,53 @@ describe("PlayerProvider 컴포넌트", () => {
       });
 
       expect(mockCueVideoById).toHaveBeenCalledTimes(1);
-      expect(mockCueVideoById).toHaveBeenCalledWith("mock_video_id");
+      expect(mockCueVideoById).toHaveBeenCalledWith("mock_video_id_1");
 
       expect(mockSetTrackInPlaylist).toHaveBeenCalledTimes(1);
-      expect(mockSetTrackInPlaylist).toHaveBeenCalledWith("mock_video_id", 1);
+      expect(mockSetTrackInPlaylist).toHaveBeenCalledWith("mock_video_id_1", 1);
+    });
+  });
+
+  describe("Player 재생 상태 변경에 따른 동작 테스트", () => {
+    test("Player가 영상을 재생할 때 재생 중인 트랙의 이전, 다음 트랙의 videoId를 가져오고 playlist 상태에 삽입한다.", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([["mock_video_id_1", 1]]),
+      });
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 3, // BUFFERING,
+        });
+      });
+
+      expect(mockSetCurrentPlayingTrack).toHaveBeenCalledTimes(1);
+      expect(mockSetCurrentPlayingTrack).toHaveBeenCalledWith(
+        mockCurrentListenersWithTrack[0].track,
+      );
+
+      expect(mockSetTrackInPlaylist.mock.calls[0]).toEqual([
+        "mock_video_id_2",
+        2,
+        true,
+      ]);
     });
   });
 });

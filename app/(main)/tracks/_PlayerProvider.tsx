@@ -54,7 +54,6 @@ export default function PlayerProvider() {
 
       e.target.cueVideoById(getVideoIdResult);
       setTrackInPlaylist(getVideoIdResult, firstPlayedTrack.id);
-      console.log(playlist);
     }
   };
 
@@ -95,6 +94,7 @@ export default function PlayerProvider() {
       e.data === window.YT.PlayerState.BUFFERING &&
       e.target.getCurrentTime() === 0
     ) {
+      // 재생 중인 영상의 트랙 ID를 찾고 트랙 목록 내에 없다면 동작 취소
       const currentPlayingTrackId = playlistRef.current.get(
         e.target.getVideoData().video_id,
       );
@@ -106,6 +106,7 @@ export default function PlayerProvider() {
 
       setCurrentPlayingTrack(currentListenerRef.current[target].track);
 
+      // 재생 중인 트랙의 이전, 다음 순번의 video_id를 찾을 준비
       const currentListenerToPlayed = [
         currentListenerRef.current[target - 1],
         currentListenerRef.current[target + 1],
@@ -131,6 +132,7 @@ export default function PlayerProvider() {
         );
       });
 
+      // playlist에 이전 순번의 video_id를 넣을경우 현재 재생 중인 video_id의 순번이 밀리므로 position + 1
       if (videoIdToNextPlayed[0] && videoIdToNextPlayed[0].videoId) {
         const videoList = playlistRef.current.keys().toArray();
         const indexOfVideoList = videoList.indexOf(
