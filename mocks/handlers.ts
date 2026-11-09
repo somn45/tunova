@@ -173,6 +173,7 @@ export const handlers = [
         data: new Map([
           [1, "mock_video_id_1"],
           [2, "mock_video_id_2"],
+          [3, "mock_video_id_3"],
         ]).get(track.id),
         success: true,
         message: "ok",
