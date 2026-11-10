@@ -1,6 +1,7 @@
 import PlayerProvider from "@/app/(main)/tracks/_PlayerProvider";
 import usePlaylist from "@/stores/playlistStore";
 import { mockCurrentListenersWithTrack } from "@/tests/fixture/current_listener";
+import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, waitFor } from "@testing-library/react";
@@ -18,15 +19,17 @@ interface MockPlayer {
   cueVideoById: (videoId: string) => void;
 }
 
-const { mockPlayer, mockCueVideoById } = vi.hoisted(() => {
+const { mockPlayer, mockCueVideoById, mockLoadVideoById } = vi.hoisted(() => {
   const mockPlayer =
     vi.fn<(elementId: string, playerOptions: PlayerOptions) => MockPlayer>();
 
   const mockCueVideoById = vi.fn<(videoId: string) => void>();
+  const mockLoadVideoById = vi.fn<(videoId: string) => void>();
 
   return {
     mockPlayer,
     mockCueVideoById,
+    mockLoadVideoById,
   };
 });
 
@@ -64,6 +67,7 @@ describe("PlayerProvider 컴포넌트", () => {
     ) {
       return {
         cueVideoById: mockCueVideoById,
+        loadVideoById: mockLoadVideoById,
         getCurrentTime: () => 0,
         getVideoData: () => ({
           video_id: "mock_video_id_1",
@@ -117,7 +121,7 @@ describe("PlayerProvider 컴포넌트", () => {
     });
   });
 
-  describe("Player 재생 상태 변경에 따른 동작 테스트", () => {
+  describe("Player 재생 시작 시 테스트 케이스", () => {
     test("Player가 영상을 재생할 때 재생 중인 트랙의 이전, 다음 트랙의 videoId를 가져오고 playlist 상태에 삽입한다.", async () => {
       queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
       usePlaylist.setState({
@@ -246,6 +250,128 @@ describe("PlayerProvider 컴포넌트", () => {
 
       expect(mockSetPosition).toHaveBeenCalledTimes(1);
       expect(mockSetPosition).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe("Player 재생 종료 시 테스트 케이스", () => {
+    test("Playlist 상태에서 재생하려는 다음 순번의 videoId가 있다면 해당 videoId를 로드한다", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([
+          ["mock_video_id_1", 1],
+          ["mock_video_id_2", 2],
+        ]),
+      });
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 0, // ENDED,
+        });
+      });
+
+      expect(mockLoadVideoById).toHaveBeenCalledTimes(1);
+      expect(mockLoadVideoById).toHaveBeenCalledWith("mock_video_id_2");
+    });
+    test("Playlist 상태에서 재생하려는 다음 순번의 videoId가 없다면 다음 순서 트랙의 videoId를 가져오고 로드한다.", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([["mock_video_id_1", 1]]),
+      });
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 0, // ENDED,
+        });
+      });
+
+      expect(mockSetTrackInPlaylist.mock.calls[0]).toEqual([
+        "mock_video_id_2",
+        2,
+      ]);
+
+      expect(mockLoadVideoById).toHaveBeenCalledTimes(1);
+      expect(mockLoadVideoById).toHaveBeenCalledWith("mock_video_id_2");
+
+      expect(mockSetPosition).toHaveBeenCalledTimes(1);
+      expect(mockSetPosition).toHaveBeenCalledWith(1);
+    });
+    test("다음에 재생하려는 트랙이 더 이상 존재하지 않는 경우 동작을 취소한다.", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([["mock_video_id_3", 3]]),
+      });
+
+      mockPlayer.mockImplementation(function (
+        _elementId: string,
+        _playerOptions: PlayerOptions,
+      ) {
+        return {
+          cueVideoById: mockCueVideoById,
+          getCurrentTime: () => 0,
+          getVideoData: () => ({
+            video_id: "mock_video_id_3",
+          }),
+        };
+      });
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 0, // ENDED,
+        });
+      });
+
+      expect(mockSetTrackInPlaylist).not.toHaveBeenCalled();
     });
   });
 });
