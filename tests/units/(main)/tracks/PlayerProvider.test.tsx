@@ -1,10 +1,12 @@
 import PlayerProvider from "@/app/(main)/tracks/_PlayerProvider";
+import { server } from "@/mocks/node";
 import usePlaylist from "@/stores/playlistStore";
 import { mockCurrentListenersWithTrack } from "@/tests/fixture/current_listener";
-import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
+import * as getVideoIdQueryModule from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 
 interface PlayerOptions {
   width: number;
@@ -251,6 +253,44 @@ describe("PlayerProvider 컴포넌트", () => {
       expect(mockSetPosition).toHaveBeenCalledTimes(1);
       expect(mockSetPosition).toHaveBeenCalledWith(1);
     });
+    test("getVideoIdQuery 함수의 결과값이 null 혹은 결과값 내 속성인 videoId가 null일 경우 작업을 취소한다", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([["mock_video_id_1", 1]]),
+      });
+      server.use(
+        http.post(
+          "http://localhost:3000/api/videos",
+          () => HttpResponse.json({ trackId: 2, videoId: null }),
+          { once: true },
+        ),
+      );
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 3, // BUFFERING,
+        });
+      });
+
+      expect(mockSetTrackInPlaylist).not.toHaveBeenCalled();
+    });
   });
 
   describe("Player 재생 종료 시 테스트 케이스", () => {
@@ -372,6 +412,45 @@ describe("PlayerProvider 컴포넌트", () => {
       });
 
       expect(mockSetTrackInPlaylist).not.toHaveBeenCalled();
+    });
+    test("getVideoIdQuery 함수의 결과값이 null 혹은 결과값 내 속성인 videoId가 null인 경우 작업을 최소한다.", async () => {
+      queryClient.setQueryData(["tracks"], mockCurrentListenersWithTrack);
+      usePlaylist.setState({
+        playlist: new Map([["mock_video_id_1", 1]]),
+      });
+      server.use(
+        http.post(
+          "http://localhost:3000/api/videos",
+          () => HttpResponse.json({ trackId: 2, videoId: null }),
+          { once: true },
+        ),
+      );
+
+      render(<PlayerProvider />, {
+        wrapper: ({ children }) => (
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        ),
+      });
+
+      await waitFor(() => {
+        expect(vi.mocked(loadYTScript)).toHaveBeenCalledTimes(1);
+        expect(mockPlayer).toHaveBeenCalledTimes(1);
+      });
+
+      const playerOptions = mockPlayer.mock.calls[0][1];
+      const playerInstance = mockPlayer.mock.results[0].value;
+
+      await act(async () => {
+        playerOptions.events.onStateChange({
+          target: playerInstance,
+          data: 0, // ENDED,
+        });
+      });
+
+      expect(mockSetTrackInPlaylist).not.toHaveBeenCalled();
+      expect(mockLoadVideoById).not.toHaveBeenCalled();
     });
   });
 });
