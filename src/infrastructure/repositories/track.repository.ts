@@ -49,6 +49,29 @@ export class TrackRepository {
       insertTrackGenreMessage: error?.message || "",
     };
   };
+
+  getVideoId = async (trackId: number) => {
+    const { data: trackVideoIdData, error } = await this.supabase
+      .from("tracks")
+      .select("video_id")
+      .eq("id", trackId);
+    return {
+      success: !!!error?.message,
+      data: trackVideoIdData,
+    };
+  };
+
+  updateVideoId = async (trackId: number, videoId: string) => {
+    const { error } = await this.supabase
+      .from("tracks")
+      .update({ video_id: videoId })
+      .eq("id", trackId);
+
+    return {
+      success: !!!error?.message,
+      updateVideoIdMessage: error?.message,
+    };
+  };
 }
 
 export type TrackRepositoryType = TrackRepository;

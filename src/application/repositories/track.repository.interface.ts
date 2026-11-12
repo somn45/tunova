@@ -17,4 +17,19 @@ export interface ITracksRepository {
     success: boolean;
     insertTrackGenreMessage: string;
   }>;
+  getVideoId(trackId: number): Promise<{
+    success: boolean;
+    data:
+      | {
+          video_id: string;
+        }[]
+      | null;
+  }>;
+  updateVideoId(
+    trackId: number,
+    videoId: string,
+  ): Promise<{
+    success: boolean;
+    updateVideoIdMessage: string;
+  }>;
 }

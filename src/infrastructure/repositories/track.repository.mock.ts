@@ -67,4 +67,35 @@ export class MockTrackRepository {
       insertTrackGenreMessage: "ok",
     };
   };
+
+  getVideoId = async (trackId: number) => {
+    if (!trackId) {
+      return {
+        success: false,
+        data: null,
+      };
+    }
+    return {
+      success: true,
+      data: [
+        {
+          video_id: "mock_video_id",
+        },
+      ],
+    };
+  };
+
+  updateVideoId = async (trackId: number, videoId: string) => {
+    if (!trackId || !videoId) {
+      return {
+        success: false,
+        updateVideoIdMessage: "",
+      };
+    }
+
+    return {
+      success: true,
+      updateVideoIdMessage: "ok",
+    };
+  };
 }

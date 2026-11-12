@@ -16,8 +16,11 @@ import { IOpenAIService } from "../application/services/openai.service.interface
 import { deleteTrackUseCase } from "../application/use-cases/delete-track";
 import { recommendTracksType } from "@/libs/openai/prompt/recommendTracksByUser";
 import type { SerializedMusicEntity } from "@/types/track";
+import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
+import { searchVideoIdUseCase } from "../application/use-cases/search-video-id";
 
-type UseCasesTypes = "GenerateRecommendTrack" | "DeleteRecommendTrack";
+type UseCasesTypes =
+  "GenerateRecommendTrack" | "DeleteRecommendTrack" | "SearchVideoId";
 
 interface GetInjectionParams {
   openaiService?: IOpenAIService;
@@ -35,6 +38,11 @@ interface GetInjectionValueMap {
     generateTrackCount: number;
   }) => Promise<recommendTracksType>;
   DeleteRecommendTrack: ({ trackId }: { trackId: number }) => Promise<string>;
+  SearchVideoId: ({
+    track,
+  }: {
+    track: CurrentListeners[number]["track"];
+  }) => Promise<string>;
 }
 async function getInjection(
   useCasesType: "GenerateRecommendTrack",
@@ -43,6 +51,11 @@ async function getInjection(
 
 async function getInjection(
   useCasesType: "DeleteRecommendTrack",
+  infraStructureModule?: GetInjectionParams,
+): Promise<GetInjectionValueMap[typeof useCasesType]>;
+
+async function getInjection(
+  useCasesType: "SearchVideoId",
   infraStructureModule?: GetInjectionParams,
 ): Promise<GetInjectionValueMap[typeof useCasesType]>;
 
@@ -99,6 +112,16 @@ async function getInjection(
 
     const bindingModule = originModule.bind(null, {
       userRepository: new UserRepository(supabaseClient),
+    });
+
+    return bindingModule;
+  }
+  if (useCasesType === "SearchVideoId") {
+    const supabaseClient = await createClient();
+
+    const originModule = searchVideoIdUseCase;
+    const bindingModule = originModule.bind(null, {
+      trackRepository: new TrackRepository(supabaseClient),
     });
 
     return bindingModule;
