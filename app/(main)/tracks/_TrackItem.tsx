@@ -77,11 +77,9 @@ export default function Track({ track, viewType, isPlaying }: TrackItemProps) {
       currentPlayingTrack &&
       currentPlayingTrack.id.toString() === itemRef.current?.id
     ) {
-      console.log(
-        itemRef.current.scrollIntoView({
-          behavior: "smooth",
-        }),
-      );
+      itemRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
     }
   }, [currentPlayingTrack]);
 
