@@ -23,8 +23,6 @@ const usePlayer = ({
     setCurrentPlayingTrack,
   } = usePlaylist();
 
-  console.log(playlist);
-
   const currentListenerRef = useRef(currentListeners);
   const playlistRef = useRef(playlist);
   const positionRef = useRef(0);
@@ -60,14 +58,18 @@ const usePlayer = ({
         const currentPlayingTrackId = playlistRef.current.get(
           e.target.getVideoData().video_id,
         );
+
+        // 1. 재생 중인 트랙의 index 구하기
         const playingTrackIndex = currentListenerRef.current.findIndex(
           currentListener => currentListener.track.id === currentPlayingTrackId,
         );
 
+        // 2. 다음에 재생될 트랙을 가져오고 없다면 동작 중지
         const nextOrderCurrentlistener =
           currentListenerRef.current[playingTrackIndex + 1];
         if (!nextOrderCurrentlistener) return;
 
+        // 1, 2 과정을 통해 가공된 데이터를 사용해 videoId 가져오기
         const getVideoIdData = await getVideoIdQuery(
           queryClient,
           nextOrderCurrentlistener.track,

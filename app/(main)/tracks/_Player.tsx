@@ -63,11 +63,13 @@ export default function Player() {
     }
   };
   return (
-    <section className="fixed bottom-10 z-20 flex h-50 w-full justify-center bg-indigo-300">
+    <section className="fixed bottom-10 z-20 flex h-64 w-full justify-center bg-indigo-50 md:h-50">
       <div className="flex w-full flex-col md:flex-row">
-        <div id="player"></div>
-        <div className="flex items-center justify-center gap-8 px-2 md:w-[calc(100%-300px)] md:flex-col md:items-center md:p-3">
-          <div className="flex w-[calc(100%-136px)] flex-col gap-2 md:w-3/4 md:text-center">
+        <div id="player-wrapper" className="flex justify-end">
+          <div id="player"></div>
+        </div>
+        <div className="flex items-center justify-center gap-8 bg-indigo-300 px-4 md:w-[calc(100%-300px)] md:flex-col md:items-center md:p-3">
+          <div className="flex w-[calc(100%-136px)] flex-col gap-2 py-2 md:w-3/4 md:text-center">
             <span className="w-full overflow-hidden text-lg font-bold text-nowrap text-ellipsis">
               {currentPlayingTrack ? currentPlayingTrack.title : "트랙 제목"}
             </span>
