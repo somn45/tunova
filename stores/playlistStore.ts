@@ -16,9 +16,13 @@ interface PlaylistState {
   resetPlaylist: () => void;
   setCurrentPlayingTrack: (track: CurrentListeners[number]["track"]) => void;
   setPosition: (position: number) => void;
+  incPositionIfPrevVideoCreate: (videoId: string) => void;
+
+  getTrackId: (videoId: string) => number;
+  getNextPlayingVideo: () => string | undefined;
 }
 
-const usePlaylist = create<PlaylistState>(set => ({
+const usePlaylist = create<PlaylistState>((set, get) => ({
   tracks: [],
   playlist: new Map(),
   currentPlayingTrack: null,
@@ -58,6 +62,29 @@ const usePlaylist = create<PlaylistState>(set => ({
       currentPlayingTrack: track,
     })),
   setPosition: position => set(() => ({ position })),
+  incPositionIfPrevVideoCreate: (videoId: string) => {
+    set(state => {
+      const videoList = state.playlist.keys().toArray();
+      const indexOfVideoList = videoList.indexOf(videoId);
+      if (indexOfVideoList < 0) {
+        return {
+          position: state.position + 1,
+        };
+      }
+
+      return {
+        position: state.position,
+      };
+    });
+  },
+  getTrackId: videoId => get().playlist.get(videoId) ?? -1,
+  getNextPlayingVideo: () => {
+    const state = get();
+    const nextPlayingVideo = state.playlist.keys().toArray()[
+      state.position + 1
+    ];
+    return nextPlayingVideo || undefined;
+  },
 }));
 
 export default usePlaylist;

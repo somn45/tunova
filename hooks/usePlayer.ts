@@ -21,6 +21,9 @@ const usePlayer = ({
     setPosition,
     setTrackInPlaylist,
     setCurrentPlayingTrack,
+    incPositionIfPrevVideoCreate,
+    getTrackId,
+    getNextPlayingVideo,
   } = usePlaylist();
 
   const currentListenerRef = useRef(currentListeners);
@@ -28,6 +31,9 @@ const usePlayer = ({
   const positionRef = useRef(0);
 
   const playerRef = useRef<YT.Player>(null);
+
+  console.log(playlistRef.current);
+  console.log(positionRef.current);
 
   const onPlayerReady = async (e: YT.PlayerEvent) => {
     if (currentListeners) {
@@ -49,13 +55,11 @@ const usePlayer = ({
       return;
 
     if (e.data === window.YT.PlayerState.ENDED) {
-      const nextPlaying = playlistRef.current.keys().toArray()[
-        positionRef.current + 1
-      ];
+      const nextPlaying = getNextPlayingVideo();
       if (nextPlaying) {
         e.target.loadVideoById(nextPlaying);
       } else {
-        const currentPlayingTrackId = playlistRef.current.get(
+        const currentPlayingTrackId = getTrackId(
           e.target.getVideoData().video_id,
         );
 
@@ -86,7 +90,7 @@ const usePlayer = ({
       e.target.getCurrentTime() === 0
     ) {
       // 재생 중인 영상의 트랙 ID를 찾고 트랙 목록 내에 없다면 동작 취소
-      const currentPlayingTrackId = playlistRef.current.get(
+      const currentPlayingTrackId = getTrackId(
         e.target.getVideoData().video_id,
       );
 
@@ -125,13 +129,7 @@ const usePlayer = ({
 
       // playlist에 이전 순번의 video_id를 넣을경우 현재 재생 중인 video_id의 순번이 밀리므로 position + 1
       if (videoIdToNextPlayed[0] && videoIdToNextPlayed[0].videoId) {
-        const videoList = playlistRef.current.keys().toArray();
-        const indexOfVideoList = videoList.indexOf(
-          videoIdToNextPlayed[0].videoId,
-        );
-        if (indexOfVideoList < 0) {
-          setPosition(positionRef.current + 1);
-        }
+        incPositionIfPrevVideoCreate(videoIdToNextPlayed[0].videoId);
       }
     }
   };
