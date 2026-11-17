@@ -68,12 +68,12 @@ const usePlaylist = create<PlaylistState>((set, get) => ({
       const indexOfVideoList = videoList.indexOf(videoId);
       if (indexOfVideoList < 0) {
         return {
-          position: state.position + 1,
+          position: state.position,
         };
       }
 
       return {
-        position: state.position,
+        position: state.position + 1,
       };
     });
   },

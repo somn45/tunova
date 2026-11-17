@@ -1,20 +1,16 @@
 "use client";
 
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
-import { getTrackVideo } from "@/services/trackVideoServices";
 import usePlaylist from "@/stores/playlistStore";
-import { getVideoIdQuery } from "@/utils/getVideoIdQuery";
 import loadYTScript from "@/utils/loadYTScript";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import useResolveTrackVideo from "./queries/useGetTrackVideo";
 
 const usePlayer = ({
   currentListeners,
 }: {
   currentListeners?: CurrentListeners;
 }) => {
-  const queryClient = useQueryClient();
-
   const {
     playlist,
     position,
@@ -29,24 +25,19 @@ const usePlayer = ({
   const currentListenerRef = useRef(currentListeners);
   const playlistRef = useRef(playlist);
   const positionRef = useRef(0);
-
   const playerRef = useRef<YT.Player>(null);
 
-  console.log(playlistRef.current);
-  console.log(positionRef.current);
+  const resolveTrackVideoId = useResolveTrackVideo();
 
   const onPlayerReady = async (e: YT.PlayerEvent) => {
     if (currentListeners) {
       const firstPlayedTrack = currentListeners[0].track;
-      const getVideoIdResult = await queryClient.fetchQuery({
-        queryKey: ["videos", firstPlayedTrack.id],
-        queryFn: () => getTrackVideo(firstPlayedTrack),
-      });
+      const getVideoIdQuery = await resolveTrackVideoId(firstPlayedTrack);
 
-      if (!getVideoIdResult) return;
+      if (!getVideoIdQuery || !getVideoIdQuery.videoId) return;
 
-      e.target.cueVideoById(getVideoIdResult);
-      setTrackInPlaylist(getVideoIdResult, firstPlayedTrack.id);
+      e.target.cueVideoById(getVideoIdQuery.videoId);
+      setTrackInPlaylist(getVideoIdQuery.videoId, firstPlayedTrack.id);
     }
   };
 
@@ -74,13 +65,15 @@ const usePlayer = ({
         if (!nextOrderCurrentlistener) return;
 
         // 1, 2 과정을 통해 가공된 데이터를 사용해 videoId 가져오기
-        const getVideoIdData = await getVideoIdQuery(
-          queryClient,
+        const getVideoIdQuery = await resolveTrackVideoId(
           nextOrderCurrentlistener.track,
         );
-        if (!getVideoIdData || !getVideoIdData.videoId) return;
-        setTrackInPlaylist(getVideoIdData.videoId, getVideoIdData.trackId);
-        playerRef.current?.loadVideoById(getVideoIdData.videoId);
+        if (!getVideoIdQuery || !getVideoIdQuery.videoId) return;
+        setTrackInPlaylist(
+          getVideoIdQuery.videoId,
+          nextOrderCurrentlistener.track.id,
+        );
+        playerRef.current?.loadVideoById(getVideoIdQuery.videoId);
       }
       setPosition(positionRef.current + 1);
     }
@@ -110,10 +103,7 @@ const usePlayer = ({
       const videoIdToNextPlayed = await Promise.all(
         currentListenerToPlayed.map(async currentListener => {
           if (!currentListener) return null;
-          const getVideoIdData = await getVideoIdQuery(
-            queryClient,
-            currentListener.track,
-          );
+          const getVideoIdData = await resolveTrackVideoId(currentListener.track);
           return getVideoIdData;
         }),
       );
