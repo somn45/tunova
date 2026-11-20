@@ -1,6 +1,7 @@
 import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import useResolveTrackVideo from "./queries/useGetTrackVideo";
 import usePlaylist from "@/stores/playlistStore";
+import { getAdjacentTracks } from "@/utils/getAdjacentVideoId";
 
 const usePlayerActions = () => {
   const {
@@ -67,22 +68,16 @@ const usePlayerActions = () => {
   ) => {
     // 재생 중인 영상의 트랙 ID를 찾고 트랙 목록 내에 없다면 동작 취소
     const currentPlayingTrackId = getTrackId(player.getVideoData().video_id);
-
-    const target = currentListeners.findIndex(
-      currentListener => currentListener.track.id === currentPlayingTrackId,
+    const { index, adjacentTracks } = getAdjacentTracks(
+      currentListeners,
+      currentPlayingTrackId,
     );
-    if (target < 0) return;
+    if (index < 0) return;
 
-    setCurrentPlayingTrack(currentListeners[target].track);
-
-    // 재생 중인 트랙의 이전, 다음 순번의 video_id를 찾을 준비
-    const currentListenerToPlayed = [
-      currentListeners[target - 1],
-      currentListeners[target + 1],
-    ];
+    setCurrentPlayingTrack(currentListeners[index].track);
 
     const videoIdToNextPlayed = await Promise.all(
-      currentListenerToPlayed.map(async currentListener => {
+      adjacentTracks.map(async currentListener => {
         if (!currentListener) return null;
         const getVideoIdData = await resolveTrackVideoId(currentListener.track);
         return getVideoIdData;

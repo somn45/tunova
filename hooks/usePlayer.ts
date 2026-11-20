@@ -4,7 +4,6 @@ import { CurrentListeners } from "@/libs/supabase/queries/current-listeners";
 import usePlaylist from "@/stores/playlistStore";
 import loadYTScript from "@/utils/loadYTScript";
 import { useEffect, useRef } from "react";
-import useResolveTrackVideo from "./queries/useGetTrackVideo";
 import usePlayerActions from "./usePlayerActions";
 
 const usePlayer = ({
@@ -12,23 +11,13 @@ const usePlayer = ({
 }: {
   currentListeners?: CurrentListeners;
 }) => {
-  const {
-    playlist,
-    position,
-    setPosition,
-    setTrackInPlaylist,
-    setCurrentPlayingTrack,
-    incPositionIfPrevVideoCreate,
-    getTrackId,
-    getNextPlayingVideo,
-  } = usePlaylist();
+  const { playlist, position } = usePlaylist();
 
   const currentListenerRef = useRef(currentListeners);
   const playlistRef = useRef(playlist);
   const positionRef = useRef(0);
   const playerRef = useRef<YT.Player>(null);
 
-  const resolveTrackVideoId = useResolveTrackVideo();
   const { handlePlayerReady, handlePlayStart, handlePlayEnd } =
     usePlayerActions();
 
@@ -50,7 +39,7 @@ const usePlayer = ({
       e.data === window.YT.PlayerState.BUFFERING &&
       e.target.getCurrentTime() === 0
     ) {
-      handlePlayStart(e.target, currentListenerRef.current)
+      handlePlayStart(e.target, currentListenerRef.current);
     }
   };
 
