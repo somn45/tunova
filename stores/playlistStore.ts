@@ -62,18 +62,18 @@ const usePlaylist = create<PlaylistState>((set, get) => ({
       currentPlayingTrack: track,
     })),
   setPosition: position => set(() => ({ position })),
-  incPositionIfPrevVideoCreate: (videoId: string) => {
+  incPositionIfPrevVideoCreate: (previousVideoId: string) => {
     set(state => {
       const videoList = state.playlist.keys().toArray();
-      const indexOfVideoList = videoList.indexOf(videoId);
-      if (indexOfVideoList < 0) {
+      const indexOfVideoList = videoList.indexOf(previousVideoId);
+      if (indexOfVideoList === -1) {
         return {
-          position: state.position,
+          position: state.position + 1,
         };
       }
 
       return {
-        position: state.position + 1,
+        position: state.position,
       };
     });
   },

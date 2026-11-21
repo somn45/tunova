@@ -84,6 +84,11 @@ const usePlayerActions = () => {
       }),
     );
 
+    // playlist에 이전 순번의 video_id를 넣을경우 현재 재생 중인 video_id의 순번이 밀리므로 position + 1
+    if (videoIdToNextPlayed[0] && videoIdToNextPlayed[0].videoId) {
+      incPositionIfPrevVideoCreate(videoIdToNextPlayed[0].videoId);
+    }
+
     videoIdToNextPlayed.forEach((getVideoIdData, index) => {
       if (!getVideoIdData || !getVideoIdData.videoId) return;
       setTrackInPlaylist(
@@ -92,11 +97,6 @@ const usePlayerActions = () => {
         !!index,
       );
     });
-
-    // playlist에 이전 순번의 video_id를 넣을경우 현재 재생 중인 video_id의 순번이 밀리므로 position + 1
-    if (videoIdToNextPlayed[0] && videoIdToNextPlayed[0].videoId) {
-      incPositionIfPrevVideoCreate(videoIdToNextPlayed[0].videoId);
-    }
   };
 
   return {
